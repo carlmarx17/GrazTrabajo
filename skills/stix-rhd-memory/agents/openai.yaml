@@ -1,0 +1,4 @@
+interface:
+  display_name: "STIX/RHD: memoria cromosférica"
+  short_description: "Objetivos y experimentos del paper de pulsos STIX"
+  default_prompt: "Usa $stix-rhd-memory para orientar el próximo paso del paper sobre la respuesta cromosférica a pulsos sucesivos de electrones."

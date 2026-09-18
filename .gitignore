@@ -1,0 +1,11 @@
+.venv/
+.conda-env/
+.sunpy/
+__pycache__/
+*.py[cod]
+data/stix/*.fits
+data/observations/*.fits
+results/*
+!results/.gitkeep
+vendor/HYDRAD/Results/*
+!vendor/HYDRAD/Results/.gitkeep
