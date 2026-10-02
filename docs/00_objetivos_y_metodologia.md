@@ -325,7 +325,8 @@ F1 y F2 pueden avanzar en paralelo; F5 no empieza sin F1, F2 y F4.
 | Generador de tablas y matriz E1–E5 | Hecho, con parámetros **sintéticos** |
 | Informe de infraestructura | Hecho |
 | Evento, ajuste STIX, datos | **No iniciados** |
-| RADYN+FP / FLARIX | **Sin instalar** ni acceso confirmado |
+| RADYN (versión F-CHROMA) | Descargable (verificado 2026-10-02, ver `docs/04_acceso_a_radyn.md`); **sin instalar**, licencia sin confirmar, contenido de Fokker–Planck por verificar |
+| RADYN+FP más reciente / FLARIX | Sin acceso confirmado |
 | HYDRAD con haz | **NaN abierto** (flujos de 10¹⁰ a 5×10¹⁰) |
 | Diagnósticos de memoria (6.6) | Definidos; sin implementar |
 
@@ -334,7 +335,7 @@ F1 y F2 pueden avanzar en paralelo; F5 no empieza sin F1, F2 y F4.
 ## 12. Preguntas abiertas para la profesora
 
 1. ¿Qué significa exactamente «impacto»: pulso de electrones sobre el mismo tubo?
-2. ¿Qué solver se usará (RADYN+FP, FLARIX) y qué acceso y cuota de clúster hay?
+2. ¿Qué solver se usará (RADYN+FP, FLARIX) y qué acceso y cuota de clúster hay? ¿Hay permiso del grupo de Oslo para usar la versión F-CHROMA de RADYN y qué versión de Fokker–Planck incluye?
 3. ¿Hα o IRIS son diagnósticos centrales para el artículo?
 4. ¿Hay un evento preferido o criterios de selección propios?
 5. ¿Se acepta el contrafactual pareado (6.6) como definición de memoria?
