@@ -95,11 +95,9 @@ numéricamente). No coinciden el área emisora ni el flujo por pulso; informarlo
 <div class="box ok"><b>30 pruebas automáticas pasan</b> (<code>pytest</code>): fórmula de potencia contra cálculo manual; ida y vuelta Ṅ↔F; rechazo de δ ≤ 2;
 energía exacta de cada tabla e integración numérica independiente; valores en meseta, hueco y fuera de tabla; ida y vuelta del formato <code>.cfg</code> y los 7 tokens de cabecera que salta HYDRAD;
 equivalencia con una réplica línea a línea de <code>CalculateBeamParameters</code>; rechazo de tablas inválidas; energía total igual en E2/E3a/E3b/E4; conservación de P<sub>total</sub>(t) en la fragmentación (2 y 3 pulsos).</div>
-<p><b>Prueba con HYDRAD real</b> (copia compilada en macOS, 6 s de tiempo físico con la tabla de E2): el ejecutable lee la tabla sin errores y el calentamiento empieza en t ≈ 1 s. La temperatura máxima pasa de
+<p><b>Prueba con HYDRAD real</b> (copia compilada en macOS, 6 s de tiempo físico con la tabla de E2): el ejecutable lee la tabla sin errores y el calentamiento empieza en t ≈ 1 s. Después se corrieron E2 y E5 completos (101 s). La temperatura máxima pasa de
 1.6 a 3.4 MK y los flujos ascendentes llegan a ≈ 73 km/s, sin NaN. Es una comprobación de formato y de arranque, <b>no una validación de la física</b>.</p>
-<div class="box warn"><b>Problema abierto en HYDRAD.</b> En pruebas previas, un haz de 5×10¹⁰ erg cm⁻² s⁻¹ (Ec = 15 keV, δ = 5) deja todas las celdas en NaN antes de t = 2 s, con colapso del paso
-de tiempo (dt ≈ 10⁻²⁰ s), y con 10¹⁰ el fallo aparece más tarde. Se reproduce sin optimización (-O0), así que no es un artefacto del compilador. Con F = 1.3×10¹⁰ el caso E2 completo
-(101 s) aún no se ha corrido. Hasta diagnosticarlo, ninguna salida de HYDRAD con haz debe usarse como resultado.</div>
+<div class="box warn"><b>Problema abierto en HYDRAD, y su alcance.</b> En pruebas iniciales, un haz constante de 5×10¹⁰ erg cm⁻² s⁻¹ (Ec = 15 keV, δ = 5) dejó todas las celdas en NaN antes de t = 2 s (dt ≈ 10⁻²⁰ s), y un haz de 10¹⁰ apagado bruscamente a los 10 s falló después. Se reproduce sin optimización (-O0). En cambio, las tablas de este informe (cajas con rampas, F = 1.3×10¹⁰) corrieron completas: E2 (101 s, con el segundo pulso) en ≈41 s de pared y E5 en ≈19 s, sin NaN. La causa sigue sin diagnosticarse (alto flujo o apagado brusco son los sospechosos); debe aclararse antes de ampliar el barrido a flujos mayores.</div>
 
 <h2>6. Qué no es todavía este trabajo</h2>
 <ul>

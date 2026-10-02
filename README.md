@@ -51,7 +51,9 @@ The project currently contains:
   Physics Research Group. No compiled executable is stored here; the shipped config.h
   files do not define BEAM_HEATING and the build scripts are Windows .bat files. A macOS
   build worked with `-DBEAM_HEATING -include cstdlib -include cstring -std=gnu++14`;
-  beam runs at 1e10–5e10 erg cm^-2 s^-1 currently end in NaN (open issue, see the report);
+  a constant 5e10 erg cm^-2 s^-1 beam, and a 1e10 beam switched off abruptly, end in NaN
+  (undiagnosed), while the ramped 1.3e10 pulse tables of src/experiments.py run cleanly
+  (E2, 101 s of model time, in ~41 s wall);
 - src/beam_tables.py: electron-pulse parameters (rate, Ec, delta, area) to HYDRAD beam
   tables, with energy-conservation checks;
 - src/experiments.py: the five-experiment matrix with comparable energy (synthetic base
