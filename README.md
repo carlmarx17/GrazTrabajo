@@ -7,9 +7,16 @@ already changed the chromosphere.
 
 The central question is:
 
-> Can observations distinguish reheating of the same magnetic strand from successive
-> heating of unresolved, independent flare filaments when both scenarios are
-> compatible with the STIX hard-X-ray signal?
+> How does the solar atmosphere respond to a second or third non-thermal electron
+> pulse, when the pulses are constrained by observed STIX spectra, and how does that
+> response differ from that of a first pulse on a relaxed atmosphere?
+
+A secondary comparison asks whether reheating of the same magnetic strand can be
+distinguished from successive heating of unresolved, independent filaments when both
+are compatible with the STIX hard-X-ray signal.
+
+Objectives, hypotheses, methodology, expected results and deliverables are in
+docs/00_objetivos_y_metodologia.md.
 
 This is a physical radiation-hydrodynamic simulation, not a neural network. The
 preferred production model is RADYN coupled to its Fokker–Planck electron-transport
@@ -33,8 +40,8 @@ chromospheric and coronal emission, and the detectability of the difference afte
 instrument cadence, exposure, spatial mixing and STIX parameter uncertainties are
 included.
 
-The full project objectives, scope, deliverables and decision rules are maintained
-in skills/stix-rhd-memory/SKILL.md.
+The detailed design is in docs/00_objetivos_y_metodologia.md; the working guidance for
+this project is in skills/stix-rhd-memory/SKILL.md.
 
 ## Current repository state
 
@@ -51,6 +58,8 @@ The project currently contains:
   case, not STIX fits);
 - src/make_figures.py, src/make_report.py: figures and docs/02_informe_experimentos_pulsos.html;
 - tests/: 30 pytest checks of the above;
+- docs/00_objetivos_y_metodologia.md: research question, hypotheses, specific objectives,
+  methodology, expected results and deliverables;
 - docs/01_hydrad_code.md: initial code-oriented guide to the installed solver;
 - results/: generated tables and (later) fits and diagnostics, git-ignored.
 

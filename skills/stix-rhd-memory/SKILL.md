@@ -25,15 +25,22 @@ su módulo cinético de conducción con el transporte del haz requerido aquí.
 
 ## Pregunta y resultado al que se quiere llegar
 
-Determinar si la respuesta al segundo o tercer pulso conserva una firma medible
-del calentamiento previo, y si esa firma permite distinguir recalentamiento de
-la misma atmósfera de activación sucesiva de filamentos independientes bajo
-restricciones compatibles con STIX.
+Determinar cómo responde la atmósfera (cromosfera, región de transición y corona) a
+un segundo o tercer pulso de electrones, con los pulsos fijados por espectros reales
+de STIX, y en qué se diferencia de la respuesta a un primer pulso sobre una atmósfera
+relajada. La memoria se mide con un contrafactual pareado: la respuesta al pulso k es
+la diferencia entre dos corridas con la misma historia hasta t_k, con y sin ese pulso
+(definición en docs/00_objetivos_y_metodologia.md, sección 6.6).
+
+Comparación secundaria: distinguir el recalentamiento del mismo tubo de la activación
+sucesiva de filamentos independientes bajo restricciones compatibles con STIX.
 
 Se busca identificar el mecanismo físico, el régimen donde importa, los
-observables que lo revelan y las condiciones donde los escenarios no pueden
-distinguirse. Un límite de detectabilidad bien establecido también es un resultado.
+observables que lo revelan y las condiciones donde la memoria no es detectable.
+Un límite de detectabilidad bien establecido también es un resultado.
 No prometer detección, novedad, aceptación editorial ni una revista determinada.
+Objetivos específicos, hipótesis falsables, entregables y reglas de decisión están en
+docs/00_objetivos_y_metodologia.md.
 
 ## Objetivos científicos
 
