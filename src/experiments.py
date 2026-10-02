@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 
 from beam_tables import (BeamTable, Pulse, build_table, energy_flux, ndot_from_flux)
+from radyn_ftab import to_radyn_ftab
 
 
 @dataclass(frozen=True)
@@ -192,8 +193,10 @@ def write_experiments(base: BaseCase, outdir: str) -> List[Experiment]:
         for c in e.components:
             d = os.path.join(outdir, e.name, c.label)
             os.makedirs(d, exist_ok=True)
-            with open(os.path.join(d, "beam_heating_model.cfg"), "w") as fh:
+            with open(os.path.join(d, "beam_heating_model.cfg"), "w") as fh:   # HYDRAD
                 fh.write(c.table.to_cfg())
+            with open(os.path.join(d, "ftab.dat"), "w") as fh:                  # RADYN ibeam = 8
+                fh.write(to_radyn_ftab(c.table, c.t_end_sim, note=e.name + "/" + c.label))
     with open(os.path.join(outdir, "manifest.json"), "w") as fh:
         json.dump({"base_case": base.__dict__, "synthetic": True,
                    "experiments": [e.manifest() for e in exps]}, fh, indent=2)

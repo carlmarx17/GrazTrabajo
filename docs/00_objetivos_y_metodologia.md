@@ -79,7 +79,7 @@ Cada objetivo tiene método, entradas, salidas, criterio de éxito y dependencia
 ### OE3 — Establecer y verificar la cadena de transporte y RHD
 
 - **Método:** reproducir un caso publicado (Allred et al. 2020; Carlsson et al. 2023); verificar acoplamiento autoconsistente del haz con la atmósfera **que evoluciona**; convergencia espacial y temporal; balance de energía.
-- **Entradas:** solver elegido (RADYN+FP preferido); versiones y configuraciones.
+- **Entradas:** RADYN con Fokker–Planck (versión F-CHROMA, ver `docs/04_acceso_a_radyn.md`); versiones y configuraciones.
 - **Salidas:** informe de verificación (D4) y configuraciones reproducibles.
 - **Criterio de éxito:** reproducción del caso de referencia dentro de una tolerancia fijada de antemano (*propuesta:* diferencias de T y n máximas por debajo del 10 % frente a la publicación); balance de energía cerrado (*propuesta:* error < 1 % de la energía inyectada).
 - **Depende de:** acceso al solver y al clúster (sección 12).
@@ -174,7 +174,7 @@ La decisión se registra en una tabla de candidatos con los criterios satisfecho
 | Transporte | Fokker–Planck con colisiones; corriente de retorno y blanco cálido cuando corresponda | Verificar qué física incluye la versión concreta |
 | Acoplamiento | Q(s,t) debe **recalcularse con la atmósfera que evoluciona** | Un perfil Q precalculado sobre una atmósfera estática **no es válido** para estudiar memoria |
 | RHD | Transferencia radiativa fuera del equilibrio local para la cromosfera | RADYN+FP (preferido) o FLARIX |
-| HYDRAD | Calentamiento analítico, radiación ópticamente delgada | Solo banco de pruebas y comparación para corona/evaporación; sin Hα |
+| HYDRAD | Calentamiento analítico, radiación ópticamente delgada | Se retira del proyecto tras verificar RADYN; no se usan dos códigos |
 
 Regla de no doble conteo: el calentamiento del haz entra en la ecuación de energía **una sola vez**.
 
@@ -214,7 +214,7 @@ Sean X(s,t) una variable de estado (T, n, v, x_H, Q, columna de deposición), X�
 - **Respuesta con historia (contrafactual pareado):** R_hist(τ) = X_con k(t_k+τ) − X_sin k(t_k+τ), donde ambas simulaciones comparten la misma historia hasta t_k. Para k = 2 es E2 − E5.
 - **Respuesta en atmósfera relajada:** R_rel(τ) = X_E1(t₀+τ) − X₀.
 - **Memoria:** M_X(τ) = R_hist(τ) − R_rel(τ); normalizada M̂_X = ‖M_X‖ / ‖R_rel‖ con una norma definida de antemano (L2 en s y τ, o el valor en el pico).
-- **Tiempo de relajación:** τ_rel, el tiempo en que una variable de referencia de E5 cae a una fracción fijada de su pico (*propuesta:* 1/e).
+- **Tiempo de relajación:** τ_rel, el tiempo en que una variable de referencia de E5 cae a una fracción fijada de su pico (*propuesta:* 1/e). En RADYN, un término de calentamiento de fondo mantiene el equilibrio inicial, de modo que la relajación es hacia ese estado; τ_rel se mide con ese término y se declara.
 - **Deposición:** columna de masa y altura del máximo de Q y del centroide de Q; desplazamiento entre pulsos.
 - **Reparto energético:** fracciones radiada, conducida, advectada (entalpía) y cinética por pulso.
 
@@ -325,7 +325,7 @@ F1 y F2 pueden avanzar en paralelo; F5 no empieza sin F1, F2 y F4.
 | Generador de tablas y matriz E1–E5 | Hecho, con parámetros **sintéticos** |
 | Informe de infraestructura | Hecho |
 | Evento, ajuste STIX, datos | **No iniciados** |
-| RADYN (versión F-CHROMA) | Descargable (verificado 2026-10-02, ver `docs/04_acceso_a_radyn.md`); **sin instalar**, licencia sin confirmar, contenido de Fokker–Planck por verificar |
+| RADYN (versión F-CHROMA) | **Solver único elegido.** Descargado y leído (FP `ibeam=8`, `ftab.dat`, reinicio; ver `docs/04_acceso_a_radyn.md`); **sin compilar** (falta Fortran y la biblioteca CDF); licencia sin confirmar |
 | RADYN+FP más reciente / FLARIX | Sin acceso confirmado |
 | HYDRAD con haz | **NaN abierto** (flujos de 10¹⁰ a 5×10¹⁰) |
 | Diagnósticos de memoria (6.6) | Definidos; sin implementar |

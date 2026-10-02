@@ -17,11 +17,15 @@ Hipótesis de trabajo: los «impactos» son pulsos de electrones sobre el mismo 
 de flujo. El usuario lo considera probable; falta confirmar el significado exacto
 con su profesora. No tratar esa interpretación como evidencia observacional.
 
-RADYN+FP es la opción científica preferida para transporte de electrones y
-diagnósticos cromosféricos como Hα. FLARIX es una alternativa pertinente. HYDRAD
-ya se descargó y compiló como base exploratoria; eso no fija el solver final.
-No equiparar su calentamiento analítico por haz con Fokker–Planck ni confundir
-su módulo cinético de conducción con el transporte del haz requerido aquí.
+Decisión (2026-10-02): **un solo solver, RADYN con Fokker–Planck**, no dos códigos.
+La distribución F-CHROMA de RADYN (descargada de la Universidad de Oslo) incluye FP
+(`ibeam=8`, versión de 2015, con corriente de retorno opcional), haz dependiente del
+tiempo (`ftab.dat`) y reinicio; la licencia está sin confirmar y no se redistribuye.
+Detalles, formato del haz y puerta de verificación: docs/04_acceso_a_radyn.md.
+HYDRAD (solo calentamiento analítico, radiación ópticamente delgada) se retira del
+proyecto cuando RADYN reproduzca un modelo publicado de F-CHROMA. No equiparar nunca
+el calentamiento analítico de HYDRAD con Fokker–Planck. FLARIX queda como alternativa
+si no se confirma la licencia de RADYN.
 
 ## Pregunta y resultado al que se quiere llegar
 

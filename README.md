@@ -19,10 +19,9 @@ Objectives, hypotheses, methodology, expected results and deliverables are in
 docs/00_objetivos_y_metodologia.md.
 
 This is a physical radiation-hydrodynamic simulation, not a neural network. The
-preferred production model is RADYN coupled to its Fokker–Planck electron-transport
-capability. HYDRAD is installed here as an exploratory field-aligned hydrodynamic
-model and a possible comparison tool; it is not assumed to be equivalent to
-RADYN+FP.
+production model is RADYN with its Fokker–Planck electron transport; a single solver is
+used. HYDRAD was explored first and is retained only until RADYN reproduces a published
+F-CHROMA model (see docs/04_acceso_a_radyn.md); it is not equivalent to RADYN+FP.
 
 ## Scientific experiments
 
@@ -54,19 +53,24 @@ The project currently contains:
   a constant 5e10 erg cm^-2 s^-1 beam, and a 1e10 beam switched off abruptly, end in NaN
   (undiagnosed), while the ramped 1.3e10 pulse tables of src/experiments.py run cleanly
   (E2, 101 s of model time, in ~41 s wall);
-- src/beam_tables.py: electron-pulse parameters (rate, Ec, delta, area) to HYDRAD beam
-  tables, with energy-conservation checks;
+- src/beam_tables.py: electron-pulse parameters (rate, Ec, delta, area) to beam tables, with
+  energy-conservation checks; src/radyn_ftab.py: encodes them as RADYN's ftab.dat
+  (Fokker–Planck beam, log-flux interpolation, 0.1 erg cm^-2 s^-1 floor);
 - src/experiments.py: the five-experiment matrix with comparable energy (synthetic base
   case, not STIX fits);
 - src/make_figures.py, src/make_report.py: figures and docs/02_informe_experimentos_pulsos.html;
-- tests/: 30 pytest checks of the above;
+- tests/: 38 pytest checks of the above;
 - docs/00_objetivos_y_metodologia.md: research question, hypotheses, specific objectives,
   methodology, expected results and deliverables;
+- docs/04_acceso_a_radyn.md: what was verified about the RADYN F-CHROMA distribution
+  (FP, ftab format, restart, license status) and the verification gate;
+- docs/03_novedad_y_antecedentes.md: prior work and novelty assessment;
 - docs/01_hydrad_code.md: initial code-oriented guide to the installed solver;
 - results/: generated tables and (later) fits and diagnostics, git-ignored.
 
 Not yet present: STIX/AIA/GOES data (data/), STIXpy/SunPy in the environment, any
-observational fit, and any RADYN installation.
+observational fit, and any RADYN installation (the F-CHROMA distribution was downloaded and read, but no Fortran
+compiler or NASA CDF library is installed yet).
 
 Create the local environment and run the checks with:
 
