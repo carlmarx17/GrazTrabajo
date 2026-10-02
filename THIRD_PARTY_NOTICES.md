@@ -10,6 +10,7 @@ STIXpy, SunPy, AIApy, Astropy, NumPy, SciPy, Matplotlib, Pandas, Xarray and h5py
 Each package retains its own license and attribution. This repository does not
 relicense those packages.
 
-RADYN, FP and FLARIX are research codes with their own distribution conditions. They
+RADYN (F-CHROMA version, University of Oslo) is downloadable but ships without a license
+file; its manual says a license is being arranged. FLARIX is also a research code. These codes
 are not included here by copying their source. Obtain and cite the exact version used
 in a production study, and record its license and access conditions in the paper.
