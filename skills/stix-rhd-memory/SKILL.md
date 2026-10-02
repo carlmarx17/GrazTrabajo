@@ -140,10 +140,13 @@ esta lista procede de una exploración preliminar, no de una revisión exhaustiv
 - [Allred et al. (2020)](https://arxiv.org/abs/2008.10671): transporte FP.
 - [Carlsson et al. (2023)](https://arxiv.org/abs/2304.02618): F-CHROMA y su versión
   pública de RADYN; verificar diferencias respecto al RADYN+FP más reciente.
-- [Litwicka et al. (2025)](https://doi.org/10.3847/1538-4357/adc393): calentamiento
-  continuo frente a pulsos en filamentos distintos y atmósferas precalentadas.
+- [Litwicka et al. (2025)](https://doi.org/10.3847/1538-4357/adc393): FLARIX;
+  calentamiento continuo frente a pulsos en filamentos distintos, con VAL-C precalentada
+  como condición inicial; sin datos observacionales.
 - [Litwicka et al., congreso de marzo de 2026](https://plan.events.mpg.de/event/453/contributions/3104/):
   aplicación con STIX, IRIS y CHASE; distinguir resumen de congreso de artículo.
+
+Evaluación de novedad y antecedentes adicionales: docs/03_novedad_y_antecedentes.md.
 
 La posible contribución es cuantificar y contrastar la memoria de una atmósfera
 recalentada frente a esas alternativas, no atribuir novedad al mero uso de STIX,

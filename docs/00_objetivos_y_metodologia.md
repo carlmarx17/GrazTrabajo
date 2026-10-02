@@ -353,7 +353,9 @@ Incluidas en el repositorio (README y skill):
 - Kennedy et al. (2015), RADYN impulsado por espectros HXR.
 - Krucker et al. (2020), A&A 642, A15 (STIX).
 - Bradshaw & Mason (2003); Bradshaw & Cargill (2013); Reep et al. (2019) (HYDRAD).
-- Litwicka et al. (2025), ApJ (calentamiento continuo frente a pulsos en filamentos); resumen de congreso de marzo de 2026 (distinguir resumen de artículo).
+- Litwicka et al. (2025), ApJ (FLARIX; calentamiento continuo frente a pulsos en filamentos, con VAL-C precalentada); resumen de congreso de marzo de 2026 con STIX/IRIS/CHASE (distinguir resumen de artículo).
+
+La evaluación de novedad y los antecedentes adicionales están en `docs/03_novedad_y_antecedentes.md`.
 
 Conceptos citados por su fuente clásica (consultar la referencia exacta antes de citar): Brown (1971) y Emslie (1978) para el blanco grueso colisional; Hawley & Fisher (1994) para el calentamiento por haz implementado en HYDRAD; Neupert (1968) para la relación entre SXR y HXR. La formulación de blanco cálido debe verificarse en la literatura (p. ej. los trabajos de Kontar y colaboradores) antes de elegirla.
 
