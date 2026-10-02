@@ -91,9 +91,9 @@ con energía comparable. <b>No contiene resultados observacionales ni conclusion
 ilustrativos, no ajustes de STIX; ningún evento ha sido seleccionado.</div>
 
 <h2>1. Qué se quiere responder</h2>
-<p>¿Conserva la respuesta de la atmósfera al <b>segundo o tercer pulso</b> de electrones una firma medible del calentamiento previo? Y, si la conserva,
-¿puede distinguirse de la alternativa en que cada pulso cae sobre un <b>filamento distinto y aún relajado</b>, cuando ambos escenarios son compatibles con la
-misma señal de rayos X duros de STIX?</p>
+<p><b>¿Cómo responde la atmósfera al segundo o tercer pulso de electrones</b>, cuando los pulsos están fijados por espectros reales de STIX, y en qué se diferencia esa respuesta de la de un primer pulso sobre una atmósfera relajada?
+Interesan la profundidad de deposición, la temperatura, la densidad, la velocidad, la ionización y el reparto energético. Como comparación secundaria: distinguir el recalentamiento del mismo tubo de la activación de <b>filamentos independientes</b> compatibles con la misma señal de rayos X duros.
+El diseño completo (hipótesis, objetivos, métodos y entregables) está en <code>docs/00_objetivos_y_metodologia.md</code>.</p>
 %(fig0)s
 <p>Hipótesis de trabajo (aún por confirmar con la profesora): los «impactos» son pulsos de electrones sobre el mismo tubo de flujo. Es una hipótesis, no una evidencia.
 Un límite de detectabilidad bien establecido —casos en que los escenarios no se pueden distinguir— también sería un resultado.</p>
@@ -144,9 +144,10 @@ numéricamente). No coinciden el área emisora ni el flujo por pulso; informarlo
 
 <h3>Cómo se leerá la memoria cuando haya salidas</h3>
 <ul>
-<li><b>Respuesta al pulso 2 con y sin historia:</b> ΔX(τ) = X<sub>E2</sub>(t₂ + τ) − X<sub>E1</sub>(t₀ + τ), con X = T, n, v, ionización, profundidad de deposición y Q(s,t), alineando los inicios de pulso.</li>
-<li><b>Residuo del pulso 1:</b> X<sub>E5</sub>(t₂ + τ), para separar el enfriamiento remanente de la respuesta al haz nuevo.</li>
-<li><b>Filamentos independientes:</b> la emisión es la suma ponderada por área, I(t) = Σ A<sub>i</sub> I<sub>i</sub>(t − desfase<sub>i</sub>), válida solo bajo las hipótesis geométricas y radiativas que se documenten.</li>
+<li><b>Respuesta con historia (contrafactual pareado):</b> R<sub>hist</sub>(τ) = X<sub>con pulso 2</sub>(t₂ + τ) − X<sub>sin pulso 2</sub>(t₂ + τ), con la misma historia hasta t₂. Para el pulso 2 es E2 − E5, que descuenta el residuo del pulso 1.</li>
+<li><b>Respuesta en atmósfera relajada:</b> R<sub>rel</sub>(τ) = X<sub>E1</sub>(t₀ + τ) − X₀. La <b>memoria</b> es M(τ) = R<sub>hist</sub>(τ) − R<sub>rel</sub>(τ), con X = T, n, v, ionización, Q(s,t) y profundidad de deposición, alineando los inicios de pulso.</li>
+<li><b>Pulso 3:</b> exige el contrafactual «pulsos 1 y 2 sin pulso 3», aún no generado.</li>
+<li><b>Filamentos independientes (secundario):</b> la emisión es la suma ponderada por área, I(t) = Σ A<sub>i</sub> I<sub>i</sub>(t − desfase<sub>i</sub>), válida solo bajo las hipótesis geométricas y radiativas que se documenten.</li>
 <li><b>Control continuo (E4):</b> aísla el efecto de la distribución temporal de la energía; su Ec y δ son medias ponderadas por energía, una elección y no una medida.</li>
 </ul>
 <p>No se suman respuestas de pulsos aislados para representar recalentamiento: la física es no lineal y esa suma solo describe filamentos independientes.</p>
