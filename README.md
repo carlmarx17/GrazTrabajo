@@ -41,24 +41,30 @@ in skills/stix-rhd-memory/SKILL.md.
 The project currently contains:
 
 - vendor/HYDRAD/: upstream HYDRAD source, MIT licensed by the Rice University Solar
-  Physics Research Group;
-- vendor/HYDRAD/HYDRAD_beam.exe: local exploratory build with beam heating enabled;
-- .venv/: local Python environment with STIXpy, SunPy, AIApy, Astropy, NumPy, SciPy,
-  Matplotlib, Pandas, Xarray and h5py;
-- data/stix/: location for STIX FITS products;
-- data/observations/: GOES, AIA, HMI, IRIS or Hα products;
-- src/: project-specific analysis and conversion scripts;
-- results/: fits, heating tables, diagnostics and figures;
-- docs/01_hydrad_code.md: initial code-oriented guide to the installed solver.
+  Physics Research Group. No compiled executable is stored here; the shipped config.h
+  files do not define BEAM_HEATING and the build scripts are Windows .bat files. A macOS
+  build worked with `-DBEAM_HEATING -include cstdlib -include cstring -std=gnu++14`;
+  beam runs at 1e10–5e10 erg cm^-2 s^-1 currently end in NaN (open issue, see the report);
+- src/beam_tables.py: electron-pulse parameters (rate, Ec, delta, area) to HYDRAD beam
+  tables, with energy-conservation checks;
+- src/experiments.py: the five-experiment matrix with comparable energy (synthetic base
+  case, not STIX fits);
+- src/make_figures.py, src/make_report.py: figures and docs/02_informe_experimentos_pulsos.html;
+- tests/: 30 pytest checks of the above;
+- docs/01_hydrad_code.md: initial code-oriented guide to the installed solver;
+- results/: generated tables and (later) fits and diagnostics, git-ignored.
 
-Activate the local analysis environment with:
+Not yet present: STIX/AIA/GOES data (data/), STIXpy/SunPy in the environment, any
+observational fit, and any RADYN installation.
 
-    source .venv/bin/activate
-    export SUNPY_CONFIGDIR="$PWD/.sunpy"
+Create the local environment and run the checks with:
 
-The installed environment has been smoke-tested with STIXpy 0.3.0, SunPy 8.0.0 and
-AIApy 0.12.1. No flare has yet been selected, no observational spectrum has yet been
-fit, and no production RADYN run has yet been completed.
+    python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+    .venv/bin/python -m pytest -q
+    .venv/bin/python src/experiments.py
+
+No flare has yet been selected, no observational spectrum has yet been fit, and no
+production RADYN run has yet been completed.
 
 ## Reproducibility and cluster work
 
