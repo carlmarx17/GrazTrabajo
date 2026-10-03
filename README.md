@@ -13,8 +13,8 @@ The electron parameters of a flare (rate Ṅ, low-energy cut-off Ec, spectral in
 
 An **inject–simulate–reinfer** test:
 
-1. Inject known electron pulses into a 1D radiation-hydrodynamic (RHD) loop that keeps its history between pulses (RADYN with Fokker–Planck transport).
-2. Compute the synthetic HXR photons (non-thermal bremsstrahlung plus thermal emission of the simulated plasma), by region and in total.
+1. Inject known electron pulses into a 1D hydrodynamic loop that keeps its history between pulses (HYDRAD first; RADYN as an optional upgrade).
+2. Run the open-source Fokker–Planck solver FP (Allred et al. 2020; warm target and return current) on the simulated atmosphere snapshots to obtain the electron transport and the synthetic HXR photons (non-thermal bremsstrahlung plus thermal emission of the plasma), by region and in total.
 3. Apply the STIX response and Poisson noise.
 4. Fit with the same standard model used for real data and compare with the injected truth. The memory-induced bias is ΔB = B₂ − B₁ (pulse 2 minus pulse 1).
 5. Repeat the analysis on one real STIX event with at least two pulses and a resolved loop top and footpoints.
@@ -25,7 +25,7 @@ Possible outcomes, all of them results: a significant and visible bias; a signif
 
 ## First task and decision gate
 
-Before any RADYN campaign, compare the coronal mass column at the onset of pulse 2 with the electron stopping column (OE1 in `docs/00_objectives_and_methodology.md`). If it is below about 10 %, the physical basis of the idea is weak and the project is reconsidered. This test uses HYDRAD, which already runs, and does not need RADYN.
+Before any campaign, compare the coronal mass column at the onset of pulse 2 with the electron stopping column (OE1 in `docs/00_objectives_and_methodology.md`). If it is below about 10 %, the physical basis of the idea is weak and the project is reconsidered. This test uses HYDRAD, which already runs, and does not need RADYN.
 
 ## What exists and what does not
 
@@ -36,7 +36,8 @@ Before any RADYN campaign, compare the coronal mass column at the onset of pulse
 | Prior-work review | Done for the previous question; the current question is assessed only preliminarily (`docs/03_novelty_and_prior_work.md`) |
 | Column test (gate) | Not started; next task |
 | STIX event selection and spectral fits | Not started |
-| RADYN: compilation, license, verification against a published model | Not started (distribution read; no Fortran compiler or CDF library installed; license unconfirmed) |
+| FP solver (solarFP/FP, Apache-2.0): install, read documentation, verify that it accepts an external atmosphere and outputs photons | Not started |
+| RADYN (optional upgrade): compilation, license, verification | Not started (distribution read; no Fortran compiler or CDF library installed; the distribution ships without a license file) |
 | Synthetic photons and re-inference | Not implemented |
 | HYDRAD with a beam | Ramped pulse tables (F ≈ 1.3×10¹⁰ erg cm⁻² s⁻¹) run cleanly; a constant 5×10¹⁰ beam and an abruptly switched-off 10¹⁰ beam end in NaN (undiagnosed) |
 
@@ -46,10 +47,10 @@ Before any RADYN campaign, compare the coronal mass column at the onset of pulse
 - `docs/01_hydrad_code.md`: first reading of the HYDRAD beam-heating path.
 - `docs/02_pulse_experiments_report.html`: report on the pulse infrastructure (synthetic case).
 - `docs/03_novelty_and_prior_work.md`: prior work and novelty assessment.
-- `docs/04_radyn_access.md`: what was verified about the RADYN F-CHROMA distribution and the verification gate.
+- `docs/04_radyn_access.md`: what was verified about the RADYN F-CHROMA distribution (optional upgrade) and its verification gate.
 - `skills/stix-rhd-memory/SKILL.md`: working guidance for this project.
 
-This is a physical radiation-hydrodynamic simulation, not a neural network. The production model is RADYN with its Fokker–Planck electron transport; a single solver is used. HYDRAD is kept for the column test and as a coronal fallback until RADYN reproduces a published F-CHROMA model; it is not equivalent to RADYN+FP.
+This is a physical simulation, not a neural network. The atmosphere comes from a 1D hydrodynamic code (HYDRAD, with RADYN+FP as an optional upgrade) and the electron transport and photons from the FP solver; the two are decoupled, so no single code is a bottleneck. HYDRAD heats with an analytic cold-target expression, which is the assumption under test; the comparison of FP's deposition with HYDRAD's on the same snapshot bounds that effect (`docs/00_objectives_and_methodology.md`, OE4). HYDRAD is not equivalent to RADYN+FP.
 
 ## Experiment matrix
 

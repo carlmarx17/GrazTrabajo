@@ -22,7 +22,7 @@
 5. Compare with the injected truth: the bias B = θ_fit − θ_true. The memory-induced bias is ΔB = B₂ − B₁, where B₁ is the method's intrinsic bias on a relaxed atmosphere.
 6. Apply the same analysis to one real STIX event with at least two pulses and a resolved loop top and footpoints.
 
-**Mechanism and controls.** The hydrodynamic memory is measured with a paired counterfactual (run with and without pulse k, same history up to pulse k). Independent filaments (each pulse in its own relaxed tube) are the alternative hypothesis: they must show no memory bias.
+**Codes (decided 2026-10-03).** The work is split in two pieces so that no single code is a bottleneck. (i) A 1D hydrodynamic loop code gives the evolving atmosphere with history: HYDRAD first (it already runs), RADYN+FP as an upgrade if access, license and time allow. (ii) The open-source Fokker–Planck solver FP (solarFP/FP, Apache-2.0, Allred et al. 2020), run on the atmosphere snapshots, gives the electron transport with warm target and return current, and the bremsstrahlung photons. The standard inference model is the OSPEX/sunkit-spex isothermal + cold-thick-target fit, with the warm-target variant as contrast. Open point: FP's input format and photon output have not been verified yet (OE4). **Mechanism and controls.** The hydrodynamic memory is measured with a paired counterfactual (run with and without pulse k, same history up to pulse k). Independent filaments (each pulse in its own relaxed tube) are the alternative hypothesis: they must show no memory bias.
 
 **Possible outcomes (all are results).** A significant and visible bias; a significant bias that STIX cannot see in imaging; a negligible bias (STIX inference is robust); or a bias degenerate with the allowed parameter uncertainty.
 
@@ -106,11 +106,11 @@ Quantify, with self-consistent RHD simulation and synthetic HXR photons, **the b
 ### OE3 — Infer the beam of each real pulse
 - Spectral fit with the full instrument response, thermal + thick target (and alternatives), covariances, A with uncertainty. This is also the **standard inference model** applied to the synthetic data in OE6, so that it is identical in both cases.
 
-### OE4 — Verified transport and RHD chain
-- Reproduce a published case (F-CHROMA); verify restart; convergence and energy balance (criteria in 6.8). Depends on RADYN access (version, compilation and license are still to be confirmed; see `docs/04_radyn_access.md`) and on the cluster.
+### OE4 — Verified atmosphere and transport chain
+- **Atmosphere:** HYDRAD ramped-pulse runs with convergence and energy-balance checks (criteria in 6.8); RADYN+FP is an optional upgrade, requiring a verified compilation, a confirmed license and a reproduced F-CHROMA model. **Transport:** install FP (solarFP/FP), read its documentation (`doc/FP.pdf`), reproduce a published FP result, and verify that it accepts an externally supplied atmosphere (n, T, ionization) and returns the electron distribution, the heating rate Q(s) and the photon spectrum. **Consistency check:** compare FP's deposition profile with HYDRAD's Hawley–Fisher profile on the same snapshot; a large difference limits how far the HYDRAD-evolved atmosphere can be trusted for pulse 2.
 
 ### OE5 — Simulations E1, E2, E5, E3 with the real parameters
-- Experiment matrix (6.4) with the parameters of OE3. Output: n(s,t), T(s,t), ionization and, if RADYN allows it, the electron flux by position and energy.
+- Experiment matrix (6.4) with the parameters of OE3. Output: n(s,t), T(s,t) and ionization snapshots at the onset of each pulse (HYDRAD; RADYN if available), which are the input of the FP transport in OE6.
 
 ### OE6 — Synthetic HXR photons and re-inference (**core of the project**)
 - **Method:** see 6.7. Compute the HXR photon spectrum (integrated and by region) of the beam propagating in the simulated atmosphere **with history**, add the thermal emission of the simulated plasma, apply the STIX response and noise, **fit with the same standard model as in OE3** and compare with the injected values.
@@ -169,10 +169,10 @@ Candidates, with the criteria met and failed, are recorded. **The event is chose
 
 | Stage | Physical requirement | Methodological consequence |
 |---|---|---|
-| Transport | Fokker–Planck with collisions; return current and warm target where applicable | The F-CHROMA FP (2015 version) includes the gas temperature in the collisions, a thermalization energy and an optional return current (see `docs/04_radyn_access.md`); **whether this is an adequate warm-target treatment for pulse 2 is to be verified** |
+| Transport | Fokker–Planck with collisions, warm target and return current | FP (solarFP/FP, Allred et al. 2020; Apache-2.0) states that it makes no cold- or warm-target assumption (general Rosenbluth potentials) and solves the return-current field self-consistently. The RADYN F-CHROMA distribution has the older 2015 FP (gas temperature in collisions, thermalization energy, optional return current). **FP input/output compatibility with an external atmosphere is to be verified** |
 | Coupling | Q(s,t) recomputed with the evolving atmosphere | A Q profile precomputed on a static atmosphere is not valid |
-| RHD | Non-LTE radiative transfer in the chromosphere | RADYN+FP (preferred) or FLARIX |
-| HYDRAD | Analytic heating, optically thin radiation | Used for the column test (OE1) and as a fallback for the coronal pilot until RADYN is verified; not for deposition conclusions |
+| Atmosphere | 1D hydrodynamics with history; chromospheric NLTE only if Hα/IRIS diagnostics are added | HYDRAD (works, MIT license) for the evolution; RADYN+FP as an upgrade; FLARIX is not accessible. **Limitation:** HYDRAD heats with the analytic cold-target expression (Hawley & Fisher, normal incidence), which is the assumption under test; the FP-versus-HYDRAD deposition comparison in OE4 bounds this effect |
+| HYDRAD role | Analytic heating, optically thin radiation | Evolves the atmosphere for the column test (OE1) and the main runs; not used for deposition conclusions, which come from FP on its snapshots |
 
 No-double-counting rule: the beam heating enters the energy equation only once.
 
@@ -204,8 +204,8 @@ Paired counterfactual: R_hist(τ) = X_with k − X_without k, with common histor
 5. *Bias:* B = θ_fit − θ_true per pulse; ΔB = B₂ − B₁; B₁ measures the intrinsic bias of the method, already present for a relaxed pulse.
 
 **Two routes for step 2, to be checked in OE4:**
-- (a) use the electron flux computed by RADYN+FP, if its output allows it (**not verified**);
-- (b) own post-processing transport (Coulomb collisions) on the snapshots n(s,t), T(s,t), ionization from the simulation. This is the fallback and also enables a quick test with HYDRAD (level 1).
+- (a) **Main route:** run the open-source FP solver (solarFP/FP) on the n, T, ionization snapshots of the simulation to obtain the electron distribution, the deposition and the bremsstrahlung photons (**input/output compatibility not yet verified**);
+- (b) fallback: own post-processing transport (Coulomb collisions) on the same snapshots, validated against FP or a published result. It also enables the quick level-1 test with HYDRAD.
 
 **Imaging:** R_LF from the emission distribution along the loop, projected; evaluate whether STIX resolves it (resolution, dynamic range between sources, noise) and with what significance. A full STIX visibility simulation is applied only if the simple estimate shows signal.
 
@@ -260,14 +260,14 @@ Record versions, compiler flags, initial atmosphere, beam, output cadence, wall 
 | F0 | Synthetic pulse infrastructure (done) | Tests pass |
 | **F0.5** | **Column test with HYDRAD (OE1)** | **N_cor/N_stop ≥ ~10 %; otherwise reconsider** |
 | F1 | Choose event for resolvable R_LF and fit STIX | D1, D2 |
-| F2 | RADYN: compile, license, reproduce F-CHROMA, check electron-flux output and restart | Verification passed |
+| F2 | Transport: install FP, reproduce a published result, verify the atmosphere input and photon output. In parallel and time-boxed (3 weeks): try RADYN compilation and the license question | FP verified; RADYN is optional |
 | F3 | Cluster cost pilots; synthetic-photon pilot with one case | Realistic budget; negative control passes |
 | F4 | Pre-register thresholds and design | Signed document |
 | F5 | E1/E2/E5/E3 campaign and sweeps | Documented cases |
 | F6 | Recovery test, imaging, real event | D6–D8 |
 | F7 | Writing and packaging | D9–D10 |
 
-F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to be agreed with the supervisor once access to RADYN and the cluster is confirmed.
+F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to be agreed with the supervisor.
 
 ---
 
@@ -278,11 +278,11 @@ F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to b
 | **Negligible bias** | Negative result | Publishable if the regime is delimited; the column test and the pilot anticipate it |
 | **Bias dominated by the already known thermal contamination** | Contribution perceived as incremental | Decompose the bias by mechanism (SQ3) and quantify it as a function of τ_w |
 | **Loop-top–footpoint separation below STIX resolution** | H3 not observable | Choose the event for R_LF; report scenario B |
-| No RADYN+FP electron-flux output | Photons cannot be computed directly | Route (b): own post-processing transport on snapshots |
+| FP does not accept an external atmosphere or does not output photons | Photons cannot be computed directly | Route (b); or couple through RADYN, where FP is native |
 | FP (2015) without an adequate warm target | Underestimates the central effect | Verify in OE4; document; request a newer version |
 | Source area not constrained by STIX | σ_tot dominated by A | Constrain it with images before simulating; treat it as a parameter |
 | Competing work (Litwicka et al.; Collier/Kennedy with STIX) | Loss of priority | Repeat the literature search before the manuscript; consult the supervisor |
-| RADYN license unconfirmed | Derived code cannot be published | Confirm with the Oslo group; do not redistribute RADYN |
+| RADYN license unconfirmed | Derived code cannot be published | RADYN is optional; confirm with the Oslo group before any use; do not redistribute |
 | Pulses at different locations | Same-tube hypothesis false | Evaluate position (OE2); treat the case as E3 |
 
 ---
@@ -307,8 +307,8 @@ F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to b
 | Infrastructure report | Done |
 | Column test (OE1) | **Not started; this is the next task** |
 | Event, STIX fit, data | Not started |
-| RADYN (F-CHROMA) | Downloaded and read; **not compiled**; license unconfirmed. Access to RADYN and a cluster is expected; version, compilation and license remain to be verified |
-| RADYN+FP electron-flux output | **Not verified** |
+| RADYN (F-CHROMA) | Optional upgrade. Downloaded and read; **not compiled**; the distribution ships without a license file |
+| FP solver (solarFP/FP) | Open source (Apache-2.0); located 2026-10-03; **not installed, documentation not read; input/output compatibility not verified** |
 | HYDRAD with beam | Ramped tables (F ≈ 1.3×10¹⁰) run; an abrupt pulse gives NaN |
 | HXR photon computation and re-inference | Not implemented |
 
@@ -318,7 +318,7 @@ F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to b
 
 1. Is the **bias of STIX inference** in successive pulses of interest as the main contribution, rather than the atmospheric response itself?
 2. Which flares or STIX events would be good candidates (resolved loop top and footpoints; pulses separated by 30–200 s)?
-3. Permission and version of RADYN+FP; does it include warm-target physics and can it provide the electron flux by position and energy?
+3. Does the group already have RADYN compiled or an electron-transport code? Is the standalone FP solver (solarFP/FP) coupled to an external atmosphere an accepted approach for the photon computation?
 4. Is the recovery test (inject, simulate, re-infer) acceptable as the definition of bias, and the paired counterfactual as the definition of memory?
 5. Which thresholds and tolerances are considered adequate?
 6. Are there known works or plans (e.g. from the Litwicka or Collier/Kennedy groups) on successive pulses with STIX?
@@ -331,7 +331,7 @@ F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to b
 Included in the repository (README and `docs/03_novelty_and_prior_work.md`):
 
 - Allred, Kowalski & Carlsson (2015), ApJ 809, 104.
-- Allred et al. (2020), ApJ 902, 16.
+- Allred et al. (2020), ApJ 902, 16 (FP solver; code at https://github.com/solarFP/FP, Apache-2.0).
 - Carlsson et al. (2023), A&A 673, A150.
 - Kennedy et al. (2015), RADYN driven by HXR spectra.
 - Krucker et al. (2020), A&A 642, A15 (STIX).

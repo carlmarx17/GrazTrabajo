@@ -1,6 +1,6 @@
-# RADYN as the single solver: what was verified and what is missing
+# RADYN as an optional upgrade: what was verified and what is missing
 
-**Project decision (2026-10-02):** use **one production code**, RADYN with Fokker–Planck (FP), and retire HYDRAD once RADYN passes verification (Section 5). HYDRAD is kept in the meantime for the column test (`docs/00_objectives_and_methodology.md`, OE1) and as a coronal fallback. The decision rests on what follows.
+**Project decision (updated 2026-10-03):** RADYN with Fokker–Planck is now an **optional upgrade**, not the single production solver. The atmosphere with history comes from HYDRAD and the electron transport and photons from the open-source FP solver (solarFP/FP, Apache-2.0) run on its snapshots (`docs/00_objectives_and_methodology.md`, Sections 6.3 and 6.7). RADYN would make the beam heating self-consistent with FP; it stays optional because compilation, license and verification can cost 1–2 months. The rest of this document records what was verified about the RADYN distribution.
 
 **Source of what was verified:** the downloaded distribution (`radyn_fchroma.tar`, 87 844 352 bytes, SHA-256 `827948d913cdb33768a6f501cf42a7c8c3d6935fcd264b16a183f070ba70bf14`) from [folk.universitetetioslo.no/matsc/radyn](https://folk.universitetetioslo.no/matsc/radyn/), with its manual (`doc/radyn_manual.pdf`, dated February 2023) and its source code. It is not included in this repository (Section 1).
 
