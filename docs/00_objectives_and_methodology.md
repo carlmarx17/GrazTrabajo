@@ -97,6 +97,7 @@ Quantify, with self-consistent RHD simulation and synthetic HXR photons, **the b
 - **Inputs:** HYDRAD installed (not stored in the repository as an executable); synthetic parameters first, real ones when available.
 - **Outputs:** table N_cor(t)/N_stop(E) for E1, E2, E5.
 - **Caveat:** HYDRAD has no Fokker–Planck transport; the test measures only the column structure of the plasma, not the deposition.
+- **Stronger version (once FP is built, `docs/05_fp_solver_verification.md`):** run FP with the same beam on the relaxed and the pulse-2-onset snapshots and compare η_cor and the photon spectra directly; this replaces the column ratio as the decisive gate.
 
 ### OE2 — Select and characterize the event
 - **Criteria (Section 6.1):** at least two pulses separated by ~30–200 s, and a STIX image with resolvable loop top and footpoints.
