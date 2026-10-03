@@ -31,7 +31,7 @@ Before any campaign, compare the coronal mass column at the onset of pulse 2 wit
 
 | Item | Status |
 |---|---|
-| Beam-pulse table generator, five-experiment matrix (E1–E5), RADYN `ftab.dat` encoder | Done, synthetic parameters, 38 tests |
+| Beam-pulse table generator, five-experiment matrix (E1–E5), RADYN `ftab.dat` encoder | Done, synthetic parameters, 42 tests |
 | Infrastructure report | Done (`docs/02_pulse_experiments_report.html`) |
 | Prior-work review | Done for the previous question; the current question is assessed only preliminarily (`docs/03_novelty_and_prior_work.md`) |
 | Column test (gate) | Not started; next task |
@@ -72,7 +72,7 @@ The simulation must retain temperature, density, velocity and atomic populations
 - `src/radyn_ftab.py`: encodes the tables as RADYN's `ftab.dat` (Fokker–Planck beam, log-flux interpolation, 0.1 erg cm⁻² s⁻¹ floor).
 - `src/experiments.py`: the experiment matrix with comparable energy (synthetic base case, not STIX fits).
 - `src/make_figures.py`, `src/make_report.py`: figures and the infrastructure report.
-- `tests/`: 38 pytest checks of the above.
+- `tests/`: 42 pytest checks of the above.
 - `results/`: generated tables and (later) fits and diagnostics, git-ignored.
 
 Not yet present: STIX/AIA/GOES data (`data/`), STIXpy/SunPy in the environment, any observational fit and any RADYN installation.

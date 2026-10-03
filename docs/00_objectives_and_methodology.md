@@ -223,7 +223,7 @@ Paired counterfactual: R_hist(τ) = X_with k − X_without k, with common histor
 
 | Level | What is checked | How |
 |---|---|---|
-| Code | Tables, units, conservation | 38 existing tests; new tests for the photon computation and the fit |
+| Code | Tables, units, conservation | 42 existing tests; new tests for the photon computation and the fit |
 | Synthetic test with known answer | The fit recovers the parameters when the target is the one of the model (bias ≈ 0) | **Essential negative control** to validate OE6 |
 | Physical negative control | Two pulses with τ_w ≫ drainage time: ΔB → 0 | Detects numerical artifacts |
 | Numerical | Convergence and energy balance | Refinement |
@@ -242,7 +242,7 @@ Record versions, compiler flags, initial atmosphere, beam, output cadence, wall 
 | D0 | Column test N_cor/N_stop (OE1) | Table for E1, E2, E5 | Pending |
 | D1 | Event dossier | Criteria 6.1, with resolvable R_LF | Pending |
 | D2 | Beam parameters per pulse with covariances | Uncertainties declared | Pending |
-| D3 | Table generator and experiment matrix | Energy conserved; 38 tests | **Done (synthetic)** |
+| D3 | Table generator and experiment matrix | Energy conserved; 42 tests | **Done (synthetic)** |
 | D4 | Solver verification report | Published case reproduced | Pending |
 | D5 | Simulation database | Schema with units | Pending |
 | D6 | Synthetic photons and recovery test | Negative control passed; B₁, B₂, ΔB | Pending |

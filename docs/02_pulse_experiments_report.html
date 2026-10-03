@@ -93,10 +93,10 @@ numerically). The emitting area and the flux per pulse do not match; reporting i
 <p>Responses of isolated pulses are not added up to represent reheating: the physics is non-linear and that sum only describes independent filaments.</p>
 
 <h2>5. Checks performed</h2>
-<div class="box ok"><b>38 automatic tests pass</b> (<code>pytest</code>): power formula against hand calculation; Ṅ↔F round trip; rejection of δ ≤ 2;
+<div class="box ok"><b>42 automatic tests pass</b> (<code>pytest</code>): power formula against hand calculation; Ṅ↔F round trip; rejection of δ ≤ 2;
 exact energy of each table and independent numerical integration; values on the plateau, in the gap and outside the table; round trip of the <code>.cfg</code> format and the 7 header tokens that HYDRAD skips;
 equivalence with a line-by-line replica of <code>CalculateBeamParameters</code>; rejection of invalid tables; equal total energy in E2/E3a/E3b/E4; conservation of P<sub>total</sub>(t) in the fragmentation (2 and 3 pulses);
-RADYN <code>ftab.dat</code> encoder: header and column order, 0.1 erg cm⁻² s⁻¹ floor, table covering the whole run, 5000-row limit, and encoded energy within 1% of the intended energy for every experiment.</div>
+RADYN <code>ftab.dat</code> encoder: header and column order, 0.1 erg cm⁻² s⁻¹ floor, table covering the whole run, 5000-row limit, and encoded energy within 1% of the intended energy for every experiment; round trip and layout of the FP solver's atmosphere file.</div>
 <p><b>Test with a real HYDRAD</b> (copy compiled on macOS, 6 s of physical time with the E2 table): the executable reads the table without errors and the heating starts at t ≈ 1 s. E2 and E5 were then run in full (101 s). The maximum temperature goes from
 1.6 to 3.4 MK and the upflows reach ≈ 73 km/s, with no NaN. This is a check of format and start-up, <b>not a validation of the physics</b>.</p>
 <div class="box warn"><b>Open problem in HYDRAD, and its scope.</b> In initial tests, a constant beam of 5×10¹⁰ erg cm⁻² s⁻¹ (Ec = 15 keV, δ = 5) left all cells as NaN before t = 2 s (dt ≈ 10⁻²⁰ s), and a 10¹⁰ beam abruptly switched off at 10 s failed later. It is reproduced without optimization (-O0). By contrast, the tables of this report (boxcars with ramps, F = 1.3×10¹⁰) ran in full: E2 (101 s, with the second pulse) in ≈41 s of wall time and E5 in ≈19 s, with no NaN. The cause remains undiagnosed (high flux or abrupt switch-off are the suspects); it must be clarified before extending the sweep to larger fluxes.</div>

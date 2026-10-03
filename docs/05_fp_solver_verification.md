@@ -58,3 +58,30 @@
 2. Write the atmosphere writer and verify it by round trip with `readatm.py` and by reproducing an example.
 3. Convert one HYDRAD snapshot (E5 at pulse-2 onset) to an FP atmosphere and run FP with the base beam.
 4. Time the run and check convergence in `nE`, `nmu` and `Emax`.
+
+## 6. Tests actually run (2026-10-03)
+
+The FP repository was cloned (shallow, outside this repository) and everything that does not need a Fortran compiler was executed in an isolated Python environment (numpy 2.0, scipy 1.13). **The Fortran solver itself was not compiled or run**: no Fortran compiler, MPI or HDF5 is installed on this machine. Scripts were run interactively; the reusable part is `src/fp_atmosphere.py` with `tests/test_fp_atmosphere.py`.
+
+| Test | Result |
+|---|---|
+| FP's own `readatm.py` on the example atmosphere `atm.13Mm.3MK.dat` | Works (nz = 191, 4 ion species, 2 neutral species, half loop 13.1 Mm, T from 4.4×10³ to 3.4×10⁶ K, B from 75 to 1000 G) |
+| Decoding of the file layout and writing it back with our own writer | **Byte-identical for all three example atmospheres.** Species 0 of the ions is the electron population, then H⁺, He⁺, He⁺⁺; neutrals H and He. Densities are depth-major `(nz, nspecies)`; physical sanity of the apex and bottom values confirms the ordering |
+| `src/fp_atmosphere.py` unit tests | 4 tests pass (round trip, record layout, depth-major order, rejection of inconsistent or corrupt files) |
+| FP's analytic cold-target heating (`qh_e78`: Emslie 1978 with Hawley & Fisher 1994, the formula HYDRAD also uses) on the example loop | Conserves energy (91 % and 89 % of the injected flux for δ = 4, Ec = 20 keV and δ = 5, Ec = 13.4 keV; the rest is cut off by the grid) |
+| FP's analytic warm-target heating (`qh_warmtarget`, Tamres et al. 1986) applied to electrons in the same 3 MK loop | **Not trustworthy as an independent reference for electrons:** it deposits 100 % of the energy in the corona (T > 10⁵ K), and for δ = 5, Ec = 13.4 keV it returns 116 % of the injected energy; the root finder warns of poor convergence. The authors validate it for protons only. Do not use it as a benchmark here |
+| Toy decision gate: fraction of the energy deposited at T > 10⁵ K, cold target (E78+HF94), when the coronal density of the example loop is scaled by k (coronal column to 10⁵ K is 1.1×10¹⁹ cm⁻² at k = 1) | δ = 4, Ec = 20 keV: 4.5 % (k = 1), 15 % (3), 64 % (10), 88 % (30). δ = 5, Ec = 13.4 keV: 13 %, 56 %, 92 %, 98 %. See the caveat below |
+| `Brm_BremCross` (Haug cross-section) used to build a thick-target photon spectrum from a power-law electron distribution | Photon index 2.76 for δ = 4 and 3.87 for δ = 5 between 40 and 120 keV, against δ − 1 = 3 and 4. Consistent within 0.13–0.24; this is an order-of-magnitude sanity check and not a validation (the standard model, OSPEX `thick2`, should be compared directly) |
+
+**Caveat on the toy gate.** It scales all species of the coronal part of a 3 MK model by a constant and uses the cold-target formula, not FP and not a hydrodynamic atmosphere. It shows that the deposition regime is very sensitive to the coronal density in the range expected after evaporation (a factor of a few to ten), which supports H1; it does not show that HYDRAD will produce such a density at F ≈ 1.3×10¹⁰, which is what the column test must establish.
+
+### Findings about the code itself
+
+- **Maintenance:** 11 commits; the last one is 2021-04-23. The GitHub page shows 9 stars and no issues. No independent report of a standalone installation was found; the documented uses are inside RADYN (several RADYN papers from the Goddard and Colorado groups describe RADYN as updated to use FP) and as an OSPEX plug-in for RHESSI inversions.
+- **Bug fix after the release:** the commit of 2021-04-23 corrects, among other things, the normalisation of the Gaussian pitch-angle distribution (a misplaced parenthesis in `beam.F90`) and the pitch-angle solid-angle weighting of the injected distribution, and rewrites parts of the boundary conditions. **Use the master branch (a7c7f31), not the v1.0 tag of September 2020**, and treat the energy-flux normalisation as something to verify (injected flux versus `eflux` at the top).
+- **Bremsstrahlung:** `fpbrem` uses hydrogen densities (`dnn[:,0] + dni[:,1]`) times Z² with a single mean atomic number (default 1.2) and no neutral-atom screening.
+
+### What is still unknown
+
+Whether FP compiles and runs on this machine or on the cluster, its run time, and whether its photon spectra, fitted with the standard model, give a ΔB above the Poisson noise of a real STIX event.
+
