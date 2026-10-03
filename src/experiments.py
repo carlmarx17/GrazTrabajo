@@ -1,4 +1,4 @@
-"""The five-experiment matrix of the STIX -> RHD chromospheric-memory project.
+"""The five-experiment matrix of the STIX -> RHD project on the bias of STIX electron inference.
 
 Every experiment is described by one or more *components*.  A component is one
 flux tube (filament) simulated by one solver run with its own beam table.  The
@@ -131,26 +131,26 @@ def build_experiments(base: BaseCase = BaseCase()) -> List[Experiment]:
     c = _single(base, last, "pulse%d_alone" % base.n_pulses, base.t0,
                 last.t_end + base.tail)
     exps.append(Experiment(
-        "E1_single_relaxed", "Un pulso en atmósfera relajada",
-        "Respuesta de referencia al pulso %d sin historia previa. Se compara con E2 "
-        "alineando los inicios de pulso." % base.n_pulses,
+        "E1_single_relaxed", "One pulse in a relaxed atmosphere",
+        "Reference response to pulse %d with no previous history. It is compared with E2 "
+        "by aligning the pulse onsets." % base.n_pulses,
         [c], t_end, {"pulse_onset": last.t_start}))
 
     # E2: all pulses in the SAME tube, one uninterrupted run.
     table = build_table(ps, base.ramp)
     exps.append(Experiment(
         "E2_same_strand", "Mismo tubo, pulsos sucesivos",
-        "Recalentamiento: la atmósfera evoluciona sin reinicio entre pulsos "
-        "(temperatura, densidad, velocidad y poblaciones se conservan).",
+        "Reheating: the atmosphere evolves without a restart between pulses "
+        "(temperature, density, velocity and populations are conserved).",
         [Component("tube", table, base.area_cm2, 0.0, t_end, tuple(ps))], t_end,
         {"pulse%d_onset" % (i + 1): p.t_start for i, p in enumerate(ps)}))
 
     # E3a/E3b: each pulse in its own tube that was relaxed beforehand.
     for tag, frac, text in (
             ("E3a_independent_same_flux", 1.0,
-             "cada filamento tiene el área de referencia: mismo F por pulso, área emisora total N·A"),
+             "each filament has the reference area: same F per pulse, total emitting area N·A"),
             ("E3b_independent_equal_area", 1.0 / base.n_pulses,
-             "el área de referencia se reparte entre filamentos: F×N por pulso, área total A")):
+             "the reference area is shared among filaments: F×N per pulse, total area A")):
         comps = []
         for i, p in enumerate(ps):
             area = base.area_cm2 * frac
@@ -158,9 +158,9 @@ def build_experiments(base: BaseCase = BaseCase()) -> List[Experiment]:
                                 base.area_cm2) / frac, p.ec_kev, p.delta, area, p.label)
             comps.append(_single(base, q, "filament%d" % (i + 1), base.t0, t_end))
         exps.append(Experiment(
-            tag, "Filamentos independientes (%s)" % ("área %.2g·A" % frac),
-            "Pulsos en tubos distintos, sin memoria entre ellos; %s. P_total(t) = Σ A_i F_i "
-            "coincide con E2." % text, comps, t_end,
+            tag, "Independent filaments (%s)" % ("area %.2g·A" % frac),
+            "Pulses in different tubes, with no memory between them; %s. P_total(t) = Σ A_i F_i "
+            "matches E2." % text, comps, t_end,
             {"pulse%d_onset" % (i + 1): p.t_start for i, p in enumerate(ps)}))
 
     # E4: continuous heating with the same total energy over the same window.
@@ -171,17 +171,17 @@ def build_experiments(base: BaseCase = BaseCase()) -> List[Experiment]:
     cont = Pulse(base.t0, window, ndot_from_flux(f_c, ec_w, d_w, base.area_cm2), ec_w, d_w,
                  base.area_cm2, "continuous")
     exps.append(Experiment(
-        "E4_continuous", "Calentamiento continuo, misma energía",
-        "Control de la distribución temporal: la misma energía total repartida de forma "
-        "uniforme en la ventana (Ec y δ ponderados por energía; elección documentada).",
+        "E4_continuous", "Continuous heating, same energy",
+        "Control of the temporal distribution: the same total energy spread uniformly "
+        "over the window (energy-weighted Ec and δ; a documented choice).",
         [Component("tube", build_table([cont], base.ramp), base.area_cm2, 0.0, t_end, (cont,))],
         t_end, {"window_start": base.t0, "window_end": base.t_last_end}))
 
     # E5: first pulse, then relaxation for the whole timeline.
     exps.append(Experiment(
-        "E5_relaxation", "Primer pulso y enfriamiento",
-        "Control del residuo del pulso 1 sin pulso posterior: restar de E2 distingue la "
-        "emisión residual de la respuesta al nuevo haz.",
+        "E5_relaxation", "First pulse and relaxation",
+        "Control for the residue of pulse 1 with no later pulse: subtracting it from E2 separates the "
+        "residual emission from the response to the new beam.",
         [Component("tube", build_table([first], base.ramp), base.area_cm2, 0.0, t_end, (first,))],
         t_end, {"pulse1_onset": first.t_start, "pulse2_onset_reference": ps[-1].t_start}))
     return exps

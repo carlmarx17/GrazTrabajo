@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below and cite the upstream codes listed in README.md."
+title: "STIX → RHD: Bias of STIX Electron Inference in Successive Pulses"
+type: software
+authors:
+  - family-names: "Martínez Sibaja"
+    given-names: "Carlos Alberto"
+    alias: "carlmarx17"
+repository-code: "https://github.com/carlmarx17/GrazTrabajo"
+license: MIT
+abstract: "Inject-simulate-reinfer test of how the atmospheric memory of a previous electron pulse biases the electron parameters inferred from Solar Orbiter/STIX hard X-ray spectra for a second or third pulse."
+keywords:
+  - solar flares
+  - hard X-rays
+  - STIX
+  - radiation hydrodynamics
+  - electron beams

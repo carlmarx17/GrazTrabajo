@@ -1,166 +1,86 @@
 ---
 name: stix-rhd-memory
-description: Orientar el diseño, las simulaciones y la escritura del paper STIX/RHD sobre la respuesta cromosférica al segundo o tercer pulso de electrones. Usar al trabajar en este proyecto, sus experimentos con RADYN/FP, sus diagnósticos o su pipeline reproducible.
+description: Guide the design, simulations and writing of the STIX/RHD paper on how the atmospheric memory of a previous electron pulse biases the electron parameters inferred from STIX for a second or third pulse. Use when working on this project, its RADYN/FP experiments, its synthetic photons and re-inference, or its reproducible pipeline.
 ---
 
-# STIX/RHD: memoria atmosférica ante pulsos sucesivos
+# STIX/RHD: bias of STIX inference from atmospheric memory
 
-## Propósito y decisiones del proyecto
+Author of the project: Carlos Alberto Martínez Sibaja.
 
-El producto final es un paper científico y un pipeline reproducible que conecten
-espectros STIX con la respuesta atmosférica a inyecciones sucesivas de electrones.
-El interés central es el segundo o tercer pulso sobre una atmósfera modificada por
-los anteriores. El usuario prevé acceso a un clúster; sus recursos y cuota aún no
-se han especificado. Es simulación física, no entrenamiento de una red neuronal.
+## Purpose and project decisions
 
-Hipótesis de trabajo: los «impactos» son pulsos de electrones sobre el mismo tubo
-de flujo. El usuario lo considera probable; falta confirmar el significado exacto
-con su profesora. No tratar esa interpretación como evidencia observacional.
+The final product is a scientific paper and a reproducible pipeline connecting STIX spectra to the atmospheric response to successive electron injections, and from that response back to the electron parameters that STIX would infer. The interest is the second or third pulse acting on an atmosphere modified by the previous ones. The project is a physical simulation, not neural-network training. Cluster resources and quota have not been specified.
 
-Decisión (2026-10-02): **un solo solver, RADYN con Fokker–Planck**, no dos códigos.
-La distribución F-CHROMA de RADYN (descargada de la Universidad de Oslo) incluye FP
-(`ibeam=8`, versión de 2015, con corriente de retorno opcional), haz dependiente del
-tiempo (`ftab.dat`) y reinicio; la licencia está sin confirmar y no se redistribuye.
-Detalles, formato del haz y puerta de verificación: docs/04_acceso_a_radyn.md.
-HYDRAD (solo calentamiento analítico, radiación ópticamente delgada) se retira del
-proyecto cuando RADYN reproduzca un modelo publicado de F-CHROMA. No equiparar nunca
-el calentamiento analítico de HYDRAD con Fokker–Planck. FLARIX queda como alternativa
-si no se confirma la licencia de RADYN.
+Working hypothesis: the pulses hit the **same flux tube**. This is probable but is an operating hypothesis, to be confirmed with the supervisor. Do not treat it as observational evidence.
 
-## Pregunta y resultado al que se quiere llegar
+Decision (2026-10-02): **a single production solver, RADYN with Fokker–Planck**, not two codes. The F-CHROMA distribution of RADYN (downloaded from the University of Oslo) includes FP (`ibeam=8`, 2015 version, with optional return current), a time-dependent beam (`ftab.dat`) and restart; the license is unconfirmed and it is not redistributed. Details, beam format and verification gate: `docs/04_radyn_access.md`. HYDRAD (analytic heating, optically thin radiation) is retired once RADYN reproduces a published F-CHROMA model; until then it is used for the column test and as a coronal fallback. Never equate HYDRAD's analytic heating with Fokker–Planck. FLARIX remains an alternative if the RADYN license is not confirmed.
 
-Determinar cómo responde la atmósfera (cromosfera, región de transición y corona) a
-un segundo o tercer pulso de electrones, con los pulsos fijados por espectros reales
-de STIX, y en qué se diferencia de la respuesta a un primer pulso sobre una atmósfera
-relajada. La memoria se mide con un contrafactual pareado: la respuesta al pulso k es
-la diferencia entre dos corridas con la misma historia hasta t_k, con y sin ese pulso
-(definición en docs/00_objetivos_y_metodologia.md, sección 6.6).
+## Question and the result to reach
 
-Comparación secundaria: distinguir el recalentamiento del mismo tubo de la activación
-sucesiva de filamentos independientes bajo restricciones compatibles con STIX.
+Question (v2, 2026-10-02): how much does the atmospheric memory of the previous pulse bias the electron parameters (Ṅ, Ec, δ) that STIX infers for the 2nd or 3rd pulse, and is it visible in images as a change of the loop-top / footpoint emission ratio R_LF? The earlier question (how much memory exists) was dropped: its qualitative answer is nearly certain and already known (Kennedy 2015); see `docs/00_objectives_and_methodology.md`, Section 14.
 
-Se busca identificar el mecanismo físico, el régimen donde importa, los
-observables que lo revelan y las condiciones donde la memoria no es detectable.
-Un límite de detectabilidad bien establecido también es un resultado.
-No prometer detección, novedad, aceptación editorial ni una revista determinada.
-Objetivos específicos, hipótesis falsables, entregables y reglas de decisión están en
-docs/00_objetivos_y_metodologia.md.
+Method: recovery test. Inject known pulses into an RHD atmosphere that keeps its history, compute synthetic HXR photons (plus thermal emission), apply the STIX response and noise, fit with the same standard model applied to the real data, and compare with what was injected. ΔB = B₂ − B₁ (bias of pulse 2 minus that of pulse 1, which measures the intrinsic bias of the method). Hydrodynamic memory (paired counterfactual, `docs/00` Section 6.6) is the mechanism, not the result. The sign of the bias is not predicted a priori. Same tube (E2) versus independent filaments (E3) is a test: E3 must show no bias and no change of R_LF.
 
-## Objetivos científicos
+First task and decision gate: compare the coronal column from apex to transition region at the onset of pulse 2 with the stopping column at the STIX Ec (`docs/00`, OE1, with HYDRAD). Below ~10 % → reconsider the project. Mandatory negative controls: (i) when the target is the one of the model, the fit recovers the parameters; (ii) with τ_w ≫ drainage time, ΔB → 0. The event is chosen for having resolvable loop top and footpoints in STIX, not for convenience.
 
-1. Seleccionar un evento con espectros STIX de ciencia y varios pulsos resolubles,
-   con GOES y AIA; priorizar espectroscopia IRIS y datos Hα si son diagnósticos
-   centrales. AIA/HMI e IRIS no sustituyen una observación de Hα. Comprobar
-   visibilidad, saturación, cadencia, evolución espacial y correcciones temporales
-   entre Solar Orbiter y la Tierra antes de atribuir los pulsos al mismo lugar.
-2. Inferir del ajuste de cuentas y respuesta instrumental los parámetros del haz
-   y su evolución: Ec, índice electrónico δ y tasa de inyección. Conservar sus
-   incertidumbres conjuntas y degeneraciones térmico/no térmico; Ec puede estar
-   débilmente acotado. STIX observa fotones, no electrones directamente, y el índice
-   fotónico no es intercambiable con δ.
-3. Transportar el haz en una atmósfera que evoluciona y calcular la deposición
-   Q(s,t). Acoplarla de forma coherente a la RHD; verificar qué física incluye la
-   versión concreta de FP, incluidas colisiones y, cuando corresponda, corriente
-   de retorno. Evitar contar dos veces el calentamiento del haz.
-4. Cuantificar el cambio entre pulsos en temperatura, densidad, velocidad,
-   ionización, profundidad de deposición y reparto energético. Separar los efectos
-   del tiempo de espera, la energía previa y las condiciones iniciales.
-5. Sintetizar un conjunto viable de diagnósticos según la cobertura real:
-   Hα, líneas de IRIS, emisión coronal/Fe XVIII y curvas GOES/AIA/STIX. Usar el
-   tratamiento de transferencia y respuesta instrumental apropiado para cada uno;
-   no identificar sin más AIA 94 Å con Fe XVIII. No exigir todos para el primer paper.
-6. Evaluar si las diferencias entre escenarios sobreviven al ruido, exposición,
-   resolución espacial y temporal, mezcla de estructuras e incertidumbres del haz.
-   La comparación Neupert es complementaria, no prueba única de la geometría
-   de calentamiento ni causa suficiente para reajustar el haz hasta forzar acuerdo.
+The mechanism, the regime and the observables are sought. A negligible bias or a signature that STIX cannot resolve are also results. Do not promise detection, novelty, editorial acceptance or a specific journal. Detail in `docs/00_objectives_and_methodology.md`.
 
-## Experimentos que deben sostener la comparación
+## Scientific objectives
 
-| Experimento | Función |
+1. Select an event with STIX science spectra and several resolvable pulses, with GOES and AIA; prioritize IRIS spectroscopy and Hα data if they are central diagnostics. AIA/HMI and IRIS do not replace an Hα observation. Check visibility, saturation, cadence, spatial evolution and the Solar Orbiter–Earth time corrections before attributing pulses to the same place.
+2. Infer from the count fit and instrument response the beam parameters and their evolution: Ec, electron index δ and injection rate. Keep their joint uncertainties and thermal/non-thermal degeneracies; Ec may be weakly constrained. STIX observes photons, not electrons directly, and the photon index is not interchangeable with δ.
+3. Transport the beam in an evolving atmosphere and compute the deposition Q(s,t). Couple it consistently to the RHD; verify which physics the specific FP version includes, including collisions and, where applicable, return current. Avoid counting the beam heating twice.
+4. Quantify the change between pulses in temperature, density, velocity, ionization, deposition depth and energy partition, separating the effects of waiting time, previous energy and initial conditions.
+5. Compute the synthetic HXR photons and re-infer the electron parameters; decompose the bias by mechanism (thermal contamination, warm target, ionization, loop-top/footpoint mixing).
+6. Synthesize a viable set of other diagnostics according to real coverage: Hα, IRIS lines, coronal/Fe XVIII emission, GOES/AIA/STIX curves. Do not identify AIA 94 Å with Fe XVIII without more. The Neupert comparison is complementary, not a sole test of the heating geometry nor a reason to readjust the beam to force agreement.
+7. Evaluate whether the differences between scenarios survive noise, exposure, spatial and temporal resolution, mixing of structures and beam uncertainties.
+
+## Experiments that must support the comparison
+
+| Experiment | Function |
 | --- | --- |
-| Pulso aislado en atmósfera relajada | Respuesta de referencia |
-| Dos o tres pulsos en la misma atmósfera | Medir efectos de la historia térmica y dinámica |
-| Pulsos en filamentos independientes | Alternativa espacialmente no resuelta |
-| Calentamiento continuo con energía total comparable | Control de duración y distribución temporal de energía |
-| Primer pulso seguido de enfriamiento, sin segundo pulso | Distinguir emisión residual de la respuesta al nuevo haz |
+| Isolated pulse in a relaxed atmosphere | Reference response and baseline bias |
+| Two or three pulses in the same atmosphere | Measure effects of the thermal and dynamic history |
+| Pulses in independent filaments | Spatially unresolved alternative; expected no memory bias |
+| Continuous heating with comparable total energy | Control of duration and temporal distribution of energy |
+| First pulse followed by cooling, no second pulse | Distinguish residual emission from the response to the new beam |
 
-Evolucionar continuamente entre pulsos: no restablecer temperatura, velocidades
-ni poblaciones atómicas. Una reanudación debe conservar el estado necesario del
-solver. No sumar respuestas de pulsos aislados para representar recalentamiento
-no lineal; la suma de emisiones solo representa estructuras independientes bajo
-las hipótesis geométricas y radiativas que se documenten.
+Evolve continuously between pulses: do not reset temperature, velocities or atomic populations. A restart must keep the necessary solver state. Do not add up isolated-pulse responses to represent non-linear reheating; the sum of emissions only represents independent structures under documented geometric and radiative assumptions.
 
-Comparar potencia total y áreas de forma explícita. La tasa de electrones [s⁻¹],
-la potencia [erg s⁻¹], el flujo energético [erg cm⁻² s⁻¹] y Q [erg cm⁻³ s⁻¹]
-son magnitudes diferentes. Para una ley simple sin corte superior, δ > 2:
-P = Ndot × Ec × (δ−1)/(δ−2), con Ec convertido a erg; F = P/A.
-Adaptar esa conversión a cortes finitos u otras distribuciones. Propagar la
-incertidumbre en A y la asignación a cada pie/filamento; conservar
-P_total(t) = Σ A_i F_i(t) en comparaciones de fragmentación equivalentes.
+Compare total power and areas explicitly. Electron rate [s⁻¹], power [erg s⁻¹], energy flux [erg cm⁻² s⁻¹] and Q [erg cm⁻³ s⁻¹] are different quantities. For a simple power law with no upper cut-off, δ > 2: P = Ndot × Ec × (δ−1)/(δ−2), with Ec converted to erg; F = P/A. Adapt that conversion to finite cut-offs or other distributions. Propagate the uncertainty of A and the assignment to each footpoint/filament; conserve P_total(t) = Σ A_i F_i(t) in equivalent fragmentation comparisons.
 
-## Uso del clúster y validación
+## Cluster use and validation
 
-Empezar reproduciendo un caso publicado con versión y configuración documentadas.
-Medir tiempo de pared, CPU, memoria, almacenamiento y estabilidad en pilotos
-representativos antes de presupuestar la campaña. Decenas de pilotos y cientos
-de casos son una posibilidad de planificación, no un requisito ni una estimación
-de rendimiento. Favorecer trabajos independientes en paralelo; no asumir escalado
-MPI/GPU de una corrida por disponer de muchos núcleos.
+Start by reproducing a published case with documented version and configuration. Measure wall time, CPU, memory, storage and stability in representative pilots before budgeting the campaign. Tens of pilots and hundreds of cases are a planning possibility, not a requirement nor a performance estimate. Favour independent jobs in parallel; do not assume MPI/GPU scaling of one run because many cores are available.
 
-Elegir un muestreo de parámetros informado por los pilotos y por las incertidumbres
-observadas. Comprobar convergencia espacial/temporal y balance energético en casos
-decisivos, además de persistencia de los diagnósticos frente a condiciones iniciales.
-Registrar fallos de convergencia y no excluirlos silenciosamente del análisis.
-Una comparación con otro solver es una ampliación útil si responde a una duda
-concreta. La MHD 3D requiere una motivación física y un alcance propio; disponer
-de clúster no la convierte automáticamente en el siguiente paso.
+Choose a parameter sampling informed by the pilots and by the observed uncertainties. Check spatial/temporal convergence and energy balance in decisive cases, as well as persistence of the diagnostics against initial conditions. Record convergence failures and do not silently exclude them from the analysis. A comparison with another solver is a useful extension if it answers a concrete doubt. 3D MHD needs a physical motivation and its own scope; having a cluster does not automatically make it the next step.
 
-## Entregables y criterios de finalización
+## Deliverables and completion criteria
 
-- Evento, datos, intervalos, calibraciones y ajustes trazables, con incertidumbres.
-- Matriz de experimentos y justificación de los controles y parámetros explorados.
-- Corridas reproducibles: versiones del solver, entradas, estado inicial, scripts
-  del clúster, registros de ejecución y salidas con unidades y coordenadas claras.
-- Evidencia cuantitativa del mecanismo, robustez numérica y detectabilidad o
-  degeneración entre escenarios; incluir discrepancias que los parámetros
-  permitidos por STIX no resuelvan.
-- Pipeline reutilizable desde datos/ajustes STIX hasta resultados y figuras,
-  documentando cualquier paso manual, licencia o dependencia externa.
-- Manuscrito de prueba de concepto con antecedentes, métodos, incertidumbres,
-  resultados, límites y materiales suficientes para reproducir las conclusiones.
+- Event, data, intervals, calibrations and fits, traceable and with uncertainties.
+- Experiment matrix and justification of the controls and explored parameters.
+- Reproducible runs: solver versions, inputs, initial state, cluster scripts, execution logs and outputs with clear units and coordinates.
+- Quantitative evidence of the bias, its mechanism, numerical robustness and detectability or degeneracy between scenarios; include discrepancies that the STIX-allowed parameters do not resolve.
+- Reusable pipeline from STIX data/fits to results and figures, documenting any manual step, license or external dependency.
+- Proof-of-concept manuscript with background, methods, uncertainties, results, limits and enough material to reproduce the conclusions.
 
-Instalar, compilar o generar figuras de demostración no equivale a completar el
-objetivo. Distinguir siempre resultados de prueba, resultados observacionales y
-predicciones por verificar. Una skill con este alcance no autoriza por sí sola
-a enviar correos, publicar resultados ni consumir una cuota de clúster no acordada.
+Installing, compiling or producing demonstration figures is not the same as completing the objective. Always distinguish test results, observational results and predictions to be verified. A skill with this scope does not by itself authorize sending e-mails, publishing results or consuming a cluster allocation that has not been agreed.
 
-## Antecedentes para delimitar la aportación
+## Prior work to delimit the contribution
 
-Al preparar novedad o manuscrito, revisar estos trabajos y actualizar la búsqueda;
-esta lista procede de una exploración preliminar, no de una revisión exhaustiva:
+When preparing the novelty or the manuscript, review these works and update the search; this list comes from a preliminary exploration, not an exhaustive review:
 
-- [Kennedy et al. (2015)](https://arxiv.org/abs/1504.07541): RADYN impulsado por
-  espectros HXR y evolución de la profundidad de frenado.
-- [Allred et al. (2020)](https://arxiv.org/abs/2008.10671): transporte FP.
-- [Carlsson et al. (2023)](https://arxiv.org/abs/2304.02618): F-CHROMA y su versión
-  pública de RADYN; verificar diferencias respecto al RADYN+FP más reciente.
-- [Litwicka et al. (2025)](https://doi.org/10.3847/1538-4357/adc393): FLARIX;
-  calentamiento continuo frente a pulsos en filamentos distintos, con VAL-C precalentada
-  como condición inicial; sin datos observacionales.
-- [Litwicka et al., congreso de marzo de 2026](https://plan.events.mpg.de/event/453/contributions/3104/):
-  aplicación con STIX, IRIS y CHASE; distinguir resumen de congreso de artículo.
+- [Kennedy et al. (2015)](https://arxiv.org/abs/1504.07541): RADYN driven by HXR spectra and evolution of the stopping depth.
+- [Allred et al. (2020)](https://arxiv.org/abs/2008.10671): FP transport.
+- [Carlsson et al. (2023)](https://arxiv.org/abs/2304.02618): F-CHROMA and its public RADYN version; verify differences with respect to the latest RADYN+FP.
+- [Litwicka et al. (2025)](https://doi.org/10.3847/1538-4357/adc393): FLARIX; continuous heating versus pulses in different filaments, with a preheated VAL-C as initial condition; no observational data.
+- [Litwicka et al., March 2026 conference](https://plan.events.mpg.de/event/453/contributions/3104/): application with STIX, IRIS and CHASE; distinguish a conference abstract from a paper.
+- [Veronig & Brown (2004)](https://eprints.gla.ac.uk/1317): coronal thick-target HXR sources (abstract only read).
 
-Evaluación de novedad y antecedentes adicionales: docs/03_novedad_y_antecedentes.md.
+Novelty assessment and further prior work: `docs/03_novelty_and_prior_work.md` (its Sections 1–7 refer to the previous question).
 
-La posible contribución es cuantificar y contrastar la memoria de una atmósfera
-recalentada frente a esas alternativas, no atribuir novedad al mero uso de STIX,
-varios pulsos o condiciones precalentadas.
+The possible contribution is to quantify how the memory of a reheated atmosphere biases STIX inference and whether it is observable, not to claim novelty for the mere use of STIX, several pulses or preheated conditions.
 
-## Contexto operativo al retomar
+## Operating context when resuming
 
-Leer primero los archivos actuales y verificar las capacidades instaladas.
-En la creación de esta skill se había reportado HYDRAD compilado y un entorno
-Python STIXpy/SunPy/AIApy, pero ninguna corrida física validada, evento definitivo
-ni instalación de RADYN. No tratar ese inventario histórico como estado perpetuo.
-Mantener los objetivos al resolver cada tarea concreta; no lanzar toda la campaña
-cuando el usuario pida únicamente una explicación, revisión o edición.
+Read the current files first and verify the installed capabilities. At the creation of this skill, a compiled HYDRAD and a Python STIXpy/SunPy/AIApy environment had been reported, but no validated physical run, definitive event or RADYN installation. Do not treat that historical inventory as a perpetual state. Keep the objectives in mind when solving each concrete task; do not launch the whole campaign when the user asks only for an explanation, review or edit.
