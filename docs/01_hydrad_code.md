@@ -1,12 +1,12 @@
-# Primera lectura de HYDRAD
+# First reading of HYDRAD
 
-HYDRAD no resuelve las ecuaciones MHD completas. En una línea de campo fija resuelve masa, momento y energía de electrones e iones, con gravedad, conducción térmica, radiación y calentamiento. Para este proyecto el término decisivo es el calentamiento del haz, `Q_beam(s,t)`.
+HYDRAD does not solve the full MHD equations. Along a fixed field line it solves mass, momentum and electron and ion energy, with gravity, thermal conduction, radiation and heating. For this project the decisive term is the beam heating, `Q_beam(s,t)`.
 
-## Recorrido de ejecución
+## Execution path
 
-`HYDRAD/source/main.cpp` es deliberadamente corto: crea `CAdaptiveMesh`. El constructor de esa clase, en `HYDRAD/source/mesh.cpp`, lee la configuración, crea la malla adaptativa y ejecuta el avance temporal. La física de cada celda vive en `HYDRAD/source/eqns.cpp`.
+`HYDRAD/source/main.cpp` is deliberately short: it creates `CAdaptiveMesh`. The constructor of that class, in `HYDRAD/source/mesh.cpp`, reads the configuration, builds the adaptive mesh and runs the time advance. The physics of each cell lives in `HYDRAD/source/eqns.cpp`.
 
-La dependencia es:
+The dependency is:
 
 ```text
 main.cpp → CAdaptiveMesh (mesh.cpp) → CEquations (eqns.cpp)
@@ -15,30 +15,30 @@ main.cpp → CAdaptiveMesh (mesh.cpp) → CEquations (eqns.cpp)
                                       └─ CKinetic (Kinetic_Model/source/)
 ```
 
-`CEquations::Initialise()` abre `HYDRAD/config/hydrad.cfg`, carga el perfil inicial, la gravedad y el tiempo de la corrida. Después crea `CHeat` y los objetos de radiación. La malla decide dónde refinar para resolver la transición cromosfera–corona durante la evaporación.
+`CEquations::Initialise()` opens `HYDRAD/config/hydrad.cfg`, loads the initial profile, the gravity and the run time. It then creates `CHeat` and the radiation objects. The mesh decides where to refine in order to resolve the chromosphere–corona transition during evaporation.
 
-## Entrada del haz de electrones
+## Electron beam input
 
-La entrada es `Heating_Model/config/beam_heating_model.cfg`. Cada fila tiene:
-
-```text
-tiempo [s]    flujo de energía [erg cm^-2 s^-1]    Ec [keV]    δ
-```
-
-`CHeat::GetBeamHeatingData()` lee esa tabla. Si tiene una sola fila, aplica un haz constante durante el tiempo indicado; si tiene varias, `CHeat::CalculateBeamParameters()` interpola linealmente entre filas. Esta es exactamente la interfaz que construiremos a partir de los ajustes STIX: cada intervalo espectral produce una fila.
-
-`CHeat::CalculateBeamHeating()` transforma `(F, Ec, δ)` en energía depositada por profundidad de columna. `CEquations` incorpora esa tasa en las ecuaciones de energía. El resultado físico esperado es calentamiento cromosférico, aumento de presión y flujo ascendente: evaporación cromosférica.
-
-## Lo que cambiaremos y lo que no
-
-No modificaremos el solver de HYDRAD. Nuestro código en `src/` hará la traducción reproducible:
+The input is `Heating_Model/config/beam_heating_model.cfg`. Each row has:
 
 ```text
-ajuste STIX(t) → F(t), Ec(t), δ(t) → beam_heating_model.cfg → perfil Q_beam(s,t)
+time [s]    energy flux [erg cm^-2 s^-1]    Ec [keV]    δ
 ```
 
-El ejecutable `HYDRAD_beam.exe` ya está compilado con `BEAM_HEATING` activado. El ejecutable genérico `HYDRAD.exe` sirve para comprobar la instalación, pero no incorpora ese término. La siguiente tarea será crear la primera tabla de prueba.
+`CHeat::GetBeamHeatingData()` reads that table. With a single row it applies a constant beam for the stated time; with several rows, `CHeat::CalculateBeamParameters()` interpolates linearly between rows and switches the beam off before the first and after the last row. This is exactly the interface that will be built from STIX fits: each spectral interval produces one row.
 
-## Límite importante para los diagnósticos
+`CHeat::CalculateBeamHeating()` converts `(F, Ec, δ)` into deposited energy per column depth. `CEquations` adds that rate to the energy equations. The expected physical outcome is chromospheric heating, a pressure increase and an upflow: chromospheric evaporation.
 
-HYDRAD incluye radiación y un modelo directo para líneas ópticamente delgadas, útil para AIA/Fe XVIII. Su tratamiento no sustituye la transferencia radiativa NLTE de RADYN para un perfil de Hα. Para Hα de calidad publicable, usaremos RADYN o postprocesado RH/RH1.5D con las atmósferas de HYDRAD.
+## What is changed and what is not
+
+The HYDRAD solver is not modified. The code in `src/` does the reproducible translation:
+
+```text
+STIX fit(t) → F(t), Ec(t), δ(t) → beam_heating_model.cfg → Q_beam(s,t) profile
+```
+
+No compiled executable is stored in the repository. The upstream configuration does not define `BEAM_HEATING` and the build scripts are Windows `.bat` files; a macOS build worked with `-DBEAM_HEATING -include cstdlib -include cstring -std=gnu++14` (see the README for the known NaN failure with strong or abruptly switched-off beams).
+
+## Important limit for the diagnostics
+
+HYDRAD includes radiation and a forward model for optically thin lines, useful for AIA/Fe XVIII. Its treatment does not replace the NLTE radiative transfer of RADYN for an Hα profile. HYDRAD is also not equivalent to RADYN with Fokker–Planck transport: its beam heating is analytic (collisional, fixed normal incidence). In this project it is used for the column test and as a coronal fallback until RADYN is verified (`docs/00_objectives_and_methodology.md`, Section 6.3).

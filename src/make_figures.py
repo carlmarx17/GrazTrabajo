@@ -1,4 +1,4 @@
-"""Figures for docs/02_informe_experimentos_pulsos.html (synthetic base case)."""
+"""Figures for docs/02_pulse_experiments_report.html (synthetic base case)."""
 from __future__ import annotations
 
 import math
@@ -44,26 +44,26 @@ def fig_stopping_column():
         return (ec * KEV_TO_ERG) ** 2 / (g * k)
 
     fig, ax = plt.subplots(figsize=(6.4, 4.0))
-    ax.loglog(ec, nc(0.0, 1e11), color=C["fil1"], lw=2, label="gas neutro (x = 0)")
-    ax.loglog(ec, nc(1.0, 1e11), color=C["tube"], lw=2, label="gas ionizado, n_e = 10¹¹ cm⁻³")
-    ax.loglog(ec, nc(1.0, 1e13), color=C["tube"], lw=2, ls="--", label="gas ionizado, n_e = 10¹³ cm⁻³")
+    ax.loglog(ec, nc(0.0, 1e11), color=C["fil1"], lw=2, label="neutral gas (x = 0)")
+    ax.loglog(ec, nc(1.0, 1e11), color=C["tube"], lw=2, label="ionized gas, n_e = 10¹¹ cm⁻³")
+    ax.loglog(ec, nc(1.0, 1e13), color=C["tube"], lw=2, ls="--", label="ionized gas, n_e = 10¹³ cm⁻³")
     i20 = np.argmin(abs(ec - 20))
     r = nc(0.0, 1e11)[i20] / nc(1.0, 1e11)[i20]
-    ax.annotate("20 keV: la columna de frenado\ncambia ×%.1f solo por la\nionización del blanco" % r,
+    ax.annotate("20 keV: the stopping column\nchanges by ×%.1f from the\ntarget ionization alone" % r,
                 xy=(20, nc(0.0, 1e11)[i20]), xytext=(6.5, 4e20), fontsize=9,
                 arrowprops=dict(arrowstyle="->", color=C["grey"]))
     ax.set_xlabel("Ec [keV]")
-    ax.set_ylabel("columna de frenado N_c [cm⁻²]")
-    ax.set_title("Dónde se frena el haz: N_c depende de Ec y del estado del plasma", fontsize=10)
+    ax.set_ylabel("stopping column N_c [cm⁻²]")
+    ax.set_title("Where the beam stops: N_c depends on Ec and on the plasma state", fontsize=10)
     ax.legend(frameon=False, fontsize=9, loc="lower right")
-    ax.text(0.02, 0.97, "δ = 5, incidencia normal (μ₀ = 1)\nexpresión de heat.cpp", transform=ax.transAxes,
+    ax.text(0.02, 0.97, "δ = 5, normal incidence (μ₀ = 1)\nexpression from heat.cpp", transform=ax.transAxes,
             va="top", fontsize=8, color=C["grey"])
     save(fig, "fig1_stopping_column.png")
 
 
 def fig_schematic():
     fig, ax = plt.subplots(figsize=(8.6, 3.6))
-    ax.set_xlim(0, 16)
+    ax.set_xlim(0, 17.6)
     ax.set_ylim(0, 8)
     ax.axis("off")
 
@@ -76,20 +76,20 @@ def fig_schematic():
                                      color=color, lw=2))
         ax.text(x, 6.55, label, ha="center", fontsize=8.5, color=color)
 
-    ax.text(0.2, 8.0, "Mismo tubo (recalentamiento)", fontsize=10, weight="bold", va="top")
-    tube(0.8, 3.0, "atmósfera con memoria\nde la historia previa", C["tube"])
-    beam(1.5, "pulso 1", C["pulse"])
-    beam(3.3, "pulso 2", C["pulse"])
-    ax.text(4.3, 3.0, "→ la atmósfera\nse modifica y no\nse reinicia", fontsize=8, va="center", color=C["grey"])
+    ax.text(0.2, 8.0, "Same tube (reheating)", fontsize=10, weight="bold", va="top")
+    tube(0.8, 3.0, "atmosphere with memory\nof the previous history", C["tube"])
+    beam(1.5, "pulse 1", C["pulse"])
+    beam(3.3, "pulse 2", C["pulse"])
+    ax.text(4.3, 3.0, "→ the atmosphere\nis modified and\nnot reset", fontsize=8, va="center", color=C["grey"])
 
-    ax.text(8.6, 8.0, "Filamentos independientes", fontsize=10, weight="bold", va="top")
-    tube(9.2, 2.2, "filamento A\n(relajado)", C["fil1"])
-    tube(12.0, 2.2, "filamento B\n(relajado)", C["fil2"])
-    beam(10.3, "pulso 1", C["pulse"])
-    beam(13.1, "pulso 2", C["pulse"])
-    ax.text(14.6, 3.0, "→ cada pulso\nve una atmósfera\nrelajada", fontsize=8, va="center", color=C["grey"])
-    ax.text(8.0, -0.2, "STIX mide los fotones del conjunto: ambos escenarios pueden dar la misma curva "
-            "de potencia P(t).", ha="center", fontsize=8.5, style="italic")
+    ax.text(8.6, 8.0, "Independent filaments", fontsize=10, weight="bold", va="top")
+    tube(9.2, 2.2, "filament A\n(relaxed)", C["fil1"])
+    tube(12.0, 2.2, "filament B\n(relaxed)", C["fil2"])
+    beam(10.3, "pulse 1", C["pulse"])
+    beam(13.1, "pulse 2", C["pulse"])
+    ax.text(14.6, 3.0, "→ each pulse\nsees a relaxed\natmosphere", fontsize=8, va="center", color=C["grey"])
+    ax.text(8.0, -0.2, "STIX measures the photons of the whole: both scenarios can give the same "
+            "power curve P(t).", ha="center", fontsize=8.5, style="italic")
     save(fig, "fig0_scenarios.png")
 
 
@@ -102,19 +102,19 @@ def fig_encoding(base):
     gf = np.array([good.flux_at(x) for x in t])
     bf = np.array([bad.flux_at(x) for x in t])
     fig, (a, b) = plt.subplots(2, 1, figsize=(7.2, 5.4), sharex=True, gridspec_kw={"height_ratios": [1.2, 1]})
-    a.plot(t, nominal / 1e10, color=C["grey"], lw=4, alpha=0.3, label="pulsos nominales (cajas)")
-    a.plot(t, gf / 1e10, color=C["good"], lw=1.8, label="tabla con filas F = 0 y rampa de %.1f s (la generada)" % base.ramp)
-    a.plot(t, bf / 1e10, color=C["pulse"], lw=1.8, ls="--", label="tabla ingenua de 2 filas por pulso")
+    a.plot(t, nominal / 1e10, color=C["grey"], lw=4, alpha=0.3, label="nominal pulses (boxcars)")
+    a.plot(t, gf / 1e10, color=C["good"], lw=1.8, label="table with F = 0 rows and a %.1f s ramp (the generated one)" % base.ramp)
+    a.plot(t, bf / 1e10, color=C["pulse"], lw=1.8, ls="--", label="naive table with 2 rows per pulse")
     a.set_ylabel("F [10¹⁰ erg cm⁻² s⁻¹]")
     a.set_ylim(0, 2.1)
     a.legend(frameon=False, fontsize=8, loc="upper center", ncol=1)
-    a.set_title("Cómo ve HYDRAD los pulsos: interpola linealmente entre filas", fontsize=10)
+    a.set_title("How HYDRAD sees the pulses: it interpolates linearly between rows", fontsize=10)
     for arr, col, ls in ((nominal, C["grey"], "-"), (gf, C["good"], "-"), (bf, C["pulse"], "--")):
         b.plot(t, np.cumsum(arr) * (t[1] - t[0]) / 1e10 * 1.0, color=col, ls=ls, lw=1.8 if col != C["grey"] else 4,
                alpha=1 if col != C["grey"] else 0.3)
     b.set_ylabel("∫F dt [10¹⁰ erg cm⁻²]")
-    b.set_xlabel("tiempo [s]")
-    b.text(0.03, 0.93, "energía inyectada: tabla correcta = %.1f×10¹⁰, ingenua = %.1f×10¹⁰ (×%.1f)" % (
+    b.set_xlabel("time [s]")
+    b.text(0.03, 0.93, "injected energy: correct table = %.1f×10¹⁰, naive = %.1f×10¹⁰ (×%.1f)" % (
         good.energy_per_area() / 1e10, bad.energy_per_area() / 1e10, bad.energy_per_area() / good.energy_per_area()),
         transform=b.transAxes, va="top", fontsize=8.5)
     save(fig, "fig2_table_encoding.png")
@@ -134,8 +134,8 @@ def fig_experiments(exps, base):
         ax.set_ylabel("F [10¹⁰]", fontsize=8)
         ax.text(0.99, 0.82, "%s   (A_total = %.0e cm²)" % (e.name, e.total_area_cm2()),
                 transform=ax.transAxes, ha="right", fontsize=8.5)
-    axes[-1].set_xlabel("tiempo global [s]  (filamentos: curvas desplazadas por su desfase)")
-    axes[0].set_title("Flujo de energía del haz en cada experimento (por tubo, F en erg cm⁻² s⁻¹)", fontsize=10)
+    axes[-1].set_xlabel("global time [s]  (filaments: curves shifted by their offset)")
+    axes[0].set_title("Beam energy flux in each experiment (per tube, F in erg cm⁻² s⁻¹)", fontsize=10)
     save(fig, "fig3_experiments_flux.png")
 
 
@@ -150,19 +150,19 @@ def fig_ledger(exps, base):
         cum = np.cumsum(p) * (t[1] - t[0])
         col, ls, lw = style[e.name]
         a.plot(t, cum / 1e28, color=col, ls=ls, lw=lw, label=e.name)
-    a.set_xlabel("tiempo global [s]")
-    a.set_ylabel("energía inyectada acumulada [10²⁸ erg]")
-    a.set_title("Misma energía total en E2, E3a, E3b y E4", fontsize=10)
+    a.set_xlabel("global time [s]")
+    a.set_ylabel("cumulative injected energy [10²⁸ erg]")
+    a.set_title("Same total energy in E2, E3a, E3b and E4", fontsize=10)
     a.legend(frameon=False, fontsize=7.5, loc="upper left")
     names = [e.name.split("_")[0] for e in exps]
     areas = [e.total_area_cm2() / base.area_cm2 for e in exps]
     pk = [max(max(r[1] for r in c.table.rows) for c in e.components) / 1e10 for e in exps]
     x = np.arange(len(exps))
     b.bar(x - 0.2, areas, 0.4, color=C["tube"], label="A_total / A_ref")
-    b.bar(x + 0.2, pk, 0.4, color=C["pulse"], label="F_pico [10¹⁰]")
+    b.bar(x + 0.2, pk, 0.4, color=C["pulse"], label="F_peak [10¹⁰]")
     b.set_xticks(x)
     b.set_xticklabels(names, fontsize=8)
-    b.set_title("Lo que NO se conserva", fontsize=10)
+    b.set_title("What is NOT conserved", fontsize=10)
     b.legend(frameon=False, fontsize=8)
     save(fig, "fig4_energy_ledger.png")
 
@@ -174,9 +174,9 @@ def fig_degeneracy(exps, base):
     for name, col, ls, lw in (("E2_same_strand", C["tube"], "-", 4), ("E3a_independent_same_flux", C["fil1"], "--", 2.2),
                               ("E3b_independent_equal_area", C["fil2"], ":", 2.6), ("E4_continuous", C["cont"], "-", 1.4)):
         a.plot(t, [byname[name].power(x) / 1e27 for x in t], color=col, ls=ls, lw=lw, label=name, alpha=0.9)
-    a.set_xlabel("tiempo global [s]")
+    a.set_xlabel("global time [s]")
     a.set_ylabel("P_total(t) = Σ A_i F_i [10²⁷ erg s⁻¹]")
-    a.set_title("La potencia total no distingue la geometría", fontsize=10)
+    a.set_title("Total power does not distinguish the geometry", fontsize=10)
     a.set_ylim(0, 1.95)
     a.legend(frameon=False, fontsize=7.5, loc="upper center", ncol=2)
     p = base.pulses()[0]
@@ -185,9 +185,9 @@ def fig_degeneracy(exps, base):
     for fr, lab, col in ((1.0, "E3a", C["fil1"]), (0.5, "E3b", C["fil2"])):
         b.plot([fr], [p.power_erg_s / (fr * base.area_cm2)], "o", color=col, ms=8)
         b.annotate(lab, (fr, p.power_erg_s / (fr * base.area_cm2)), textcoords="offset points", xytext=(6, 5), fontsize=9)
-    b.set_xlabel("área del filamento / A_ref")
-    b.set_ylabel("F por pulso [erg cm⁻² s⁻¹]")
-    b.set_title("P fija ⇒ F = P / A", fontsize=10)
+    b.set_xlabel("filament area / A_ref")
+    b.set_ylabel("F per pulse [erg cm⁻² s⁻¹]")
+    b.set_title("fixed P ⇒ F = P / A", fontsize=10)
     save(fig, "fig5_degeneracy.png")
 
 

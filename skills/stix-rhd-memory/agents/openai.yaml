@@ -1,4 +1,4 @@
 interface:
-  display_name: "STIX/RHD: memoria cromosférica"
-  short_description: "Objetivos y experimentos del paper de pulsos STIX"
-  default_prompt: "Usa $stix-rhd-memory para orientar el próximo paso del paper sobre la respuesta cromosférica a pulsos sucesivos de electrones."
+  display_name: "STIX/RHD: inference bias from atmospheric memory"
+  short_description: "Objectives and experiments of the STIX successive-pulse paper"
+  default_prompt: "Use $stix-rhd-memory to guide the next step of the paper on how atmospheric memory biases STIX electron inference in successive pulses."
