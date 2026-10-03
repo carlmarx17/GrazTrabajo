@@ -48,6 +48,7 @@ Before any campaign, compare the coronal mass column at the onset of pulse 2 wit
 - `docs/02_pulse_experiments_report.html`: report on the pulse infrastructure (synthetic case).
 - `docs/03_novelty_and_prior_work.md`: prior work and novelty assessment.
 - `docs/04_radyn_access.md`: what was verified about the RADYN F-CHROMA distribution (optional upgrade) and its verification gate.
+- `docs/05_fp_solver_verification.md`: what the manual and source of the open-source FP solver say, and how they fit the project (documented, not yet tested).
 - `skills/stix-rhd-memory/SKILL.md`: working guidance for this project.
 
 This is a physical simulation, not a neural network. The atmosphere comes from a 1D hydrodynamic code (HYDRAD, with RADYN+FP as an optional upgrade) and the electron transport and photons from the FP solver; the two are decoupled, so no single code is a bottleneck. HYDRAD heats with an analytic cold-target expression, which is the assumption under test; the comparison of FP's deposition with HYDRAD's on the same snapshot bounds that effect (`docs/00_objectives_and_methodology.md`, OE4). HYDRAD is not equivalent to RADYN+FP.
