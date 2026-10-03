@@ -47,7 +47,7 @@ Particularities that constrain the design (`prog/rftab.f`, `prog/beam.f`):
 4. **The table must cover the whole run:** if the time exceeds the last row, RADYN stops.
 5. The example in the distribution is a **20 s triangular** pulse with a fluence of 10¹¹ erg cm⁻².
 
-**Implemented adaptation:** [`src/radyn_ftab.py`](../src/radyn_ftab.py) subdivides each ramp into 0.02 s segments following the linear shape, applies the 0.1 floor, extends the table to the end of the run and checks the energy assuming log-linear interpolation between rows. In the six experiments the encoded energy matches the intended one within **−0.03 %** (42 tests pass). `src/experiments.py` now writes one `ftab.dat` per component.
+**Implemented adaptation:** [`src/radyn_ftab.py`](../src/radyn_ftab.py) subdivides each ramp into 0.02 s segments following the linear shape, applies the 0.1 floor, extends the table to the end of the run and checks the energy assuming log-linear interpolation between rows. In the six experiments the encoded energy matches the intended one within **−0.03 %** (all repository tests pass). `src/experiments.py` now writes one `ftab.dat` per component.
 
 **Pending:** RADYN's actual tensioned spline has **not been executed** (no compiler). The definitive check is to integrate the beam flux that RADYN writes in its own output.
 

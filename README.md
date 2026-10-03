@@ -31,10 +31,10 @@ Before any campaign, compare the coronal mass column at the onset of pulse 2 wit
 
 | Item | Status |
 |---|---|
-| Beam-pulse table generator, five-experiment matrix (E1–E5), RADYN `ftab.dat` encoder | Done, synthetic parameters, 42 tests |
+| Beam-pulse table generator, five-experiment matrix (E1–E5), RADYN `ftab.dat` encoder | Done, synthetic parameters; 50 tests in total |
 | Infrastructure report | Done (`docs/02_pulse_experiments_report.html`) |
 | Prior-work review | Done for the previous question; the current question is assessed only preliminarily (`docs/03_novelty_and_prior_work.md`) |
-| Column test (gate) | Not started; next task |
+| Column test (gate) and toy inject-reinfer test | Done (`docs/06_usefulness_tests.md`): the bias is material only for energetic first pulses in short loops and ≳10⁵ counts per pulse; the repository base case gives a negligible bias; HYDRAD fails (NaN) for F ≥ 2.5×10¹⁰ |
 | STIX event selection and spectral fits | Not started |
 | FP solver (solarFP/FP, Apache-2.0): install, read documentation, verify that it accepts an external atmosphere and outputs photons | Not started |
 | RADYN (optional upgrade): compilation, license, verification | Not started (distribution read; no Fortran compiler or CDF library installed; the distribution ships without a license file) |
@@ -48,6 +48,7 @@ Before any campaign, compare the coronal mass column at the onset of pulse 2 wit
 - `docs/02_pulse_experiments_report.html`: report on the pulse infrastructure (synthetic case).
 - `docs/03_novelty_and_prior_work.md`: prior work and novelty assessment.
 - `docs/04_radyn_access.md`: what was verified about the RADYN F-CHROMA distribution (optional upgrade) and its verification gate.
+- `docs/06_usefulness_tests.md`: executable tests of the project's usefulness (toy inject-reinfer model, HYDRAD column test and variants) and what they imply.
 - `docs/05_fp_solver_verification.md`: what the manual and source of the open-source FP solver say, and how they fit the project (documented, not yet tested).
 - `skills/stix-rhd-memory/SKILL.md`: working guidance for this project.
 
@@ -72,7 +73,9 @@ The simulation must retain temperature, density, velocity and atomic populations
 - `src/radyn_ftab.py`: encodes the tables as RADYN's `ftab.dat` (Fokker–Planck beam, log-flux interpolation, 0.1 erg cm⁻² s⁻¹ floor).
 - `src/experiments.py`: the experiment matrix with comparable energy (synthetic base case, not STIX fits).
 - `src/make_figures.py`, `src/make_report.py`: figures and the infrastructure report.
-- `tests/`: 42 pytest checks of the above.
+- `src/fp_atmosphere.py`: reader/writer of the FP solver's atmosphere file (validated byte-for-byte against FP's examples).
+- `src/toy_bias.py`: toy inject-reinfer model (two-zone target, Haug bremsstrahlung, STIX-like response, Cash fits); `scripts/`: the sweep, the HYDRAD column test and its variants, and the figure.
+- `tests/`: 50 pytest checks of the above.
 - `results/`: generated tables and (later) fits and diagnostics, git-ignored.
 
 Not yet present: STIX/AIA/GOES data (`data/`), STIXpy/SunPy in the environment, any observational fit and any RADYN installation.
