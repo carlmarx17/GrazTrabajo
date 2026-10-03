@@ -223,7 +223,7 @@ Paired counterfactual: R_hist(τ) = X_with k − X_without k, with common histor
 
 | Level | What is checked | How |
 |---|---|---|
-| Code | Tables, units, conservation | 42 existing tests; new tests for the photon computation and the fit |
+| Code | Tables, units, conservation | 50 existing tests (including the toy photon computation and fit); FP photons still to be tested |
 | Synthetic test with known answer | The fit recovers the parameters when the target is the one of the model (bias ≈ 0) | **Essential negative control** to validate OE6 |
 | Physical negative control | Two pulses with τ_w ≫ drainage time: ΔB → 0 | Detects numerical artifacts |
 | Numerical | Convergence and energy balance | Refinement |
@@ -239,10 +239,10 @@ Record versions, compiler flags, initial atmosphere, beam, output cadence, wall 
 
 | ID | Deliverable | Acceptance criterion | Status |
 |---|---|---|---|
-| D0 | Column test N_cor/N_stop (OE1) | Table for E1, E2, E5 | Pending |
+| D0 | Column test N_cor/N_stop (OE1) | Table for E1, E2, E5 | **Done** (`docs/06`, Section 7) |
 | D1 | Event dossier | Criteria 6.1, with resolvable R_LF | Pending |
 | D2 | Beam parameters per pulse with covariances | Uncertainties declared | Pending |
-| D3 | Table generator and experiment matrix | Energy conserved; 42 tests | **Done (synthetic)** |
+| D3 | Table generator and experiment matrix | Energy conserved; tested (50 tests in the repository) | **Done (synthetic)** |
 | D4 | Solver verification report | Published case reproduced | Pending |
 | D5 | Simulation database | Schema with units | Pending |
 | D6 | Synthetic photons and recovery test | Negative control passed; B₁, B₂, ΔB | Pending |
@@ -306,7 +306,7 @@ F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to b
 |---|---|
 | Table generator and E1–E5 matrix | Done, **synthetic** |
 | Infrastructure report | Done |
-| Column test (OE1) | **Not started; this is the next task** |
+| Column test (OE1) | **Done with HYDRAD and a toy inject-reinfer model** (`docs/06_usefulness_tests.md`): base case 2.5× column growth (11 % of N_stop), negligible bias; short loop with a 30 s first pulse 65 % of N_stop, Δδ = −0.27 (3σ at 10⁵ counts); HYDRAD NaN for F ≥ 2.5×10¹⁰ |
 | Event, STIX fit, data | Not started |
 | RADYN (F-CHROMA) | Optional upgrade. Downloaded and read; **not compiled**; the distribution ships without a license file |
 | FP solver (solarFP/FP) | Open source (Apache-2.0); located 2026-10-03; **not installed, documentation not read; input/output compatibility not verified** |
