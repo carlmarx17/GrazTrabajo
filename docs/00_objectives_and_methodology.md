@@ -1,353 +1,283 @@
-# Bias of STIX electron inference in successive pulses: objectives, hypotheses and methodology
+# Does the flaring chromosphere remember? Objectives, hypotheses and methodology (v3)
 
 **Author:** Carlos Alberto Martínez Sibaja
-**Status:** research proposal (version 2, 2026-10-02). Nothing in this document has been simulated yet; all beam parameters in the repository are synthetic. Thresholds marked *proposed* must be fixed before the production campaign (Section 6.8).
+**Status:** research proposal, version 3 (2026-10-03). It replaces v2 (archived in `docs/archive/00_objectives_v2_inference_bias.md`) after the executable tests of `docs/06_usefulness_tests.md` and a new literature and event search. No STIX science data have been analysed yet.
 
 ---
 
-## 0. Summary: what is proposed, what will be done
+## 0. One-page summary
 
-**Problem.** The electron parameters of a flare (rate Ṅ, low-energy cut-off Ec, spectral index δ) are inferred from the hard X-ray (HXR) spectrum with a standard model: an isothermal component plus a cold, collisionally thick target. This is reasonable for the first pulse. A second or third pulse arrives in an atmosphere already changed by the first one: chromospheric evaporation has raised the coronal density, the plasma is hotter and ionized, and the thermal emission is stronger. Order-of-magnitude estimates (not yet verified by a simulation in this project) suggest that the coronal column can become comparable to the stopping column of the electrons, so the target is no longer the one the fitting model assumes (cf. coronal thick-target sources, Veronig & Brown 2004).
+**Working title.** *Target memory, return current or acceleration? Separating the causes of pulse-to-pulse hard X-ray spectral evolution with STIX.*
+
+**Why the question changed.** The tests of `docs/06` showed two things:
+- The mechanism behind the v2 question exists. The ionized column left by earlier pulses distorts the spectrum of later ones (the nonuniform-ionization effect of Kontar, Brown & McArthur 2002).
+- The v2 question itself ("how much does it bias the standard fit?") has a modest answer, conditional on bright flares and large column growth. As a paper it would be a methods note about a known effect.
+
+The more valuable question is the reverse: **use the time dependence of the spectra to find out which physical process shapes them.** Three processes can change the spectrum from one pulse to the next, and each leaves a different fingerprint in time:
+
+| Process | What changes the spectrum | Fingerprint in time |
+|---|---|---|
+| **M — target memory** (cumulative ionization and evaporation) | The column of ionized plasma the electrons cross before the neutral chromosphere | The spectral break moves up with the **energy already deposited** at the same footpoints. The hardening is confined to energies near the break, and resets when **new footpoints** light up. Hysteresis: at equal flux, the break is higher late in a pulse or in a later pulse |
+| **R — return current** (Alaoui & Holman 2017) | Ohmic energy losses of the beam, set by its **instantaneous flux density** | The break follows the instantaneous flux; no hysteresis; no dependence on deposition history |
+| **A — acceleration** (soft-hard-soft, soft-hard-harder) | The injected electron spectrum itself | The index changes **at all energies**, tied to pulse amplitude (soft-hard-soft) or progressively (soft-hard-harder) |
 
 **Research question.**
 
-> How much does the atmospheric memory of the previous pulse bias the electron parameters (Ṅ, Ec, δ) inferred with STIX for a second or third pulse, and is it visible in STIX images as a change in the loop-top / footpoint emission ratio?
+> In bright flares with several hard X-ray pulses, does the X-ray spectrum depend on the energy previously deposited at the same footpoints (target memory), on the instantaneous beam flux (return current), or on neither (acceleration), and how much of the observed pulse-to-pulse spectral evolution, including progressive hardening, does each explain?
 
-**Approach: an inject–simulate–reinfer test.**
+**Why it may be new.** Each process has been studied separately; the time dependence has not been used to discriminate between them.
+- Nonuniform-ionization breaks: at the X-ray peak, and in the time evolution of one RHESSI flare (Su, Holman & Dennis 2009, 2011).
+- Return-current breaks: at the peak, including a statistical study of 65 RHESSI flares (Alaoui & Holman 2017; Alaoui, Krucker & Saint-Hilaire 2019).
+- Soft-hard-soft and soft-hard-harder: interpreted as acceleration and trapping (Grigis & Benz 2004–2008; Kiplinger 1995, who linked soft-hard-harder to solar proton events).
+- Time evolution with the warm-target model, using RHESSI and STIX: Bhattacharjee, Kontar & Luo (2025).
 
-1. Inject known electron pulses into a 1D radiation-hydrodynamic (RHD) loop that keeps its history between pulses.
-2. Compute the synthetic HXR photons (non-thermal bremsstrahlung plus thermal emission of the simulated plasma), by region (loop top, footpoints) and in total.
-3. Apply the STIX response and Poisson noise.
-4. Fit the result with the same standard model that is applied to real STIX data.
-5. Compare with the injected truth: the bias B = θ_fit − θ_true. The memory-induced bias is ΔB = B₂ − B₁, where B₁ is the method's intrinsic bias on a relaxed atmosphere.
-6. Apply the same analysis to one real STIX event with at least two pulses and a resolved loop top and footpoints.
+The search found no study that uses **history dependence (cumulative versus instantaneous)** and **footpoint novelty from imaging** to discriminate between these processes. This must still be confirmed with ADS (Section 10, K1).
 
-**Codes (decided 2026-10-03).** The work is split in two pieces so that no single code is a bottleneck. (i) A 1D hydrodynamic loop code gives the evolving atmosphere with history: HYDRAD first (it already runs), RADYN+FP as an upgrade if access, license and time allow. (ii) The open-source Fokker–Planck solver FP (solarFP/FP, Apache-2.0, Allred et al. 2020), run on the atmosphere snapshots, gives the electron transport with warm target and return current, and the bremsstrahlung photons. The standard inference model is the OSPEX/sunkit-spex isothermal + cold-thick-target fit, with the warm-target variant as contrast. Open point: FP's input format and photon output have not been verified yet (OE4). **Mechanism and controls.** The hydrodynamic memory is measured with a paired counterfactual (run with and without pulse k, same history up to pulse k). Independent filaments (each pulse in its own relaxed tube) are the alternative hypothesis: they must show no memory bias.
+**Data.** STIX science data (spectrograms and pixel data) of bright, multi-pulse flares, selected reproducibly from the STIX data-center catalogue (`scripts/stix_event_search.py`, Figure 7). Primary events: the X5.0 flare of 2023-12-31 and the X5.2 flare of 2025-11-11, both observed from close to the Earth direction (AIA context). The X1.3 flare of 2022-03-30 serves as the benchmark against published pulse-resolved fits. The X9.1 flare of 2024-10-03 is the high-count stress case (Section 5).
 
-**Possible outcomes (all are results).** A significant and visible bias; a significant bias that STIX cannot see in imaging; a negligible bias (STIX inference is robust); or a bias degenerate with the allowed parameter uncertainty.
+**Modelling support** (already built, `docs/06`):
+- the two-zone forward model `src/toy_bias.py`, to which a return-current module is to be added;
+- HYDRAD runs for the growth of the column with deposited energy;
+- the open-source Fokker–Planck solver FP for photons with warm target and return current (`docs/05`);
+- RADYN as an optional upgrade, for non-equilibrium hydrogen recombination.
 
-**First task and decision gate.** Compare the coronal mass column at the onset of pulse 2 with the electron stopping column (Section 4, OE1). If it is below ~10 %, the physical basis of the idea is weak and the project is reconsidered before any cluster time is spent.
+**Product.** One paper (A&A or ApJ) plus a public pipeline: pulse-resolved STIX spectroscopy, history and flux regressors, and injection–recovery with the instrument response.
 
-**Current state.** Done: beam-pulse table generator, five-experiment matrix (E1–E5), encoder for RADYN's `ftab.dat`, tests, an infrastructure report. Not done: gate test, event selection, STIX fits, RADYN verification and runs, photon computation, re-inference.
+**Feasibility.** About 20 weeks, with three decision gates. The first decisive signal is due by week 5–6 (Section 9).
 
 ---
 
-## 1. Problem statement
+## 1. Background in brief
 
-During a flare, HXR emission often arrives in **successive pulses**. Each pulse is an injection of non-thermal electrons that stop in the atmosphere, heat it and set it in motion. Variations of δ and Ṅ between pulses are usually interpreted as changes in the acceleration process. That interpretation assumes that each pulse is inferred with the same, correct, target model.
+- **Nonuniform ionization** (Brown 1973; Kontar, Brown & McArthur 2002; Su et al. 2009, 2011).
+  - Electrons lose energy more slowly in neutral than in ionized gas, so the bremsstrahlung yield rises (up to ×2.8) where the target becomes neutral.
+  - This flattens the photon spectrum between an upward and a downward knee, whose energy grows with the ionized column, roughly E* ∝ N*^1/2.
+  - The index change it can produce is limited to about 0.2–0.7 (Su et al. 2009).
+- **Return current** (Holman 2012; Alaoui & Holman 2017; Alaoui et al. 2019). Ohmic losses in the co-spatial return current flatten the spectrum below a break set by the instantaneous beam flux density. RHESSI breaks are typically near 55 keV with Δγ ≈ 0.3–1, often too strong for nonuniform ionization alone.
+- **Soft-hard-soft and soft-hard-harder** (Grigis & Benz 2004, 2005, 2008; Kiplinger 1995).
+  - The spectral index anti-correlates with flux within peaks, with different rise and decay branches.
+  - Progressive hardening across peaks occurs in gradual events and is associated with solar energetic particles.
+  - Both are interpreted as acceleration and trapping.
+- **Warm target** (Kontar et al. 2015; Bhattacharjee et al. 2025). It constrains the low-energy cut-off; its time evolution shows a high-low-high cut-off around bursts.
+- **Coronal thick target** (Veronig & Brown 2004). Dense loops can stop electrons in the corona, giving loop-top hard X-ray sources.
+- **This project's own tests** (`docs/06`):
+  - For an identical beam, a larger ionized column at the onset of pulse 2 gives a harder fitted δ (by 0.1–0.3) and an apparent drop of the electron rate (up to ×2).
+  - HYDRAD with the repository's synthetic beam grows the column only 2.5–4× before pulse 2. A short loop with a 30 s first pulse reaches 65 % of the stopping column.
+  - Within each pulse, the beam ionizes the upper chromosphere in seconds (the column of plasma above 3×10⁴ K reaches 6–7×10¹⁹ cm⁻²), so **memory acts on two timescales**:
+    - **within a pulse:** ionization;
+    - **between pulses:** evaporation, plus recombination, which HYDRAD does not model.
 
-The first pulse acts on a relaxed atmosphere. The second and third act on a modified one. Estimates of order of magnitude (to be verified, OE1):
+## 2. Research question and sub-questions
 
-- the stopping column of a 20 keV electron is ~10¹⁹–10²⁰ cm⁻²;
-- the coronal column goes from ~10¹⁸ cm⁻² (relaxed) to ~10¹⁹–10²⁰ cm⁻² after evaporation;
-- a significant fraction of the energy of pulse 2 may then be deposited in the corona, and the cold-thick-target fit no longer describes the target.
-
-Atmospheric memory itself, i.e. that the stopping depth changes with the history, is already known (Kennedy et al. 2015). What is not quantified, and has consequences for the use of STIX spectra, is **how much that memory biases the inferred electron parameters and whether it leaves a signature in the images**.
-
-### 1.1 Research question
-
-> **How much does the atmospheric memory of the previous pulse bias the electron parameters (Ṅ, Ec, δ) inferred with STIX for a second or third pulse, and is it visible in STIX images as a change in the loop-top / footpoint emission ratio?**
-
-### 1.2 Sub-questions
+**Main question:** stated in Section 0.
 
 | ID | Sub-question | Main observable |
 |---|---|---|
-| SQ1 | What fraction of the energy of pulse k is deposited in the corona rather than the chromosphere, and how does it change between pulses 1 and 2? | η_cor(k); coronal column versus stopping column |
-| SQ2 | If the HXR photon spectrum is generated from the atmosphere with history and refitted with the standard model, how far do (Ṅ, Ec, δ) deviate from the injected values, and by how much more than for pulse 1? | Bias B = θ_fit − θ_true; ΔB = B₂ − B₁ |
-| SQ3 | How much of the bias comes from each mechanism: thermal contamination, warm target, target ionization state, spatial mixing of loop top and footpoints? | Bias decomposition by numerical experiment |
-| SQ4 | Does the loop-top / footpoint ratio R_LF change between pulses, and can STIX resolve it (angular resolution, dynamic range, noise)? | R_LF(k), significance of ΔR_LF |
-| SQ5 | What does ΔB depend on: waiting time, energy of the previous pulse, Ec and δ, area A? | Parameter sweeps and sensitivity (6.5) |
-| SQ6 | In a real event, do the observed pulse-to-pulse changes of δ and R_LF exceed the predicted bias (a sign of changing acceleration) or fit inside it? Can the same-strand scenario be distinguished from independent filaments? | Observed δ₂ − δ₁ versus ΔB; observed R_LF versus E2/E3 |
+| Q1 | Does the spectral break (or curvature) of a time bin depend on the energy previously deposited at the same footpoints, after controlling for the instantaneous flux? | Break energy E_b (or Δγ = γ_low − γ_high) versus cumulative non-thermal energy E_cum and instantaneous flux F |
+| Q2 | Is there hysteresis: at matched flux, does the break differ between the rise and the decay of a pulse, and between an early and a late pulse? | ΔE_b at matched F |
+| Q3 | Is the pulse-to-pulse hardening confined to the energies near the break (memory, return current), or present at all energies (acceleration)? | Δγ in a low band (≈ 20–40 keV) versus a high band (≈ 50–100 keV) |
+| Q4 | Does the spectral memory reset when the emission moves to new footpoints? | Footpoint displacement between pulses from STIX imaging, as a covariate |
+| Q5 | Does the coronal (loop-top) fraction of the non-thermal emission grow with E_cum? | Imaging spectroscopy of loop-top versus footpoints |
+| Q6 | What timescale does the memory have between pulses? | Dependence of the residual effect on the waiting time between pulses |
 
-The paired-counterfactual memory metric (Section 6.6) is kept as a **tool**: it explains where the bias comes from, but it is not the headline result.
+## 3. Hypotheses and predicted signatures
 
-### 1.3 Working assumption on geometry
-
-The pulses are provisionally assumed to hit **the same flux tube**. This is an operating hypothesis, not an observational result (Section 12). The comparison with independent filaments (E3) is a **test** of it: in E3 each pulse acts on a relaxed atmosphere and therefore should show neither memory bias nor a change of R_LF.
-
----
-
-## 2. Falsifiable hypotheses
-
-Each hypothesis has a quantitative prediction and a condition that would refute it. They are stated **before** any result is seen.
-
-| ID | Hypothesis (physical mechanism) | Prediction | Refuted if |
+| ID | Hypothesis | Prediction (pre-registered form) | Refuted if |
 |---|---|---|---|
-| **H0** | *Null.* The parameters inferred for pulse 2 with the standard model have the same bias as those of pulse 1: the atmospheric history does not affect the inference. | ΔB ≈ 0 for Ṅ, Ec and δ within the statistical and numerical uncertainty; ΔR_LF ≈ 0 | — (reference) |
-| **H1** | *Change of deposition regime.* After evaporation, the coronal column from apex to transition region reaches a significant fraction of the stopping column for part of the STIX electrons. | η_cor(2) > η_cor(1) by more than the numerical uncertainty (*proposed:* difference > 0.05); the density increase dominates over chromospheric compression when τ_w ≲ the drainage time | η_cor(2) − η_cor(1) < 0.05, or coronal column at t₂ < 10 % of N_stop(Ec) |
-| **H2** | *Inference bias.* The cold-thick-target fit reproduces (Ṅ, Ec, δ) worse for pulse 2 than for pulse 1. Candidate mechanisms: (i) stronger thermal emission from a denser, hotter plasma that invades the low non-thermal range and shifts Ec and δ; (ii) warm-target effects for E ≲ a few kT; (iii) different ionization of the target; (iv) mixing of loop-top and footpoint emission in an integrated spectrum. **The sign is not predicted a priori**; the simulation determines it. | \|ΔB\| exceeds the statistical uncertainty for the photon counts of the event and exceeds the baseline bias B₁ | \|ΔB\| within the statistical uncertainty: STIX inference is robust to memory (a valid negative result) |
-| **H3** | *Imaging signature.* R_LF increases in pulse 2 in the same tube and does not change for independent filaments. | ΔR_LF(E2) > 0 with d/σ > 3 in the synthetic STIX image; ΔR_LF(E3) ≈ 0 | ΔR_LF not significant, or the loop-top–footpoint separation is below the STIX resolution (not observable) |
-| **H4** | *Error budget of pulse-to-pulse variation.* In a real event, part of δ₂ − δ₁ and ΔR_LF is explained by the memory bias without a change of acceleration. | observed \|δ₂ − δ₁\| compatible with the predicted ΔB | observed \|δ₂ − δ₁\| ≫ ΔB: the variation is due to acceleration |
+| **H0** | No history dependence: the spectral shape depends only on the instantaneous beam and its acceleration. | Coefficient of log E_cum in the regression of E_b (or Δγ) is zero | — |
+| **H_M** | Target memory: the break tracks the cumulative energy deposited at the same footpoints. | β_cum > 0 at ≥ 3σ; Δγ confined to the band around E_b; resets with new footpoints; positive hysteresis | β_cum compatible with 0, or the same hardening appears in the high band, or no reset with new footpoints |
+| **H_R** | Return current: the break tracks the instantaneous flux density. | β_F > 0 at ≥ 3σ, β_cum ≈ 0, no hysteresis | β_F compatible with 0, or hysteresis present |
+| **H_A** | Acceleration: index changes at all energies, tied to amplitude or time. | Δγ_low ≈ Δγ_high; soft-hard-soft relation with flux; no footpoint-reset dependence | Δγ_high ≪ Δγ_low |
 
-**Negative results that are also results:** a negligible ΔB (STIX is robust), or a ΔR_LF that cannot be observed because of resolution (memory exists but STIX cannot see it).
+The hypotheses are not exclusive; the regression estimates the share of each. **A null result for H_M is a result:** an upper limit on spectral memory in bright flares, which tells analysts that pulse-by-pulse fits can ignore it. Thresholds marked *proposed* are fixed in the pre-registration (Section 6.7).
 
----
+## 4. Objectives
 
-## 3. General objective
+### O1 — Event selection and data (weeks 1–3)
+- **Method:** reproducible catalogue search (`scripts/stix_event_search.py`), visual check of the quick-look light curves (Figure 7), quick-look imaging previews, and observing geometry (distance, angle to Earth).
+- **Success:** two primary events plus a benchmark, each with ≥ 4 resolvable non-thermal pulses and ≳ 10⁵ counts per pulse in 25–84 keV. Science data (spectrogram and pixel data) are available for them, with attenuator and rate-control states documented.
 
-Quantify, with self-consistent RHD simulation and synthetic HXR photons, **the bias that atmospheric memory introduces in the electron parameters inferred with STIX for successive pulses**, determine whether it is visible in the images, and deliver a reproducible pipeline "STIX spectrum → atmosphere → synthetic photons → re-inference".
+### O2 — Pulse-resolved spectroscopy (weeks 3–10)
+- **Models per time bin:**
+  1. isothermal + cold thick target, the standard model;
+  2. isothermal + broken power law, giving E_b and Δγ;
+  3. isothermal + two-zone (nonuniform ionization), giving N*;
+  4. as a cross-check, warm target and return current where available.
+- **Instrument handling:** full instrument response, background, attenuator, and live time / pile-up handling (OSPEX or sunkit-spex; to be decided with the supervisor).
+- **Bins:** time bins adapted to counts. One per pulse phase (rise, peak, decay) where statistics allow; pulse-integrated otherwise.
+- **Success:** parameters with uncertainties for every bin; a goodness of fit recorded for every model; failed fits reported.
 
----
+### O3 — History and geometry regressors (weeks 6–11)
+- **Cumulative energy E_cum,** computed in two ways (both reported):
+  - model-independent: cumulative background-subtracted counts above 25 keV;
+  - model-based: cumulative thick-target power with a fixed reference cut-off. A cut-off fitted pulse by pulse would itself be biased by memory.
+- **Instantaneous flux density F:** power divided by the footpoint area from imaging.
+- **Footpoint displacement:** STIX imaging per pulse (CLEAN or MEM_GE), as a continuous covariate, with ribbon context from AIA when the event is visible from Earth.
+- **Success:** each bin has E_cum, F and footpoint displacement with uncertainties.
 
-## 4. Specific objectives
+### O4 — The discriminating test (weeks 10–14)
+- **Method:** mixed regression with a random effect per flare,
+  E_b (or Δγ) = β₀ + β_cum log E_cum + β_F log F + β_amp log(amplitude) + β_disp · displacement + ε.
+  Added to it: hysteresis at matched flux (Q2) and the two-band test (Q3).
+- **Success:** each β estimated with its uncertainty; the decision rules of Section 6.7 applied; the share of each process given per flare.
 
-### OE1 — Cheap prior gate: column test (no RADYN needed)
-- **Method:** with HYDRAD output for E2 and E5 (the ramped tables already run), compute at the onset of pulse 2 the mass column from the apex to the transition region and compare it with N_stop(E) for E = 10, 20, 50 keV.
-- **Success/abandon criterion:** if the coronal column is < 10 % of N_stop(Ec_STIX) with real parameters, H1 loses its basis and the project is reconsidered; if ≳ 50 %, continue.
-- **Inputs:** HYDRAD installed (not stored in the repository as an executable); synthetic parameters first, real ones when available.
-- **Outputs:** table N_cor(t)/N_stop(E) for E1, E2, E5.
-- **Caveat:** HYDRAD has no Fokker–Planck transport; the test measures only the column structure of the plasma, not the deposition.
-- **Stronger version (once FP is built, `docs/05_fp_solver_verification.md`):** run FP with the same beam on the relaxed and the pulse-2-onset snapshots and compare η_cor and the photon spectra directly; this replaces the column ratio as the decisive gate.
+### O5 — Forward modelling and injection–recovery (weeks 4–14, in parallel)
+- **Toy model:** add a return-current module to `src/toy_bias.py` (energy loss in the return-current region, Alaoui & Holman 2017) and the real STIX response.
+- **Calibration of the memory expectation:** with HYDRAD (and FP or RADYN if available), the expected change in E_b per unit E_cum for the event's energetics.
+- **Injection–recovery:** simulate each process separately and check that the regression of O4 recovers the right β with the event's counts and time bins. This is the **power test**, gate G2.
+- **Success:** the recovery matrix (true process → inferred β) with false-positive and false-negative rates.
 
-### OE2 — Select and characterize the event
-- **Criteria (Section 6.1):** at least two pulses separated by ~30–200 s, and a STIX image with resolvable loop top and footpoints.
-- **Outputs:** event dossier (D1).
-- **Success:** ≥ 2 resolvable pulses, estimated loop geometry, GOES/AIA/EUI coverage (IRIS/EIS/SPICE if possible), and a documented estimate of the area A with uncertainty.
+### O6 — Paper and pipeline (weeks 15–20)
+- Proof-of-concept paper with two to four flares, the regression results and an interpretation backed by the forward models.
+- Pipeline published with the paper.
 
-### OE3 — Infer the beam of each real pulse
-- Spectral fit with the full instrument response, thermal + thick target (and alternatives), covariances, A with uncertainty. This is also the **standard inference model** applied to the synthetic data in OE6, so that it is identical in both cases.
+## 5. Data and event selection (status 2026-10-03)
 
-### OE4 — Verified atmosphere and transport chain
-- **Atmosphere:** HYDRAD ramped-pulse runs with convergence and energy-balance checks (criteria in 6.8); RADYN+FP is an optional upgrade, requiring a verified compilation, a confirmed license and a reproduced F-CHROMA model. **Transport:** install FP (solarFP/FP), read its documentation (`doc/FP.pdf`), reproduce a published FP result, and verify that it accepts an externally supplied atmosphere (n, T, ionization) and returns the electron distribution, the heating rate Q(s) and the photon spectrum. **Consistency check:** compare FP's deposition profile with HYDRAD's Hawley–Fisher profile on the same snapshot; a large difference limits how far the HYDRAD-evolved atmosphere can be trusted for pulse 2.
+Procedure (`scripts/stix_event_search.py`):
+1. STIX flare list sorted by the 50–84 keV quick-look band.
+2. Particle-background entries rejected (a flare has more net counts at 15–25 keV than at 50–84 keV).
+3. Net 25–50 keV peak ≥ 2×10⁴ counts per 4 s.
+4. Quick-look curves of the best candidates and of three events known for their pulses inspected by eye (Figure 7). The automatic pulse counter is not reliable in large events, because of background-window choice and attenuator steps, so it is used only for ranking.
 
-### OE5 — Simulations E1, E2, E5, E3 with the real parameters
-- Experiment matrix (6.4) with the parameters of OE3. Output: n(s,t), T(s,t) and ionization snapshots at the onset of each pulse (HYDRAD; RADYN if available), which are the input of the FP transport in OE6.
+| Event | GOES / STIX class | SolO r [AU] | Angle to Earth | Peak net counts per 4 s, 25–50 / 50–84 keV | Net 25–84 keV counts in ±12 min | Non-thermal pulses (by eye) | Role |
+|---|---|---|---|---|---|---|---|
+| 2023-12-31 21:50 | X5.0 / X5 | 0.95 | 18° | 1.2×10⁴ / 5.0×10³ | 1.6×10⁶ | ≥ 6 over ~14 min | **Primary.** Earth view; also observed by ASO-S/HXI (triangulation paper exists) |
+| 2025-11-11 10:01 | X5.2 / X4 | 0.83 | 20° | 6.9×10⁴ / 2.7×10⁴ | 3.0×10⁶ | 4–5 over ~8 min | **Primary.** Earth view |
+| 2022-03-30 17:2x | X1.3 / — | 0.34 | 96° | 1.2×10⁴ / 1.4×10³ | 5.7×10⁵ | ~8–10 (quasi-periodic) | **Benchmark.** Pulse-resolved fits published (Collier et al. 2024); counts per pulse marginal |
+| 2024-10-03 12:12 | X9.1 / X3 | 0.30 | 85° | 1.4×10⁵ / 3.5×10⁴ | 7.3×10⁶ | 5–6 over ~6 min | **Stress case.** Highest counts; pile-up risk at 0.30 AU; the same flare is studied by another group (Litwicka et al., with a different question) |
+| 2024-05-14 16:47 | X8.8 / X8 | 0.74 | 168° | 3.1×10⁵ / 1.6×10⁵ | 1.2×10⁷ | 1 dominant + several smaller | Reserve; heavily studied |
+| 2024-10-09 01:35 | X1.8 / M3 | 0.35 | 54° | 2.9×10⁴ / 8.4×10³ | 2.8×10⁶ | 3–5 over ~10 min | Reserve; STIX class well below GOES (partial occultation to be checked) |
+| 2024-08-01 20:51 | — / X4 | 0.88 | 158° | 3.4×10⁴ / 1.1×10⁴ | 1.4×10⁶ | 3–5 | Reserve; far side for Earth |
+| 2021-10-28 15:30 | X1.0 / — | 0.80 | 4° | 5.1×10³ / 1.3×10³ | 3.0×10⁵ | main pulse + bumps; 12 rate-control changes | Soft-hard-harder angle: associated with the GLE73 proton event; counts marginal |
 
-### OE6 — Synthetic HXR photons and re-inference (**core of the project**)
-- **Method:** see 6.7. Compute the HXR photon spectrum (integrated and by region) of the beam propagating in the simulated atmosphere **with history**, add the thermal emission of the simulated plasma, apply the STIX response and noise, **fit with the same standard model as in OE3** and compare with the injected values.
-- **Outputs:** B₁, B₂, ΔB with uncertainties, decomposition by mechanism (SQ3), R_LF (D6, D7).
-- **Success:** bias quantified for Ṅ, Ec and δ with its statistical uncertainty and the uncertainty of the photon computation itself declared.
+Quick-look counts are compressed and summed over detectors. They rank events but are not spectroscopic data. "Pulses by eye" must be confirmed with the science data.
 
-### OE7 — Sweeps and sensitivity
-- Waiting time, energy ratio, Ec, δ, A (6.5). Map of ΔB in the (τ_w, E_prev/E_new) plane.
+![Figure 7](figures/fig7_stix_candidates.png)
 
-### OE8 — Comparison with the real event and detectability
-- Apply H3 and H4 to the real event: compare the observed δ₂ − δ₁ and R_LF with the prediction with memory (E2) and without it (E3). Decision rule in 6.8.
-
-### OE9 — Package and write
-- Reproducible pipeline and a proof-of-concept manuscript for one event.
-
----
-
-## 5. Expected results
-
-Open possibilities, not promises.
-
-| Scenario | What would be seen | Contribution |
-|---|---|---|
-| **A. Significant and visible bias** | Large ΔB in δ or Ec; observable ΔR_LF | Error budget for pulse-to-pulse variation in STIX; guidance against over-interpreting changes of δ |
-| **B. Significant bias, not visible in imaging** | Large ΔB, but loop-top–footpoint separation below STIX resolution | Lower bound on the error of isolated spectral inference |
-| **C. Negligible bias** | ΔB within the statistical error | STIX is robust to memory in that regime; justifies treating each pulse in isolation |
-| **D. Degeneracy** | The bias cannot be told apart from parameter variations allowed by STIX | Conditions under which memory and acceleration cannot be separated |
-
-All four are publishable if the regime is well delimited; **A** would be the most citable. No detection, novelty or specific journal is promised.
-
----
+*Figure 7.* STIX quick-look 25–50 keV (blue) and 50–84 keV (orange) light curves of the candidates (`scripts/plot_stix_candidates.py`). Gray lines mark attenuator and rate-control changes; an asterisk marks a class estimated by STIX for events occulted from Earth.
 
 ## 6. Methodology
 
-### 6.1 Event selection criteria
+### 6.1 Pulses and time bins
+Pulses are defined in the 25–84 keV science light curve. Overlapping pulses are not forced apart; the analysis works on time bins, with the pulse phase (rise, peak, decay) as a label. Bins are adaptive, with a minimum number of counts above 25 keV fixed in the pre-registration (*proposed:* 3×10⁴).
 
-| Criterion | Requirement | Type |
+### 6.2 Spectral models
+1. Standard: isothermal (or two thermal components when a superhot plasma is present, cf. the 2026 STIX superhot study) + cold thick target.
+2. Broken power law: E_b, γ_low, γ_high.
+3. Two-zone (nonuniform ionization): N*, δ, Ec, Ṅ.
+4. Cross-checks: warm target, and return current if an implementation is available. Otherwise the toy return-current module is used as the fitting model.
+
+Albedo is included or excluded consistently for all bins of a flare. Its effect is nearly constant for fixed footpoints and varies with heliocentric angle.
+
+### 6.3 Systematics that can imitate the signal
+| Systematic | Why it matters | Handling |
 |---|---|---|
-| HXR pulses | ≥ 2 pulses separated by 30–200 s; enough photons for a per-pulse fit | Mandatory |
-| Imaging | STIX reconstruction with separable loop top and footpoints (angular resolution of STIX, to be checked in Krucker et al. 2020, and Solar Orbiter–Sun distance at the event date) | **Mandatory** |
-| Spectra | Science data, no saturation; attenuator state identified | Mandatory |
-| Context | GOES and AIA | Mandatory |
-| Resolution in other diagnostics | EUI, IRIS, EIS or SPICE for the geometry test | Desirable |
-| Geometry | Visibility from Earth and Solar Orbiter; light-travel-time correction | Mandatory |
+| Pile-up and live time at high rates | Produces flux-correlated spurious hardening, which imitates return current or acceleration | Prefer events at larger distance and rates within the documented limits; compare attenuator and rate-control states; include pile-up in the injection–recovery |
+| Attenuator insertion | Changes the low-energy response abruptly | Fit only within constant states, or with the state-dependent response; exclude bins at transitions |
+| Thermal (superhot) emission | Raises the lower limit of the non-thermal fit to 25–30 keV; hides breaks below it | Two-temperature models; report the usable lower energy per bin; the memory test needs E_b ≳ 30 keV |
+| Background at high energies | Biases γ_high | Background from the dedicated detector; stop the fit where the source drops below a fixed signal-to-noise ratio |
+| Memory bias in Ṅ and Ec | Makes model-based E_cum circular | Use the count-based E_cum as the primary regressor |
 
-Candidates, with the criteria met and failed, are recorded. **The event is chosen for the observable (resolvable R_LF), not for convenience.**
+### 6.4 History and geometry regressors
+Section O3. E_cum is reset for an emitting region when its footpoint moves by more than a source size (*proposed:* one FWHM of the STIX point-spread function at the event distance).
 
-### 6.2 STIX data analysis
-1. Reduction: background, attenuator, pile-up, integration per pulse.
-2. Standard model: isothermal + cold thick target; warm-target variant as a contrast.
-3. Fit with the full response; posterior of θ = (Ṅ, Ec, δ, T, EM) per pulse and covariances.
-4. Cautions: STIX observes photons; the photon index is not the electron index; Ec may be weakly constrained; thermal/non-thermal degeneracy at low energy; albedo.
-5. Conversion: P = Ṅ·Ec·(δ−1)/(δ−2); F = P/A, propagating A and its uncertainty.
+### 6.5 Imaging
+Per pulse, in 20–30 and 30–60 keV:
+- footpoint centroids and separation;
+- loop-top fraction, where the dynamic range allows;
+- ribbon context from AIA 1600/1700 Å for events visible from Earth.
 
-### 6.3 Transport and RHD chain
+### 6.6 Forward modelling
+- **Toy model:** two-zone target plus return-current module, with the STIX response, used for the injection–recovery (O5).
+- **Expected size of the memory effect:** HYDRAD gives the growth of the column with deposited energy. Its present limit is NaN for F ≥ 2.5×10¹⁰ erg cm⁻² s⁻¹ (`docs/06`, Section 7).
+- **FP:** photons with warm target and return current, run on HYDRAD snapshots (`docs/05`).
+- **RADYN (optional):** recombination timescale of hydrogen after a pulse, which sets the between-pulse memory (Q6).
 
-| Stage | Physical requirement | Methodological consequence |
+### 6.7 Decision rules (to be pre-registered before the regression is run on real data)
+- **Memory detected:** β_cum > 0 at ≥ 3σ (*proposed*) for the count-based E_cum, robust to the model-based E_cum. It must also show either confinement (|Δγ_high| < |Δγ_low| / 2, *proposed*) or a footpoint reset.
+- **Return current favoured:** β_F > 0 at ≥ 3σ with β_cum compatible with 0 and no hysteresis.
+- **Acceleration favoured:** Δγ_low and Δγ_high equal within errors and β_cum, β_F compatible with 0.
+- **Multiple comparisons:** the number of tested coefficients is fixed in advance; Holm correction.
+- **All fits reported,** including failed and degenerate ones.
+
+## 7. Possible outcomes and what each means
+
+| Outcome | Meaning | Contribution |
 |---|---|---|
-| Transport | Fokker–Planck with collisions, warm target and return current | FP (solarFP/FP, Allred et al. 2020; Apache-2.0) states that it makes no cold- or warm-target assumption (general Rosenbluth potentials) and solves the return-current field self-consistently. The RADYN F-CHROMA distribution has the older 2015 FP (gas temperature in collisions, thermalization energy, optional return current). **FP input/output compatibility with an external atmosphere is to be verified** |
-| Coupling | Q(s,t) recomputed with the evolving atmosphere | A Q profile precomputed on a static atmosphere is not valid |
-| Atmosphere | 1D hydrodynamics with history; chromospheric NLTE only if Hα/IRIS diagnostics are added | HYDRAD (works, MIT license) for the evolution; RADYN+FP as an upgrade; FLARIX is not accessible. **Limitation:** HYDRAD heats with the analytic cold-target expression (Hawley & Fisher, normal incidence), which is the assumption under test; the FP-versus-HYDRAD deposition comparison in OE4 bounds this effect |
-| HYDRAD role | Analytic heating, optically thin radiation | Evolves the atmosphere for the column test (OE1) and the main runs; not used for deposition conclusions, which come from FP on its snapshots |
+| Memory detected | Later pulses see a target modified by earlier ones; part of the pulse-to-pulse hardening is a transport effect | A new diagnostic of evaporation and ionization from hard X-rays alone; a caveat for acceleration studies and for soft-hard-harder interpretations |
+| Return current favoured | Breaks are set by the instantaneous beam | An independent, time-domain test supporting return-current models |
+| Acceleration favoured | Spectral evolution reflects the injected electrons | Supports current acceleration interpretations; an upper limit on target effects |
+| Not decidable at STIX statistics | Degenerate within errors | The injection–recovery power curve tells what counts and cadence a future instrument needs |
 
-No-double-counting rule: the beam heating enters the energy equation only once.
+## 8. Deliverables
 
-### 6.4 Experiment matrix
-
-| ID | Set-up | Role |
+| ID | Deliverable | Status |
 |---|---|---|
-| E1 | One pulse in a relaxed atmosphere | Baseline bias B₁ and reference R_LF |
-| E2 | 2 or 3 pulses in the same tube, no restart | **Object of study:** B₂, ΔB, ΔR_LF |
-| E5 | Pulse 1 and relaxation, no pulse 2 | Counterfactual: separates residual emission from the response to pulse 2 |
-| E3a/E3b | Independent filaments (two area assignments) | Alternative hypothesis: ΔB and ΔR_LF should be ≈ 0 |
-| E4 | Continuous heating, equal energy | Control of the temporal distribution |
+| D1 | Event selection: procedure, catalogue query, candidate table, light curves | **Done (quick-look level)** (`scripts/stix_event_search.py`, Figure 7) |
+| D2 | Science-data reduction for the selected events | Pending |
+| D3 | Pulse-resolved fits with four models | Pending |
+| D4 | Regressors E_cum, F, displacement; imaging per pulse | Pending |
+| D5 | Regression and hysteresis tests | Pending |
+| D6 | Toy model with return-current module and real response; injection–recovery | Toy model **done without return current**; rest pending |
+| D7 | Calibration of the expected memory effect (HYDRAD/FP/RADYN) | **Partial** (`docs/06`) |
+| D8 | Paper and public pipeline | Pending |
 
-For pulse 3, E5′ (pulses 1 and 2 without pulse 3) is also needed. The input tables are already generated by `src/experiments.py` (synthetic parameters until OE3).
+Existing infrastructure kept from v1 and v2:
+- beam tables, the E1–E5 matrix and the RADYN `ftab` encoder;
+- the FP atmosphere reader and writer;
+- HYDRAD scripts and the toy model.
 
-### 6.5 Factorial design and uncertainty propagation
-Factors: number of pulses (1, 2, 3), waiting time τ_w (relative to the estimated drainage time), energy ratio previous/new pulse, Ec and δ within the STIX-allowed range, area A. One-factor-at-a-time from the central case, then a space-filling design over the STIX posterior. **Statistical uncertainty** (Poisson photon noise) is propagated with noise replicas for each simulation. The number of samples is decided after pilots. Compared cases have the same total energy and area unless the difference is the factor under study.
+All of it serves O5.
 
-### 6.6 Operational definition of memory (tool)
-Paired counterfactual: R_hist(τ) = X_with k − X_without k, with common history up to t_k (for k = 2, E2 − E5); R_rel(τ) = X_E1 − X₀; memory M = R_hist − R_rel, normalized with a norm fixed in advance. τ_rel is measured with the background heating term of RADYN declared. The **coronal column N_cor(t)** and η_cor(k) are added as memory variables relevant to the inference.
+## 9. Timeline (20 weeks) and gates
 
-### 6.7 Synthetic photons, re-inference and imaging (**core**)
-
-**Inject–recover pipeline:**
-1. *Truth:* (Ṅ, Ec, δ) of each pulse injected in E1 and E2.
-2. *Photons:* non-thermal bremsstrahlung of the beam propagating in the simulated atmosphere and thermal emission of the simulated plasma, by region (loop top, footpoints) and total.
-3. *Instrument:* STIX response, attenuator, cadence, Poisson noise.
-4. *Re-inference:* fit with **the same standard model and the same fitting procedure applied to the real data** (OE3).
-5. *Bias:* B = θ_fit − θ_true per pulse; ΔB = B₂ − B₁; B₁ measures the intrinsic bias of the method, already present for a relaxed pulse.
-
-**Two routes for step 2, to be checked in OE4:**
-- (a) **Main route:** run the open-source FP solver (solarFP/FP) on the n, T, ionization snapshots of the simulation to obtain the electron distribution, the deposition and the bremsstrahlung photons (**input/output compatibility not yet verified**);
-- (b) fallback: own post-processing transport (Coulomb collisions) on the same snapshots, validated against FP or a published result. It also enables the quick level-1 test with HYDRAD.
-
-**Imaging:** R_LF from the emission distribution along the loop, projected; evaluate whether STIX resolves it (resolution, dynamic range between sources, noise) and with what significance. A full STIX visibility simulation is applied only if the simple estimate shows signal.
-
-**Other diagnostics (secondary):** SXR/GOES and AIA with their responses; Fe XVIII only for T > ~6 MK; Hα/IRIS with adequate transfer (not equated with HYDRAD). **Neupert test** pulse by pulse as a complementary check, without readjusting the beam to force agreement.
-
-### 6.8 Decision rules (to be fixed before simulating)
-- **Significant bias:** |ΔB| > k·σ_stat with k = 3 (*proposed*), σ_stat from Poisson replicas for the photon counts of the event.
-- **Imaging:** d/σ > 3 for ΔR_LF (*proposed*).
-- **Numerical tolerances:** convergence in grid and time step; energy balance (< 1 % of injected energy, *proposed*); reproduction of F-CHROMA (differences in T and n < 10 %, *proposed*).
-- **Failed cases:** are recorded and reported.
-- **Pre-registration:** thresholds, norms and statistics are written in the repository **before** the production campaign.
-
-### 6.9 Verification, validation and uncertainty quantification
-
-| Level | What is checked | How |
+| Weeks | Work | Gate |
 |---|---|---|
-| Code | Tables, units, conservation | 50 existing tests (including the toy photon computation and fit); FP photons still to be tested |
-| Synthetic test with known answer | The fit recovers the parameters when the target is the one of the model (bias ≈ 0) | **Essential negative control** to validate OE6 |
-| Physical negative control | Two pulses with τ_w ≫ drainage time: ΔB → 0 | Detects numerical artifacts |
-| Numerical | Convergence and energy balance | Refinement |
-| Physical | Published case reproduced | OE4 |
-| Observational | Real data versus E2/E3 | OE8 |
+| 1–2 | ADS novelty search (K1); obtain science data for the primary events; set up the spectroscopy and imaging tools with the supervisor's group | **G1:** no prior paper doing the history test; data in hand |
+| 3–5 | Reduce the first primary event; first pulse-integrated fits; injection–recovery with the real response at the event's counts | **G2 (power test):** the predicted memory effect is ≥ 3σ detectable for at least one primary event |
+| 6–10 | Time-resolved fits (four models), imaging, regressors for both primaries; benchmark against the published 2022-03-30 fits | **G3:** systematics (pile-up, attenuator) controlled |
+| 10–14 | Regression, hysteresis and two-band tests; forward-model interpretation | — |
+| 15–20 | Paper draft, pipeline cleanup, supervisor review | — |
 
-### 6.10 Reproducibility and cluster use
-Record versions, compiler flags, initial atmosphere, beam, output cadence, wall time, CPU, memory and storage. Independent cases as separate jobs. A manifest per run; an end-to-end pipeline with one documented command.
-
----
-
-## 7. Deliverables
-
-| ID | Deliverable | Acceptance criterion | Status |
-|---|---|---|---|
-| D0 | Column test N_cor/N_stop (OE1) | Table for E1, E2, E5 | **Done** (`docs/06`, Section 7) |
-| D1 | Event dossier | Criteria 6.1, with resolvable R_LF | Pending |
-| D2 | Beam parameters per pulse with covariances | Uncertainties declared | Pending |
-| D3 | Table generator and experiment matrix | Energy conserved; tested (50 tests in the repository) | **Done (synthetic)** |
-| D4 | Solver verification report | Published case reproduced | Pending |
-| D5 | Simulation database | Schema with units | Pending |
-| D6 | Synthetic photons and recovery test | Negative control passed; B₁, B₂, ΔB | Pending |
-| D7 | R_LF and imaging detectability | Rule 6.8 | Pending |
-| D8 | Comparison with the real event | δ₂ − δ₁ and R_LF versus E2/E3 | Pending |
-| D9 | Reproducible pipeline | A third party reproduces the figures | Partial |
-| D10 | Proof-of-concept manuscript | Methods, uncertainties, limits | Pending |
-| D11 | Pulse-infrastructure report | `docs/02_pulse_experiments_report.html` | **Done** |
-
----
-
-## 8. Phases and decision gates
-
-| Phase | Content | Exit gate |
-|---|---|---|
-| F0 | Synthetic pulse infrastructure (done) | Tests pass |
-| **F0.5** | **Column test with HYDRAD (OE1)** | **N_cor/N_stop ≥ ~10 %; otherwise reconsider** |
-| F1 | Choose event for resolvable R_LF and fit STIX | D1, D2 |
-| F2 | Transport: install FP, reproduce a published result, verify the atmosphere input and photon output. In parallel and time-boxed (3 weeks): try RADYN compilation and the license question | FP verified; RADYN is optional |
-| F3 | Cluster cost pilots; synthetic-photon pilot with one case | Realistic budget; negative control passes |
-| F4 | Pre-register thresholds and design | Signed document |
-| F5 | E1/E2/E5/E3 campaign and sweeps | Documented cases |
-| F6 | Recovery test, imaging, real event | D6–D8 |
-| F7 | Writing and packaging | D9–D10 |
-
-F1 and F2 can proceed in parallel; F5 requires F1, F2 and F4. Durations are to be agreed with the supervisor.
-
----
-
-## 9. Risks and mitigations
+## 10. Risks and kill criteria
 
 | Risk | Effect | Mitigation |
 |---|---|---|
-| **Negligible bias** | Negative result | Publishable if the regime is delimited; the column test and the pilot anticipate it |
-| **Bias dominated by the already known thermal contamination** | Contribution perceived as incremental | Decompose the bias by mechanism (SQ3) and quantify it as a function of τ_w |
-| **Loop-top–footpoint separation below STIX resolution** | H3 not observable | Choose the event for R_LF; report scenario B |
-| FP does not accept an external atmosphere or does not output photons | Photons cannot be computed directly | Route (b); or couple through RADYN, where FP is native |
-| FP (2015) without an adequate warm target | Underestimates the central effect | Verify in OE4; document; request a newer version |
-| Source area not constrained by STIX | σ_tot dominated by A | Constrain it with images before simulating; treat it as a parameter |
-| Competing work (Litwicka et al.; Collier/Kennedy with STIX) | Loss of priority | Repeat the literature search before the manuscript; consult the supervisor |
-| RADYN license unconfirmed | Derived code cannot be published | RADYN is optional; confirm with the Oslo group before any use; do not redistribute |
-| Pulses at different locations | Same-tube hypothesis false | Evaluate position (OE2); treat the case as E3 |
+| K1 — prior work found in ADS (history-dependence test of breaks) | Loss of novelty | Pivot to the soft-hard-harder angle (Q3 across many flares), or to the memory timescale (Q6) |
+| K2 — the power test fails (G2) | The test cannot decide at STIX statistics | Stop the core; publish the power curve and event analysis as a short paper, or return to a modelling paper on the bias (v2) |
+| K3 — pile-up or attenuator systematics comparable to the effect | False signals | Restrict to lower-rate events and bins; event at 0.83–0.95 AU first |
+| Too few independent pulses (E_cum and F correlated in time) | Coefficients not separable | Use within-pulse hysteresis and several flares; pool with random effects |
+| Tools: the nonuniform-ionization and return-current models may not exist in the chosen fitting package | Delay | Use the toy forward model as fitting function with the real response |
+| Competition (STIX team, Glasgow and Wrocław groups) | Priority | Early discussion with the supervisor; focus on the discriminating design |
 
----
-
-## 10. Scope limits
-
-- Physical simulation; not a neural network.
-- A single event as a proof of concept.
-- 1D along one flux tube; no 3D MHD.
-- STIX alone does not determine geometry or area.
-- The computed bias depends on the chosen standard inference model and on the transport physics included; both must be declared with the result.
-- No detection, novelty or specific journal is promised.
-- No e-mails are sent, no results are published and no cluster allocation is consumed without prior agreement.
-
----
-
-## 11. Current state against the plan
-
-| Element | Status |
-|---|---|
-| Table generator and E1–E5 matrix | Done, **synthetic** |
-| Infrastructure report | Done |
-| Column test (OE1) | **Done with HYDRAD and a toy inject-reinfer model** (`docs/06_usefulness_tests.md`): base case 2.5× column growth (11 % of N_stop), negligible bias; short loop with a 30 s first pulse 65 % of N_stop, Δδ = −0.27 (3σ at 10⁵ counts); HYDRAD NaN for F ≥ 2.5×10¹⁰ |
-| Event, STIX fit, data | Not started |
-| RADYN (F-CHROMA) | Optional upgrade. Downloaded and read; **not compiled**; the distribution ships without a license file |
-| FP solver (solarFP/FP) | Open source (Apache-2.0); located 2026-10-03; **not installed, documentation not read; input/output compatibility not verified** |
-| HYDRAD with beam | Ramped tables (F ≈ 1.3×10¹⁰) run; an abrupt pulse gives NaN |
-| HXR photon computation and re-inference | Not implemented |
-
----
+## 11. Scope limits
+- A proof of concept on two to four flares; no population statistics in this paper.
+- Hard X-ray spectroscopy and imaging are the core; chromospheric line diagnostics are context only.
+- Simulations support the interpretation; they are not the result.
+- No detection, novelty or journal is promised.
 
 ## 12. Open questions for the supervisor
+1. Is the discriminating design (history versus instantaneous flux versus acceleration) of interest for the group, and does it overlap with ongoing work in the STIX team?
+2. Which spectroscopy tools does the group use for STIX (OSPEX or sunkit-spex; pile-up and live-time corrections; nonuniform-ionization and return-current models)?
+3. Are the 2023-12-31 and 2025-11-11 flares suitable, or does the group know better multi-pulse events?
+4. Which imaging algorithm and dynamic range are realistic for loop-top versus footpoint separation in these events?
+5. Is RADYN access worth pursuing for the recombination timescale, or should the modelling stay with HYDRAD, FP and the toy model?
 
-1. Is the **bias of STIX inference** in successive pulses of interest as the main contribution, rather than the atmospheric response itself?
-2. Which flares or STIX events would be good candidates (resolved loop top and footpoints; pulses separated by 30–200 s)?
-3. Does the group already have RADYN compiled or an electron-transport code? Is the standalone FP solver (solarFP/FP) coupled to an external atmosphere an accepted approach for the photon computation?
-4. Is the recovery test (inject, simulate, re-infer) acceptable as the definition of bias, and the paired counterfactual as the definition of memory?
-5. Which thresholds and tolerances are considered adequate?
-6. Are there known works or plans (e.g. from the Litwicka or Collier/Kennedy groups) on successive pulses with STIX?
-7. Should RHESSI events (finer angular resolution, larger archive) be used as an additional or alternative proof of concept to the STIX event?
-
----
-
-## 13. References
-
-Included in the repository (README and `docs/03_novelty_and_prior_work.md`):
-
-- Allred, Kowalski & Carlsson (2015), ApJ 809, 104.
-- Allred et al. (2020), ApJ 902, 16 (FP solver; code at https://github.com/solarFP/FP, Apache-2.0).
-- Carlsson et al. (2023), A&A 673, A150.
-- Kennedy et al. (2015), RADYN driven by HXR spectra.
-- Krucker et al. (2020), A&A 642, A15 (STIX).
-- Veronig & Brown (2004), coronal thick-target HXR sources, [Glasgow eprints](https://eprints.gla.ac.uk/1317) (only the abstract has been read; read the paper before citing).
-- Bradshaw & Mason (2003); Bradshaw & Cargill (2013); Reep et al. (2019) (HYDRAD).
-- Litwicka et al. (2025), ApJ 983, 155 (FLARIX; continuous versus pulsed filament heating with a preheated VAL-C); March 2026 conference abstract with STIX/IRIS/CHASE (distinguish abstract from paper).
-- Warm-target formulation (Kontar and collaborators): **to be verified**, which work to cite.
-
-Classical concepts are cited by their classical source (check the exact reference before citing): Brown (1971) and Emslie (1978) for the collisional thick target; Hawley & Fisher (1994) for the beam heating implemented in HYDRAD; Neupert (1968) for the relation between SXR and HXR.
-
-This list comes from a preliminary exploration, not from an exhaustive review; it must be updated when the manuscript is prepared. The novelty assessment is in `docs/03_novelty_and_prior_work.md` and **does not yet cover the current question** (see its Section 8).
-
----
+## 13. References (selection; to be completed and checked before citing)
+- Alaoui, M. & Holman, G. D. (2017), co-spatial return-current model of hard X-ray breaks (arXiv:1706.03897).
+- Alaoui, M., Krucker, S. & Saint-Hilaire, P. (2019), Statistical study of hard X-ray spectral breaks, Solar Physics 294, 105.
+- Allred, J. C. et al. (2020), FP: Fokker–Planck transport, ApJ 902, 16.
+- Bhattacharjee, Kontar & Luo (2025), warm-target time evolution with RHESSI and STIX, ApJ (arXiv:2506.08310).
+- Collier, H. et al. (2024), Localising pulsations in the hard X-ray and microwave emission of an X-class flare, A&A (arXiv:2402.10546).
+- Grigis, P. C. & Benz, A. O. (2004, 2005, 2008), soft-hard-soft and spectral hardening of large flares.
+- Kiplinger, A. L. (1995), soft-hard-harder and solar proton events, ApJ 453, 973.
+- Kontar, E. P., Brown, J. C. & McArthur, G. K. (2002), nonuniform target ionization, Solar Physics 210, 419.
+- Krucker, S. et al. (2020), STIX, A&A 642, A15.
+- Su, Y., Holman, G. D., Dennis, B. R. et al. (2009, 2011), ApJ 705, 1584; ApJ 731, 106.
+- Veronig, A. M. & Brown, J. C. (2004), coronal thick-target hard X-ray sources, ApJ 603, L117.
+- Prior-work reviews of v1 and v2: `docs/03_novelty_and_prior_work.md`.
 
 ## 14. History of the question
-
-- **v1:** *How does the atmosphere respond to the 2nd and 3rd pulse compared with a first pulse on a relaxed atmosphere?* A critical scientific review (2026-10-02) concluded that the qualitative outcome is nearly certain and already known (Kennedy et al. 2015), that the null hypothesis was a straw man, and that the interest had to come from magnitude and observability.
-- **v2 (this document):** the focus is the **bias of STIX inference** and its imprint on the image, with atmospheric memory as the mechanism. All infrastructure is kept (tables, E1–E5, RADYN ftab encoder).
+- **v1 (2026-10-02):** how does the atmosphere respond to the second and third pulse? Dropped: the qualitative answer is known (Kennedy et al. 2015).
+- **v2 (2026-10-02):** how much does atmospheric memory bias the standard STIX fit? Tested on 2026-10-03 (`docs/06`). The effect is real, but conditional and known in mechanism; as a stand-alone paper it would be a methods note. It is kept as the forward-modelling component of v3.
+- **v3 (2026-10-03, this document):** use the time dependence of the spectra to discriminate target memory, return current and acceleration.

@@ -1,31 +1,39 @@
-# STIX → RHD: Bias of STIX Electron Inference in Successive Pulses
+# Does the Flaring Chromosphere Remember? Target Memory, Return Current or Acceleration in Successive STIX Hard X-ray Pulses
 
 **Author:** Carlos Alberto Martínez Sibaja ([@carlmarx17](https://github.com/carlmarx17))
-**Status:** research proposal and preparatory infrastructure. No physical result has been produced yet; every beam parameter in this repository is synthetic.
+**Status:** research proposal, version 3 (2026-10-03), with preparatory infrastructure, executable usefulness tests and a reproducible event search. No STIX science data have been analysed yet.
 
 ## What is proposed
 
-The electron parameters of a flare (rate Ṅ, low-energy cut-off Ec, spectral index δ) are inferred from Solar Orbiter/STIX hard X-ray (HXR) spectra with a standard model: an isothermal component plus a cold, collisionally thick target. That model is reasonable for a first pulse. A second or third pulse arrives in an atmosphere that the first pulse has already evaporated into the corona and heated, so the target is no longer the one the model assumes.
+When a flare produces several hard X-ray pulses, the spectrum can change from one pulse to the next for three different physical reasons:
 
-> **Research question.** How much does the atmospheric memory of the previous pulse bias the electron parameters (Ṅ, Ec, δ) inferred with STIX for a second or third pulse, and is it visible in STIX images as a change in the loop-top / footpoint emission ratio?
+| Process | Fingerprint in time |
+|---|---|
+| **Target memory**: earlier pulses ionize and evaporate the chromosphere, so later electrons cross a larger ionized column (nonuniform ionization) | The spectral break moves up with the **energy already deposited** at the same footpoints. Hardening is confined near the break. It resets when **new footpoints** light up. Hysteresis at equal flux |
+| **Return current**: ohmic losses set by the instantaneous beam flux | The break follows the **instantaneous flux**; no hysteresis |
+| **Acceleration**: the injected spectrum itself changes (soft-hard-soft, soft-hard-harder) | The index changes **at all energies**, tied to amplitude or time |
+
+> **Research question.** In bright flares with several hard X-ray pulses, does the X-ray spectrum depend on the energy previously deposited at the same footpoints, on the instantaneous beam flux, or on neither, and how much of the observed pulse-to-pulse spectral evolution, including progressive hardening, does each explain?
+
+Each process has been studied before, but separately and mostly at the X-ray peak. This project uses the **time dependence** of the spectra (cumulative versus instantaneous), together with **footpoint novelty from STIX imaging**, to discriminate them. Full design: `docs/00_objectives_and_methodology.md`.
 
 ## What will be done
 
-An **inject–simulate–reinfer** test:
+1. Select bright multi-pulse flares reproducibly from the STIX data-center catalogue (`scripts/stix_event_search.py`; Figure 7 in `docs/00`). Primary events: X5.0 on 2023-12-31 and X5.2 on 2025-11-11, both seen from near the Earth direction. Benchmark: X1.3 on 2022-03-30. Stress case: X9.1 on 2024-10-03.
+2. Fit STIX spectra in time bins with four models: standard; broken power law; two-zone nonuniform ionization; and, as cross-checks, warm target or return current.
+3. Build per bin the cumulative deposited energy, the instantaneous flux density and the footpoint displacement from imaging.
+4. Regress the break and the curvature on these quantities, test hysteresis at matched flux, and compare the hardening in a low and a high energy band.
+5. Use forward models (two-zone toy model with a return-current module and the real STIX response; HYDRAD, FP and optionally RADYN) for injection–recovery and for the expected size of each effect.
 
-1. Inject known electron pulses into a 1D hydrodynamic loop that keeps its history between pulses (HYDRAD first; RADYN as an optional upgrade).
-2. Run the open-source Fokker–Planck solver FP (Allred et al. 2020; warm target and return current) on the simulated atmosphere snapshots to obtain the electron transport and the synthetic HXR photons (non-thermal bremsstrahlung plus thermal emission of the plasma), by region and in total.
-3. Apply the STIX response and Poisson noise.
-4. Fit with the same standard model used for real data and compare with the injected truth. The memory-induced bias is ΔB = B₂ − B₁ (pulse 2 minus pulse 1).
-5. Repeat the analysis on one real STIX event with at least two pulses and a resolved loop top and footpoints.
+A null result for target memory is a result: an upper limit on spectral memory in bright flares.
 
-The hydrodynamic memory is measured with a paired counterfactual (runs with and without a given pulse, sharing the history up to that pulse). Independent filaments, where each pulse hits a relaxed tube, are the alternative hypothesis and should show no memory bias, so the same-tube versus independent-filament comparison is a test rather than an appendix.
+## Decision gates
 
-Possible outcomes, all of them results: a significant and visible bias; a significant bias that STIX imaging cannot resolve; a negligible bias (STIX inference is robust to memory); or a bias degenerate with the allowed parameter uncertainty.
+- **G1:** no prior paper doing this test (ADS search), and the science data obtained.
+- **G2 (power test):** injection–recovery with the real STIX response shows that the memory effect predicted for the event is detectable at ≥ 3σ.
+- **G3:** pile-up and attenuator systematics are under control.
 
-## First task and decision gate
-
-Before any campaign, compare the coronal mass column at the onset of pulse 2 with the electron stopping column (OE1 in `docs/00_objectives_and_methodology.md`). If it is below about 10 %, the physical basis of the idea is weak and the project is reconsidered. This test uses HYDRAD, which already runs, and does not need RADYN.
+The earlier gate (coronal column test) and the toy inject-reinfer test are done (`docs/06_usefulness_tests.md`).
 
 ## What exists and what does not
 
@@ -33,17 +41,19 @@ Before any campaign, compare the coronal mass column at the onset of pulse 2 wit
 |---|---|
 | Beam-pulse table generator, five-experiment matrix (E1–E5), RADYN `ftab.dat` encoder | Done, synthetic parameters; 50 tests in total |
 | Infrastructure report | Done (`docs/02_pulse_experiments_report.html`) |
-| Prior-work review | Done for the previous question; the current question is assessed only preliminarily (`docs/03_novelty_and_prior_work.md`) |
+| Prior-work review | Done for v1 and v2 (`docs/03_novelty_and_prior_work.md`); v3 checked by web search (`docs/00`, Sections 0–1; `docs/03`, Section 9); ADS search pending (gate G1) |
 | Column test (gate) and toy inject-reinfer test | Done (`docs/06_usefulness_tests.md`): the bias is material only for energetic first pulses in short loops and ≳10⁵ counts per pulse; the repository base case gives a negligible bias; HYDRAD fails (NaN) for F ≥ 2.5×10¹⁰ |
-| STIX event selection and spectral fits | Not started |
-| FP solver (solarFP/FP, Apache-2.0): install, read documentation, verify that it accepts an external atmosphere and outputs photons | Not started |
+| Event search in the STIX catalogue (quick-look level) | Done: candidate table and light curves in `docs/00`, Section 5; science data not yet retrieved |
+| Pulse-resolved spectroscopy, regressors, discriminating test (v3 core) | Not started |
+| FP solver (solarFP/FP, Apache-2.0) | Manual and source read; atmosphere format decoded and reproduced byte-for-byte; Python parts run; Fortran solver not compiled (`docs/05`) |
 | RADYN (optional upgrade): compilation, license, verification | Not started (distribution read; no Fortran compiler or CDF library installed; the distribution ships without a license file) |
-| Synthetic photons and re-inference | Not implemented |
-| HYDRAD with a beam | Ramped pulse tables (F ≈ 1.3×10¹⁰ erg cm⁻² s⁻¹) run cleanly; a constant 5×10¹⁰ beam and an abruptly switched-off 10¹⁰ beam end in NaN (undiagnosed) |
+| Synthetic photons and re-inference | Done in the two-zone toy model (`src/toy_bias.py`); return-current module and real STIX response pending; FP photons pending |
+| HYDRAD with a beam | Ramped pulse tables at F ≈ 1.3×10¹⁰ erg cm⁻² s⁻¹ with 10 s pulses run cleanly; F ≥ 2.5×10¹⁰ (even ramped) and a 30 s pulse in a 60 Mm loop end in NaN (undiagnosed; `docs/06`, Section 7) |
 
 ## Documentation
 
-- `docs/00_objectives_and_methodology.md`: research question, hypotheses, specific objectives, methodology, decision rules, phases, risks and open questions.
+- `docs/00_objectives_and_methodology.md`: research question (v3), hypotheses, objectives, event selection, methodology, decision rules, timeline, risks and open questions.
+- `docs/archive/00_objectives_v2_inference_bias.md`: the previous (v2) design, kept for reference.
 - `docs/01_hydrad_code.md`: first reading of the HYDRAD beam-heating path.
 - `docs/02_pulse_experiments_report.html`: report on the pulse infrastructure (synthetic case).
 - `docs/03_novelty_and_prior_work.md`: prior work and novelty assessment.
@@ -52,14 +62,14 @@ Before any campaign, compare the coronal mass column at the onset of pulse 2 wit
 - `docs/05_fp_solver_verification.md`: what the manual and source of the open-source FP solver say, and how they fit the project (documented, not yet tested).
 - `skills/stix-rhd-memory/SKILL.md`: working guidance for this project.
 
-This is a physical simulation, not a neural network. The atmosphere comes from a 1D hydrodynamic code (HYDRAD, with RADYN+FP as an optional upgrade) and the electron transport and photons from the FP solver; the two are decoupled, so no single code is a bottleneck. HYDRAD heats with an analytic cold-target expression, which is the assumption under test; the comparison of FP's deposition with HYDRAD's on the same snapshot bounds that effect (`docs/00_objectives_and_methodology.md`, OE4). HYDRAD is not equivalent to RADYN+FP.
+The core of the project is observational (STIX spectroscopy and imaging); simulations support the interpretation and the power test. No neural network is involved. In the forward modelling, the atmosphere comes from a 1D hydrodynamic code (HYDRAD, with RADYN+FP as an optional upgrade) and the electron transport and photons from the two-zone toy model or the FP solver. HYDRAD heats with an analytic cold-target expression; the comparison of FP's deposition with HYDRAD's on the same snapshot bounds that effect. HYDRAD is not equivalent to RADYN+FP.
 
-## Experiment matrix
+## Simulation experiment matrix (forward-modelling support)
 
 | ID | Set-up | Role |
 |---|---|---|
 | E1 | One pulse in a relaxed atmosphere | Baseline response and bias |
-| E2 | Two or three pulses in the same, continuously evolving tube | Object of study |
+| E2 | Two or three pulses in the same, continuously evolving tube | Main simulated case |
 | E5 | First pulse followed by relaxation, no later pulse | Counterfactual that separates residual emission from the new response |
 | E3a/E3b | Pulses in independent filaments, two area assignments | Alternative hypothesis |
 | E4 | Continuous heating with comparable total energy | Control for the temporal distribution |
@@ -74,7 +84,8 @@ The simulation must retain temperature, density, velocity and atomic populations
 - `src/experiments.py`: the experiment matrix with comparable energy (synthetic base case, not STIX fits).
 - `src/make_figures.py`, `src/make_report.py`: figures and the infrastructure report.
 - `src/fp_atmosphere.py`: reader/writer of the FP solver's atmosphere file (validated byte-for-byte against FP's examples).
-- `src/toy_bias.py`: toy inject-reinfer model (two-zone target, Haug bremsstrahlung, STIX-like response, Cash fits); `scripts/`: the sweep, the HYDRAD column test and its variants, and the figure.
+- `src/toy_bias.py`: toy inject-reinfer model (two-zone target, Haug bremsstrahlung, STIX-like response, Cash fits).
+- `scripts/`: the toy sweep and its figure, the HYDRAD column test and its variants, the STIX catalogue search (`stix_event_search.py`) and the candidate light curves (`plot_stix_candidates.py`).
 - `tests/`: 50 pytest checks of the above.
 - `results/`: generated tables and (later) fits and diagnostics, git-ignored.
 
@@ -88,19 +99,19 @@ Create the local environment and run the checks with:
 
 ## Data and analysis pipeline
 
-    STIX science spectrum
+    STIX catalogue query + quick-look light curves  →  event selection
             ↓
-    response-aware thermal + non-thermal fit  (standard model)
+    STIX science data (spectrograms, pixel data), response, background, attenuator / live time
             ↓
-    Ec(t), δ(t), electron rate or energy flux, uncertainties
+    time-binned fits: standard | broken power law | two-zone (nonuniform ionization) | warm target / return current
             ↓
-    Fokker–Planck transport and RHD evolution (history retained)
+    per bin: break energy, low- and high-band indices, cumulative deposited energy,
+             instantaneous flux density (imaging area), footpoint displacement (imaging)
             ↓
-    T(s,t), density(s,t), velocity(s,t), populations(s,t), Q(s,t)
-            ↓
-    synthetic HXR photons + STIX response and noise
-            ↓
-    re-inference with the same standard model  →  bias ΔB, loop-top/footpoint ratio
+    regression + hysteresis + two-band tests  →  share of target memory, return current, acceleration
+            ↑
+    forward models: two-zone toy (+ return current) with the STIX response; HYDRAD / FP / RADYN
+    for the expected size of each effect; injection–recovery for the power of the test
 
 ## Reproducibility and cluster work
 

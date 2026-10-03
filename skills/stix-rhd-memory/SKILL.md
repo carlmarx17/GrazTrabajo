@@ -1,15 +1,15 @@
 ---
 name: stix-rhd-memory
-description: Guide the design, simulations and writing of the STIX/RHD paper on how the atmospheric memory of a previous electron pulse biases the electron parameters inferred from STIX for a second or third pulse. Use when working on this project, its RADYN/FP experiments, its synthetic photons and re-inference, or its reproducible pipeline.
+description: Guide the design, analysis and writing of the STIX paper that separates target memory, return current and acceleration in successive flare hard X-ray pulses, with forward modelling support (toy two-zone model, HYDRAD, FP, RADYN). Use when working on this project, its RADYN/FP experiments, its synthetic photons and re-inference, or its reproducible pipeline.
 ---
 
-# STIX/RHD: bias of STIX inference from atmospheric memory
+# STIX: target memory, return current or acceleration in successive hard X-ray pulses
 
 Author of the project: Carlos Alberto Martínez Sibaja.
 
 ## Purpose and project decisions
 
-The final product is a scientific paper and a reproducible pipeline connecting STIX spectra to the atmospheric response to successive electron injections, and from that response back to the electron parameters that STIX would infer. The interest is the second or third pulse acting on an atmosphere modified by the previous ones. The project is a physical simulation, not neural-network training. Cluster resources and quota have not been specified.
+The final product is a scientific paper and a reproducible pipeline. The pipeline tests, with STIX spectroscopy and imaging of bright multi-pulse flares, whether later hard X-ray pulses see a target modified by earlier ones, and separates that target memory from return-current losses and from acceleration changes. Forward modelling (two-zone toy model, HYDRAD, FP, RADYN) supports the interpretation and the power test. The project is physical data analysis and simulation, not neural-network training. Cluster resources and quota have not been specified.
 
 Working hypothesis: the pulses hit the **same flux tube**. This is probable but is an operating hypothesis, to be confirmed with the supervisor. Do not treat it as observational evidence.
 
@@ -17,13 +17,15 @@ Decision (2026-10-03, replaces the single-RADYN decision of 2026-10-02): the wor
 
 ## Question and the result to reach
 
-Question (v2, 2026-10-02): how much does the atmospheric memory of the previous pulse bias the electron parameters (Ṅ, Ec, δ) that STIX infers for the 2nd or 3rd pulse, and is it visible in images as a change of the loop-top / footpoint emission ratio R_LF? The earlier question (how much memory exists) was dropped: its qualitative answer is nearly certain and already known (Kennedy 2015); see `docs/00_objectives_and_methodology.md`, Section 14.
+Question (v3, 2026-10-03; supersedes v2): in bright flares with several hard X-ray pulses, does the X-ray spectrum depend on the energy previously deposited at the same footpoints (target memory: nonuniform ionization and evaporation), on the instantaneous beam flux (return current), or on neither (acceleration: soft-hard-soft, soft-hard-harder)? How much of the pulse-to-pulse spectral evolution does each explain? Full design in `docs/00_objectives_and_methodology.md`; v2 is archived in `docs/archive/`.
 
-Method: recovery test. Inject known pulses into an RHD atmosphere that keeps its history, compute synthetic HXR photons (plus thermal emission), apply the STIX response and noise, fit with the same standard model applied to the real data, and compare with what was injected. ΔB = B₂ − B₁ (bias of pulse 2 minus that of pulse 1, which measures the intrinsic bias of the method). Hydrodynamic memory (paired counterfactual, `docs/00` Section 6.6) is the mechanism, not the result. The sign of the bias is not predicted a priori. Same tube (E2) versus independent filaments (E3) is a test: E3 must show no bias and no change of R_LF.
+Core method: STIX time-binned spectroscopy with four models (standard; broken power law; two-zone nonuniform ionization; warm target or return current), plus per-bin regressors: cumulative deposited energy (count-based first, because model-based estimates are biased by memory), instantaneous flux density (imaging area) and footpoint displacement (imaging). Then regression with a random effect per flare, hysteresis at matched flux, and a low-band versus high-band hardening test. Decision rules are pre-registered (Section 6.7 of `docs/00`).
 
-Status 2026-10-03: the column test and a toy inject-reinfer model have been run (`docs/06_usefulness_tests.md`). The bias is material only for energetic first pulses in short loops and bright pulses (≳10⁵ counts per pulse); the repository base case gives a negligible bias; HYDRAD fails for F ≥ 2.5×10¹⁰. The next decisive test is on real data: fit successive bright STIX pulses with the standard and the nonuniform-ionization models. Original wording of the gate: compare the coronal column from apex to transition region at the onset of pulse 2 with the stopping column at the STIX Ec (`docs/00`, OE1, with HYDRAD). Below ~10 % → reconsider the project. Mandatory negative controls: (i) when the target is the one of the model, the fit recovers the parameters; (ii) with τ_w ≫ drainage time, ΔB → 0. The event is chosen for having resolvable loop top and footpoints in STIX, not for convenience.
+Forward models support, not replace, the observations: the two-zone toy model (`src/toy_bias.py`, return-current module still to be added, real STIX response to be used), HYDRAD, FP and optionally RADYN, for the expected size of each effect and for injection–recovery (the power test, gate G2).
 
-The mechanism, the regime and the observables are sought. A negligible bias or a signature that STIX cannot resolve are also results. Do not promise detection, novelty, editorial acceptance or a specific journal. Detail in `docs/00_objectives_and_methodology.md`.
+Events (from the reproducible catalogue search `scripts/stix_event_search.py`): primary X5.0 2023-12-31 and X5.2 2025-11-11 (seen from near the Earth direction); benchmark X1.3 2022-03-30 (published pulse-resolved fits); stress case X9.1 2024-10-03 (pile-up risk; studied by another group). Quick-look counts rank events; they are not spectroscopic data.
+
+Systematics that can imitate the signal: pile-up and live time (flux-correlated hardening), attenuator steps, superhot thermal emission hiding breaks below ~25–30 keV, high-energy background. A null result for target memory is a result (an upper limit). Do not promise detection, novelty, acceptance or a journal.
 
 ## Scientific objectives
 
