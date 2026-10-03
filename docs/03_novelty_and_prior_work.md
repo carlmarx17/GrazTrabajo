@@ -110,3 +110,35 @@ Pending before committing months:
 3. Confirm that RADYN+FP of the F-CHROMA version includes a warm target and what it gives as electron-flux output (`docs/04_radyn_access.md`).
 4. Ask the supervisor and repeat the search before the manuscript.
 5. **FP solver (added 2026-10-03):** Allred et al. (2020) released the FP solver as open source ([solarFP/FP](https://github.com/solarFP/FP), Apache-2.0; Fortran/MPI with Python and IDL wrappers). It states that it makes no cold- or warm-target assumption and solves the return current self-consistently, and it can be used as a plug-in to OSPEX for forward fitting. Check whether FP-based forward modelling already quantifies the bias of the cold-target fit in dense or hot targets (the question here is the pulse-to-pulse case with a history-dependent atmosphere).
+
+## 9. Addendum (2026-10-03): prior work for the v3 question
+
+The project question is now v3 (`docs/00`): separating target memory, return current and acceleration through the time dependence of pulse-resolved STIX spectra. Web searches on 2026-10-03 found the following closest work. ADS has still not been queried.
+
+| Work | What it does | Relation to v3 |
+|---|---|---|
+| Kontar, Brown & McArthur (2002) | Nonuniform target ionization: yield up to ×2.8 higher in neutral gas; upward and downward knees whose energy depends on the transition-zone column | Mechanism of target memory |
+| Su, Holman, Dennis et al. (2009), ApJ 705, 1584 | Nonuniform ionization cannot produce Δγ above ~0.2–0.7 | Limits what memory can explain |
+| Su, Holman & Dennis (2011), ApJ 731, 106 | One RHESSI X1.2 flare: both breaks (~49 and ~134 keV) at the peak; their time evolution agrees with nonuniform ionization | **Closest prior work.** Time evolution in one flare, without a test against instantaneous flux or footpoint novelty |
+| Alaoui & Holman (2017) | Co-spatial return current explains strong breaks in 19 RHESSI flares | Mechanism R |
+| Alaoui, Krucker & Saint-Hilaire (2019), Solar Physics 294, 105 | 65 RHESSI flares above 150 keV; most show a downward break near 55 keV with Δγ ≈ 0.3–1; studied at the peak | Statistics of breaks; no time dependence |
+| Grigis & Benz (2004, 2005, 2008); Kiplinger (1995) | Soft-hard-soft within peaks, with different rise and decay branches; soft-hard-harder across peaks, associated with proton events; interpreted as acceleration and trapping | Mechanism A; a target-memory contribution to progressive hardening has not been tested |
+| Bhattacharjee, Kontar & Luo (2025), ApJ (arXiv:2506.08310) | Warm-target fits in time for RHESSI and STIX flares: cut-off high-low-high around bursts, electron rate low-high-low | Time evolution with a target-aware model, interpreted as acceleration; no test of history dependence |
+| Collier et al. (2024), A&A (arXiv:2402.10546) | STIX + EOVSA pulsations of the X1.3 flare of 2022-03-30: images per peak, high-cadence spectral fits | Data benchmark for v3 |
+| STIX superhot study (A&A 2026, arXiv:2511.09108) | Superhot (> 30 MK) components in 32 large STIX flares | Systematic: thermal emission can hide breaks below ~25–30 keV |
+| Triangulation of the X5 flare of 2023-12-31 with ASO-S/HXI and STIX | Three distinct hard X-ray peaks; 3D source positions | Primary event already studied for geometry, not for spectral memory |
+
+**Preliminary verdict:** the mechanisms are known. The **discriminating design** found no precedent in these searches:
+- cumulative energy versus instantaneous flux as regressors for the break;
+- hysteresis at matched flux;
+- confinement of the hardening to the band around the break;
+- reset with new footpoints.
+
+Novelty is plausible but **not yet confirmed**.
+
+ADS queries to run (gate G1):
+1. `abs:("spectral break" OR "nonuniform ionization" OR "return current") AND abs:("time evolution" OR "hysteresis" OR "successive" OR "cumulative") AND abs:("hard X-ray")`
+2. `abs:"soft-hard-harder" AND abs:("ionization" OR "target" OR "transport")`
+3. `abs:"STIX" AND abs:("spectral break" OR "broken power law" OR "return current" OR "nonuniform ionization")`
+4. Citations of Su et al. 2011 and Alaoui et al. 2019.
+

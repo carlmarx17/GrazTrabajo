@@ -130,6 +130,8 @@ The E2 and E5 runs are identical up to the pulse-2 ramp (difference 0), as the s
 
 ## 8. What this means, and the next decisive tests
 
+**Update 2026-10-03:** these results led to the v3 design of `docs/00`. The bias studied here becomes the forward-modelling component of a test that separates target memory, return current and acceleration with real STIX data. The real-data test of item 1 below is now objective O2–O4 there, with the events of `docs/00`, Section 5.
+
 - **The usefulness is conditional, not refuted.** The bias is large enough to matter (Δδ ≈ −0.2 to −0.3, apparent Ṅ drop up to ×2) only for energetic first pulses in short loops, observed with ~10⁵ counts per pulse or more.
 - **Making the code survive realistic fluxes is now the bottleneck,** more than the physics. The options are fixing HYDRAD, using RADYN+FP, or accepting the toy for the parameter map.
 - **The physics is the known nonuniform-ionization effect.** The contribution would be its pulse-to-pulse consequence and the STIX detectability, or turning it into a measurement of the evaporated column. The novelty search must include Su et al. (2009, 2011) and Kontar et al. (2002, 2003).

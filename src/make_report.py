@@ -91,9 +91,8 @@ with comparable energy. <b>It contains no observational results and no physical 
 illustrative values, not STIX fits; no event has been selected. It covers only the input side: the photon computation, the STIX response and the re-inference described below are not implemented yet.</div>
 
 <h2>1. What the project asks</h2>
-<p><b>How much does the atmospheric memory of the previous pulse bias the electron parameters (Ṅ, Ec, δ) inferred with STIX for a second or third pulse, and is it visible in STIX images as a change in the loop-top / footpoint ratio?</b>
-The method injects known pulses into an RHD atmosphere that keeps its history, computes the synthetic hard X-ray photons, fits them with the standard STIX model and compares with the injected truth.
-The hydrodynamic memory (deposition depth, temperature, density, velocity, ionization, energy partition) is the mechanism. As a test of the geometry, reheating of the same tube is contrasted with <b>independent filaments</b> compatible with the same hard X-ray signal.
+<p><b>In bright flares with several hard X-ray pulses, does the X-ray spectrum depend on the energy previously deposited at the same footpoints (target memory), on the instantaneous beam flux (return current), or on neither (acceleration), and how much of the pulse-to-pulse spectral evolution does each explain?</b>
+The core of the project is STIX spectroscopy and imaging of real flares. The pulse infrastructure described in this report serves the forward modelling: the expected size of each effect and the injection–recovery tests.
 The full design (hypotheses, objectives, methods and deliverables) is in <code>docs/00_objectives_and_methodology.md</code>.</p>
 %(fig0)s
 <p>Working hypothesis (still to be confirmed with the supervisor): the pulses hit the same flux tube. It is a hypothesis, not evidence.
