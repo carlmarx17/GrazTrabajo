@@ -142,3 +142,38 @@ ADS queries to run (gate G1):
 3. `abs:"STIX" AND abs:("spectral break" OR "broken power law" OR "return current" OR "nonuniform ionization")`
 4. Citations of Su et al. 2011 and Alaoui et al. 2019.
 
+
+## 10. Addendum (2026-10-04): prior work for the v4 question
+
+The project question is now v4 (`docs/00`): do successive hard X-ray pulses re-use the loops filled by earlier pulses, measured with the evaporated plasma as a tracer (predicted versus observed loop-top/footpoint ratio, conservative bound on the re-use fraction φ)?
+
+**Search method.** Forward citations in OpenAlex of five seed papers (Su et al. 2011, Su et al. 2009, Liu et al. 2006, Veronig & Brown 2004 and Kong et al. 2022, the last one picked up by a search meant for Alaoui et al. 2019), about 375 citing works screened by title. About 20 abstracts were read. Targeted web and arXiv searches were run on 2026-10-04. ADS and Google Scholar were not used. Two works below were classified from their titles only, as marked.
+
+| Work | What it does | Relation to v4 | Overlap |
+|---|---|---|---|
+| Liu, Liu, Jiang & Petrosian 2006, ApJ 649, 1124 | RHESSI M1.7: HXR sources rise from the footpoints and merge into a loop-top source as evaporation fills the loop | The qualitative behaviour expected under re-use, in one flare | High |
+| Ning & Cao 2010, ApJ 717, 1232; Ning 2011, Sol. Phys. | Footpoints converging into the loop top in a Neupert-type flare; speeds of merging sources | Same, qualitative | High |
+| Veronig & Brown 2004, ApJ 603, L117 | Coronal thick target in dense loops | The physics used by the tracer | High (physics) |
+| Simões & Kontar 2013, A&A 551, A135 | Loop-top electron rates 1.7–8 times the footpoint rates, interpreted as trapping | An extra loop-top source that the bound must tolerate (it does) | High (observable) |
+| Dennis et al. 2018, ApJ | Coronal HXR sources revisited, 13 flares | Systematics of loop-top sources | Medium |
+| Fleishman et al. 2016, ApJ 816, 62 | 3D validation of the coronal thick-target model | Physics | Medium |
+| Liu, Han & Fletcher 2010, ApJ 709, 58 | Model of elementary energy-release events in single loops with evaporation | Theory of single-loop events | Medium |
+| Volpara et al. 2024, A&A | Regularized imaging spectroscopy with STIX along a loop | Tool for R(ε); competitor in method | High (method) |
+| Mikuła, Mrozek & Kułaga 2026, A&A 706, A379 | STIX footpoint heights versus energy, plateau attributed to evaporation | Column memory seen with STIX | Medium |
+| Krucker & Masuda 2026, A&A | Faint high-coronal HXR sources seen through occultation | Dynamic-range problem; occultation strategy | Medium |
+| Mrozek et al. 2026, arXiv:2609.16862 | Three coronal sources with STIX in a failed eruption | Coronal sources at 5–20 % of the main one, invisible without occultation | Medium |
+| Ryan et al. 2024 | HXI + STIX triangulation of the X5 flare of 2023-12-31 | Pilot event geometry | High (event) |
+| Matsumoto et al. 2026, arXiv:2606.29979 | Stereoscopic HXR + microwave, X7.1 of 2024-10-01 | Stereo methods | Low |
+| Grigis & Benz 2005; Inglis & Dennis 2012 (titles only) | Reconnection progressing along the arcade; pulse timing versus footpoint location | New loops per pulse seen by imaging | Medium |
+| Reep et al. 2016; Rubio da Costa et al. 2016 | Multithread models that assume a new thread per burst | The assumption the test addresses | Medium |
+
+**Verdict.**
+- Found: the qualitative re-use behaviour (Liu 2006; Ning & Cao 2010), the coronal thick-target physics and the observable.
+- Not found: a quantitative, pulse-by-pulse test of loop re-use with a physical prediction from the thermal emission, a conservative bound on φ, or a statistical sample.
+- Novelty estimate: 3–4 out of 5, pending ADS.
+
+ADS queries to run (gate G0):
+1. `abs:("coronal thick target" OR "loop-top" OR "looptop") AND abs:("evaporation" OR "emission measure") AND abs:("successive" OR "repeated" OR "same loop" OR "new loops")`
+2. `abs:("multithread" OR "multi-thread") AND abs:("hard X-ray") AND abs:("imaging" OR "loop top")`
+3. `abs:"STIX" AND abs:("loop-top" OR "coronal source") AND abs:("footpoint")`
+4. Citations of Liu et al. 2006, Ning & Cao 2010 and Simões & Kontar 2013.

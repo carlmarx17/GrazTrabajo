@@ -1,88 +1,92 @@
 ---
 name: stix-rhd-memory
-description: Guide the design, analysis and writing of the STIX paper that separates target memory, return current and acceleration in successive flare hard X-ray pulses, with forward modelling support (toy two-zone model, HYDRAD, FP, RADYN). Use when working on this project, its RADYN/FP experiments, its synthetic photons and re-inference, or its reproducible pipeline.
+description: Guide the design, analysis and writing of the STIX paper (v4) that tests whether successive flare hard X-ray pulses re-use the loops filled by earlier pulses, using the evaporated plasma as a tracer (predicted versus observed loop-top/footpoint ratio and a conservative bound on the re-use fraction). Use when working on this project, its STIX data, its tracer physics, its pipeline, catalogue or manuscript.
 ---
 
-# STIX: target memory, return current or acceleration in successive hard X-ray pulses
+# STIX v4: do successive hard X-ray pulses re-use flare loops?
 
-Author of the project: Carlos Alberto Martínez Sibaja.
+Author of the project: Carlos Alberto Martínez Sibaja. Do not write the supervisor's name in the public repository.
 
-## Purpose and project decisions
+## Question and idea
 
-The final product is a scientific paper and a reproducible pipeline. The pipeline tests, with STIX spectroscopy and imaging of bright multi-pulse flares, whether later hard X-ray pulses see a target modified by earlier ones, and separates that target memory from return-current losses and from acceleration changes. Forward modelling (two-zone toy model, HYDRAD, FP, RADYN) supports the interpretation and the power test. The project is physical data analysis and simulation, not neural-network training. Cluster resources and quota have not been specified.
+**Question.** When pulse k ≥ 2 of a flare arrives, what fraction φ of its electrons crosses the loop-top region already filled with plasma evaporated by pulses 1 … k−1, and on what does φ depend (footpoint motion, waiting time, confined or eruptive flare)? Flare models assume either "same loop" (single-loop RHD) or "new loop per burst" (multithread) without an observational test; imaging cannot separate neighbouring loops within one resolution element.
 
-Working hypothesis: the pulses hit the **same flux tube**. This is probable but is an operating hypothesis, to be confirmed with the supervisor. Do not treat it as observational evidence.
+**Tracer.** At each pulse onset the thermal loop-top source (emission measure EM_LT, volume ≤ V_max, beam path ≥ l_min) gives a column N_min = sqrt(EM_LT / V_max) · l_min. Electrons below E* = sqrt(2KN) stop in it, so re-use predicts a non-thermal loop-top/footpoint ratio R_pred(ε) that falls above E*. The observed R(ε) gives the conservative bound
 
-Decision (2026-10-03, replaces the single-RADYN decision of 2026-10-02): the work is split in two decoupled pieces so that no single code is a bottleneck. The atmosphere with history comes from HYDRAD (works, MIT license; its analytic cold-target heating is the assumption under test, so compare its deposition with FP's on the same snapshot). The electron transport (warm target, return current) and the bremsstrahlung photons come from the open-source FP solver (solarFP/FP, Apache-2.0, Allred et al. 2020) run on the snapshots; its input/output compatibility is to be verified. RADYN with FP (F-CHROMA distribution, 2015 FP, no license file, not compiled) is an optional upgrade, not a requirement; details in `docs/04_radyn_access.md`. FLARIX is not accessible. Never equate HYDRAD's analytic heating with Fokker–Planck.
+    phi <= R_obs,max (1 + a_max) · max over (delta, Ec) of I_0 / I_LT(N_min)
 
-## Question and the result to reach
+implemented in `src/tracer.py`; `tests/test_tracer.py` checks that it never falls below the true φ. Full design: `docs/00_objectives_and_methodology.md` (v4); earlier versions in `docs/archive/`.
 
-Question (v3, 2026-10-03; supersedes v2): in bright flares with several hard X-ray pulses, does the X-ray spectrum depend on the energy previously deposited at the same footpoints (target memory: nonuniform ionization and evaporation), on the instantaneous beam flux (return current), or on neither (acceleration: soft-hard-soft, soft-hard-harder)? How much of the pulse-to-pulse spectral evolution does each explain? Full design in `docs/00_objectives_and_methodology.md`; v2 is archived in `docs/archive/`.
+## Rules that keep the physics honest
 
-Core method: STIX time-binned spectroscopy with four models (standard; broken power law; two-zone nonuniform ionization; warm target or return current), plus per-bin regressors: cumulative deposited energy (count-based first, because model-based estimates are biased by memory), instantaneous flux density (imaging area) and footpoint displacement (imaging). Then regression with a random effect per flare, hysteresis at matched flux, and a low-band versus high-band hardening test. Decision rules are pre-registered (Section 6.7 of `docs/00`).
+- **Conservative only where proven.** Filling factor, pitch angles, trapping or other extra loop-top sources, residual thermal emission, pre-flare corona on empty paths and a larger albedo only loosen the bound. Two effects are **not** covered and must be handled explicitly:
+  - **Return current:** check it with the FP solver for the highest flux densities, or exclude those pulses.
+  - **Emission-measure attribution:** use the imaging-derived loop-top share with its lower uncertainty, never the spatially integrated EM.
+- **Use the onset EM** of pulse k, not its peak value, so that only the memory of earlier pulses enters.
+- **A CLEAN non-detection is not an upper limit.** Detection limits come from injection–recovery on the observed visibilities with matched noise.
+- **Use the energy dependence R(ε).** Energy-independent amplitude errors only add a constant offset, so the shape constrains φ when the absolute level does not.
+- **Re-use claims need the knee.** Claiming re-use requires R_obs ≈ R_pred **and** the knee at E*, with thermal emission subtracted. An extra loop-top source has a smooth R(ε).
+- **Units are not interchangeable.** Electron rate [s⁻¹], power [erg s⁻¹], energy flux [erg cm⁻² s⁻¹] and column [cm⁻²] are different quantities. STIX observes photons; the photon index is not δ. Ec may be weakly constrained: use its posterior range.
 
-Forward models support, not replace, the observations: the two-zone toy model (`src/toy_bias.py`, return-current module still to be added, real STIX response to be used), HYDRAD, FP and optionally RADYN, for the expected size of each effect and for injection–recovery (the power test, gate G2).
+## Data, selection and controls
 
-Events (from the reproducible catalogue search `scripts/stix_event_search.py`): primary X5.0 2023-12-31 and X5.2 2025-11-11 (seen from near the Earth direction); benchmark X1.3 2022-03-30 (published pulse-resolved fits); stress case X9.1 2024-10-03 (pile-up risk; studied by another group). Quick-look counts rank events; they are not spectroscopic data.
+- **STIX alone for the core measurement**, from SOAR L1 pixel data (8 pixels) and spectrograms; thermal and non-thermal on one time base.
+  - Context: AIA (Earth view) for geometry; ASO-S/HXI for stereoscopic occultation cases if accessible; CME catalogues for the eruption flag.
+  - Environment: `requirements-stix.txt` (Python ≥ 3.10); the base `.venv` (3.9) is for models and tests.
+- **Selection** (pre-registered before measuring the sample):
+  - net 25–50 keV peak ≥ 5×10³ counts/4 s (167 flares, 2021–2026);
+  - ≥ 2 pulses after the first;
+  - constant attenuator state in each window;
+  - loop-top/footpoint separation ≥ 2 resolution elements;
+  - at least one informative pulse, defined from thermal and integrated quantities only.
+- **Controls:**
+  - synthetic end-to-end visibilities with known φ;
+  - positive controls (coronal thick-target or evaporation-sequence flares) chosen with the supervisor;
+  - negative control: the first pulse of each flare.
+- **The X5.0 of 2023-12-31 is a pilot only.** Its loop-top/footpoint separation is about 8″. First-look scripts and caveats are in `scripts/x5_first_look/`.
 
-Systematics that can imitate the signal: pile-up and live time (flux-correlated hardening), attenuator steps, superhot thermal emission hiding breaks below ~25–30 keV, high-energy background. A null result for target memory is a result (an upper limit). Do not promise detection, novelty, acceptance or a journal.
+## Gates and kill criteria
 
-## Scientific objectives
+| Gate | Week | Condition |
+|---|---|---|
+| G0 | 1 | ADS novelty check passed; pre-registration agreed |
+| G1 | 3 | Synthetic coverage ≥ 95 %; R_min ≤ R_pred/2 for dense pulses on real visibilities; positive control within ×3 |
+| G2 | 8 | ≥ 15 flares with informative pulses |
+| G3 | 12 | Conclusions stable across algorithms and bands |
 
-1. Select an event with STIX science spectra and several resolvable pulses, with GOES and AIA; prioritize IRIS spectroscopy and Hα data if they are central diagnostics. AIA/HMI and IRIS do not replace an Hα observation. Check visibility, saturation, cadence, spatial evolution and the Solar Orbiter–Earth time corrections before attributing pulses to the same place.
-2. Infer from the count fit and instrument response the beam parameters and their evolution: Ec, electron index δ and injection rate. Keep their joint uncertainties and thermal/non-thermal degeneracies; Ec may be weakly constrained. STIX observes photons, not electrons directly, and the photon index is not interchangeable with δ.
-3. Transport the beam in an evolving atmosphere and compute the deposition Q(s,t). Couple it consistently to the RHD; verify which physics the specific FP version includes, including collisions and, where applicable, return current. Avoid counting the beam heating twice.
-4. Quantify the change between pulses in temperature, density, velocity, ionization, deposition depth and energy partition, separating the effects of waiting time, previous energy and initial conditions.
-5. Compute the synthetic HXR photons and re-infer the electron parameters; decompose the bias by mechanism (thermal contamination, warm target, ionization, loop-top/footpoint mixing).
-6. Synthesize a viable set of other diagnostics according to real coverage: Hα, IRIS lines, coronal/Fe XVIII emission, GOES/AIA/STIX curves. Do not identify AIA 94 Å with Fe XVIII without more. The Neupert comparison is complementary, not a sole test of the heating geometry nor a reason to readjust the beam to force agreement.
-7. Evaluate whether the differences between scenarios survive noise, exposure, spatial and temporal resolution, mixing of structures and beam uncertainties.
+**The main risk is the STIX imaging dynamic range.** A bound φ ≤ 0.3 needs loop-top limits of a few percent of the footpoints. If G1 fails, the fallbacks are:
+- stereoscopic occultation case studies;
+- a note on the X5.0 third source if robust;
+- the archived v3 with per-footpoint control.
 
-## Experiments that must support the comparison
+## Cluster use
 
-| Experiment | Function |
-| --- | --- |
-| Isolated pulse in a relaxed atmosphere | Reference response and baseline bias |
-| Two or three pulses in the same atmosphere | Measure effects of the thermal and dynamic history |
-| Pulses in independent filaments | Spatially unresolved alternative; expected no memory bias |
-| Continuous heating with comparable total energy | Control of duration and temporal distribution of energy |
-| First pulse followed by cooling, no second pulse | Distinguish residual emission from the response to the new beam |
+- **Jobs:** one flare per job (Slurm array), pinned environments, fixed seeds and a manifest per flare.
+- **Expected budget:** order 10³ CPU-hours and 5–15 GB of raw data. Measure it in the pilot before budgeting.
+- **No simulation campaign by default:** the RHD codes (HYDRAD, FP, RADYN) are not needed for the core result. Do not launch simulation campaigns unless a concrete check requires one.
+- **Record failures:** keep failed fits and images in the record.
 
-Evolve continuously between pulses: do not reset temperature, velocities or atomic populations. A restart must keep the necessary solver state. Do not add up isolated-pulse responses to represent non-linear reheating; the sum of emissions only represents independent structures under documented geometric and radiative assumptions.
+## Deliverables
 
-Compare total power and areas explicitly. Electron rate [s⁻¹], power [erg s⁻¹], energy flux [erg cm⁻² s⁻¹] and Q [erg cm⁻³ s⁻¹] are different quantities. For a simple power law with no upper cut-off, δ > 2: P = Ndot × Ec × (δ−1)/(δ−2), with Ec converted to erg; F = P/A. Adapt that conversion to finite cut-offs or other distributions. Propagate the uncertainty of A and the assignment to each footpoint/filament; conserve P_total(t) = Σ A_i F_i(t) in equivalent fragmentation comparisons.
+1. The paper (no venue promised).
+2. A public pulse-by-pulse catalogue with a DOI.
+3. The pipeline code and the pre-registration.
 
-## Cluster use and validation
+Installing tools or making demonstration figures is not completing an objective. Always distinguish pilot results, sample results and predictions. This skill does not authorize sending e-mails, publishing results or using an unagreed cluster allocation.
 
-Start by reproducing a published case with documented version and configuration. Measure wall time, CPU, memory, storage and stability in representative pilots before budgeting the campaign. Tens of pilots and hundreds of cases are a planning possibility, not a requirement nor a performance estimate. Favour independent jobs in parallel; do not assume MPI/GPU scaling of one run because many cores are available.
+## Prior work to cite and position against
 
-Choose a parameter sampling informed by the pilots and by the observed uncertainties. Check spatial/temporal convergence and energy balance in decisive cases, as well as persistence of the diagnostics against initial conditions. Record convergence failures and do not silently exclude them from the analysis. A comparison with another solver is a useful extension if it answers a concrete doubt. 3D MHD needs a physical motivation and its own scope; having a cluster does not automatically make it the next step.
+- **Qualitative re-use in single flares:** Liu et al. 2006; Ning & Cao 2010.
+- **Physics:** Veronig & Brown 2004 (coronal thick target); Fleishman et al. 2016; Dennis et al. 2018.
+- **Trapping alternative:** Simões & Kontar 2013.
+- **STIX methods and sources:** Volpara et al. 2024; Mikuła et al. 2026; Krucker & Masuda 2026; Mrozek et al. 2026.
+- **Pilot geometry:** Ryan et al. 2024.
+- **Model assumptions:** Reep et al. 2016; Rubio da Costa et al. 2016; Kennedy et al. 2015.
 
-## Deliverables and completion criteria
-
-- Event, data, intervals, calibrations and fits, traceable and with uncertainties.
-- Experiment matrix and justification of the controls and explored parameters.
-- Reproducible runs: solver versions, inputs, initial state, cluster scripts, execution logs and outputs with clear units and coordinates.
-- Quantitative evidence of the bias, its mechanism, numerical robustness and detectability or degeneracy between scenarios; include discrepancies that the STIX-allowed parameters do not resolve.
-- Reusable pipeline from STIX data/fits to results and figures, documenting any manual step, license or external dependency.
-- Proof-of-concept manuscript with background, methods, uncertainties, results, limits and enough material to reproduce the conclusions.
-
-Installing, compiling or producing demonstration figures is not the same as completing the objective. Always distinguish test results, observational results and predictions to be verified. A skill with this scope does not by itself authorize sending e-mails, publishing results or consuming a cluster allocation that has not been agreed.
-
-## Prior work to delimit the contribution
-
-When preparing the novelty or the manuscript, review these works and update the search; this list comes from a preliminary exploration, not an exhaustive review:
-
-- [Kennedy et al. (2015)](https://arxiv.org/abs/1504.07541): RADYN driven by HXR spectra and evolution of the stopping depth.
-- [Allred et al. (2020)](https://arxiv.org/abs/2008.10671): FP transport.
-- [Carlsson et al. (2023)](https://arxiv.org/abs/2304.02618): F-CHROMA and its public RADYN version; verify differences with respect to the latest RADYN+FP.
-- [Litwicka et al. (2025)](https://doi.org/10.3847/1538-4357/adc393): FLARIX; continuous heating versus pulses in different filaments, with a preheated VAL-C as initial condition; no observational data.
-- [Litwicka et al., March 2026 conference](https://plan.events.mpg.de/event/453/contributions/3104/): application with STIX, IRIS and CHASE; distinguish a conference abstract from a paper.
-- [Veronig & Brown (2004)](https://eprints.gla.ac.uk/1317): coronal thick-target HXR sources (abstract only read).
-
-Novelty assessment and further prior work: `docs/03_novelty_and_prior_work.md` (its Sections 1–7 refer to the previous question).
-
-The possible contribution is to quantify how the memory of a reheated atmosphere biases STIX inference and whether it is observable, not to claim novelty for the mere use of STIX, several pulses or preheated conditions.
+Details and ADS queries: `docs/03_novelty_and_prior_work.md`, Section 10. The contribution is the quantitative tracer test with a conservative bound and a sample, not the use of STIX or of loop-top sources as such.
 
 ## Operating context when resuming
 
-Read the current files first and verify the installed capabilities. At the creation of this skill, a compiled HYDRAD and a Python STIXpy/SunPy/AIApy environment had been reported, but no validated physical run, definitive event or RADYN installation. Do not treat that historical inventory as a perpetual state. Keep the objectives in mind when solving each concrete task; do not launch the whole campaign when the user asks only for an explanation, review or edit.
+- **Read first:** the current files and `docs/00`, Section 13 (status), and verify installed capabilities.
+- **At this version:** the tracer physics is implemented and tested; the X5.0 first look exists; no onset thermal fits, forward-fit imaging, injection–recovery or sample yet.
+- **Scope of each request:** when the user asks only for an explanation, review or edit, do that; do not launch the campaign.

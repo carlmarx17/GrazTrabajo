@@ -1,283 +1,404 @@
-# Does the flaring chromosphere remember? Objectives, hypotheses and methodology (v3)
+# Do successive hard X-ray pulses re-use flare loops? Evaporated plasma as a tracer of electron paths (v4)
 
 **Author:** Carlos Alberto Martínez Sibaja
-**Status:** research proposal, version 3 (2026-10-03). It replaces v2 (archived in `docs/archive/00_objectives_v2_inference_bias.md`) after the executable tests of `docs/06_usefulness_tests.md` and a new literature and event search. No STIX science data have been analysed yet.
+**Status:** research plan, version 4 (2026-10-04), to be agreed with the supervisor before the pre-registration (Section 4). It replaces v3, archived in `docs/archive/00_objectives_v3_spectral_memory.md`; Section 14 explains the change. The novelty search for v4 is in `docs/03_novelty_and_prior_work.md`, Section 10; ADS has not been queried yet.
+
+All numbers in this document marked *computed* come from `src/tracer.py` (tested in `tests/test_tracer.py`) or from the STIX catalogue cached by `scripts/stix_event_search.py`. Thresholds marked *proposed* are fixed in the pre-registration.
 
 ---
 
 ## 0. One-page summary
 
-**Working title.** *Target memory, return current or acceleration? Separating the causes of pulse-to-pulse hard X-ray spectral evolution with STIX.*
+**Question.** When the second or third hard X-ray (HXR) pulse of a flare arrives, do its electrons travel through the loops that earlier pulses already filled with evaporated plasma (**re-use**), or through new, still empty loops (**new loops**)? What fraction φ of the electrons re-uses the filled loops, and what does it depend on?
 
-**Why the question changed.** The tests of `docs/06` showed two things:
-- The mechanism behind the v2 question exists. The ionized column left by earlier pulses distorts the spectrum of later ones (the nonuniform-ionization effect of Kontar, Brown & McArthur 2002).
-- The v2 question itself ("how much does it bias the standard fit?") has a modest answer, conditional on bright flares and large column growth. As a paper it would be a methods note about a known effect.
+**The idea: the memory of the atmosphere is the measuring instrument.**
+1. Earlier pulses evaporate chromospheric plasma into the loops they heat. STIX sees it as the thermal loop-top source (6–15 keV), with a measurable emission measure and size.
+2. That plasma is dense enough to stop flare electrons in the corona (coronal thick target): a column N stops every electron below E* = √(2KN), about 23 keV for N = 10²⁰ cm⁻² and 40 keV for 3×10²⁰ cm⁻² (*computed*).
+3. So if pulse k sends its electrons through the filled loops, the loop top **must** shine in non-thermal HXR. The size of that signal (loop-top/footpoint ratio R, and its fall above E*) follows from the thermal measurements alone, with no free parameter.
+4. Comparing the observed R with the predicted one measures φ. Every unknown that could spoil the comparison (filling factor, pitch angle, trapping, residual thermal emission, albedo) makes the derived **upper bound** on φ larger, never smaller, so the bound is robust (Section 3.4).
 
-The more valuable question is the reverse: **use the time dependence of the spectra to find out which physical process shapes them.** Three processes can change the spectrum from one pulse to the next, and each leaves a different fingerprint in time:
+**Why it matters.** Flare models make opposite assumptions without an observational test:
+- Single-loop radiation-hydrodynamic models heat one loop again and again (e.g. Kennedy et al. 2015; the F-CHROMA grid).
+- Multithread models assume that every burst lights a new thread (Warren 2006; Reep et al. 2016; Rubio da Costa et al. 2016).
 
-| Process | What changes the spectrum | Fingerprint in time |
-|---|---|---|
-| **M — target memory** (cumulative ionization and evaporation) | The column of ionized plasma the electrons cross before the neutral chromosphere | The spectral break moves up with the **energy already deposited** at the same footpoints. The hardening is confined to energies near the break, and resets when **new footpoints** light up. Hysteresis: at equal flux, the break is higher late in a pulse or in a later pulse |
-| **R — return current** (Alaoui & Holman 2017) | Ohmic energy losses of the beam, set by its **instantaneous flux density** | The break follows the instantaneous flux; no hysteresis; no dependence on deposition history |
-| **A — acceleration** (soft-hard-soft, soft-hard-harder) | The injected electron spectrum itself | The index changes **at all energies**, tied to pulse amplitude (soft-hard-soft) or progressively (soft-hard-harder) |
+Imaging alone cannot decide, because a new loop next to an old one lies within one resolution element. The tracer decides by physics what the imager cannot resolve. A statistical answer constrains how flare energy release is organized, what HXR pulses and quasi-periodic pulsations represent, and how flare models should be built.
 
-**Research question.**
+**What is new (to be confirmed in ADS).**
+- The qualitative effect, HXR emission moving into the loop as it fills, was reported in single RHESSI flares (Liu et al. 2006; Ning & Cao 2010).
+- No quantitative, pulse-by-pulse test of loop re-use was found, nor a conservative bound on φ, nor a statistical sample. STIX makes it possible now: years of data and a large flare catalogue.
 
-> In bright flares with several hard X-ray pulses, does the X-ray spectrum depend on the energy previously deposited at the same footpoints (target memory), on the instantaneous beam flux (return current), or on neither (acceleration), and how much of the observed pulse-to-pulse spectral evolution, including progressive hardening, does each explain?
+**What is used.**
+- STIX only for the core measurement: thermal and non-thermal from the same instrument, so one time base and no cross-calibration.
+- An analytic thick-target model (already implemented).
+- Standard STIX spectroscopy and visibility imaging.
+- A computing cluster for the embarrassingly parallel image reconstructions and injection–recovery tests.
+- No radiation-hydrodynamic simulation is needed.
 
-**Why it may be new.** Each process has been studied separately; the time dependence has not been used to discriminate between them.
-- Nonuniform-ionization breaks: at the X-ray peak, and in the time evolution of one RHESSI flare (Su, Holman & Dennis 2009, 2011).
-- Return-current breaks: at the peak, including a statistical study of 65 RHESSI flares (Alaoui & Holman 2017; Alaoui, Krucker & Saint-Hilaire 2019).
-- Soft-hard-soft and soft-hard-harder: interpreted as acceleration and trapping (Grigis & Benz 2004–2008; Kiplinger 1995, who linked soft-hard-harder to solar proton events).
-- Time evolution with the warm-target model, using RHESSI and STIX: Bhattacharjee, Kontar & Luo (2025).
+**Scale.**
+- **Flares:** 167 STIX flares (2021–2026) have a net 25–50 keV peak of ≥ 5×10³ counts per 4 s (*computed*). After the selection of Section 6 an estimated 20–60 flares and 100–300 informative pulses remain.
+- **Compute and storage:** order 10³ CPU-hours and 5–15 GB of raw data.
+- **People and time:** one doctoral researcher, 20 weeks.
 
-The search found no study that uses **history dependence (cumulative versus instantaneous)** and **footpoint novelty from imaging** to discriminate between these processes. This must still be confirmed with ADS (Section 10, K1).
+**Product.** One paper (A&A or ApJ), a public pulse-by-pulse catalogue (thermal and non-thermal parameters, loop-top ratios or limits, predicted ratios, bounds on φ) with a DOI, and the pipeline code.
 
-**Data.** STIX science data (spectrograms and pixel data) of bright, multi-pulse flares, selected reproducibly from the STIX data-center catalogue (`scripts/stix_event_search.py`, Figure 7). Primary events: the X5.0 flare of 2023-12-31 and the X5.2 flare of 2025-11-11, both observed from close to the Earth direction (AIA context). The X1.3 flare of 2022-03-30 serves as the benchmark against published pulse-resolved fits. The X9.1 flare of 2024-10-03 is the high-count stress case (Section 5).
-
-**Modelling support** (already built, `docs/06`):
-- the two-zone forward model `src/toy_bias.py`, to which a return-current module is to be added;
-- HYDRAD runs for the growth of the column with deposited energy;
-- the open-source Fokker–Planck solver FP for photons with warm target and return current (`docs/05`);
-- RADYN as an optional upgrade, for non-equilibrium hydrogen recombination.
-
-**Product.** One paper (A&A or ApJ) plus a public pipeline: pulse-resolved STIX spectroscopy, history and flux regressors, and injection–recovery with the instrument response.
-
-**Feasibility.** About 20 weeks, with three decision gates. The first decisive signal is due by week 5–6 (Section 9).
+**Timeline.** Twenty weeks, with four decision gates (Section 10). The decisive gate G1 comes at week 3: the synthetic end-to-end test, the X5.0 pilot and the detection limits show whether STIX can reach the required sensitivity.
 
 ---
 
-## 1. Background in brief
+## 1. Scientific context
 
-- **Nonuniform ionization** (Brown 1973; Kontar, Brown & McArthur 2002; Su et al. 2009, 2011).
-  - Electrons lose energy more slowly in neutral than in ionized gas, so the bremsstrahlung yield rises (up to ×2.8) where the target becomes neutral.
-  - This flattens the photon spectrum between an upward and a downward knee, whose energy grows with the ionized column, roughly E* ∝ N*^1/2.
-  - The index change it can produce is limited to about 0.2–0.7 (Su et al. 2009).
-- **Return current** (Holman 2012; Alaoui & Holman 2017; Alaoui et al. 2019). Ohmic losses in the co-spatial return current flatten the spectrum below a break set by the instantaneous beam flux density. RHESSI breaks are typically near 55 keV with Δγ ≈ 0.3–1, often too strong for nonuniform ionization alone.
-- **Soft-hard-soft and soft-hard-harder** (Grigis & Benz 2004, 2005, 2008; Kiplinger 1995).
-  - The spectral index anti-correlates with flux within peaks, with different rise and decay branches.
-  - Progressive hardening across peaks occurs in gradual events and is associated with solar energetic particles.
-  - Both are interpreted as acceleration and trapping.
-- **Warm target** (Kontar et al. 2015; Bhattacharjee et al. 2025). It constrains the low-energy cut-off; its time evolution shows a high-low-high cut-off around bursts.
-- **Coronal thick target** (Veronig & Brown 2004). Dense loops can stop electrons in the corona, giving loop-top hard X-ray sources.
-- **This project's own tests** (`docs/06`):
-  - For an identical beam, a larger ionized column at the onset of pulse 2 gives a harder fitted δ (by 0.1–0.3) and an apparent drop of the electron rate (up to ×2).
-  - HYDRAD with the repository's synthetic beam grows the column only 2.5–4× before pulse 2. A short loop with a 30 s first pulse reaches 65 % of the stopping column.
-  - Within each pulse, the beam ionizes the upper chromosphere in seconds (the column of plasma above 3×10⁴ K reaches 6–7×10¹⁹ cm⁻²), so **memory acts on two timescales**:
-    - **within a pulse:** ionization;
-    - **between pulses:** evaporation, plus recombination, which HYDRAD does not model.
+### 1.1 Two pictures of a multi-pulse flare
+- **Same loop, heated repeatedly.** Each pulse deposits energy in a loop already modified by the previous ones. This is what single-loop RHD runs assume when they are driven by a time series of beam parameters (Kennedy et al. 2015).
+- **New loops for each pulse.** Reconnection proceeds through the arcade and every burst energizes fresh flux tubes. Multithread models build flares this way (Warren 2006; Reep et al. 2016). Rubio da Costa et al. (2016) start each thread "from the initial atmosphere", by assumption.
+- Footpoint motions along and across ribbons (Grigis & Benz 2005; Inglis & Dennis 2012) show that new loops are often involved. But they cannot show whether a given pulse re-uses loops inside the same resolution element.
+
+### 1.2 Evaporation fills the loops, and HXR can follow
+- Liu et al. (2006) and Ning & Cao (2010): in single RHESSI flares the HXR sources rise from the footpoints and merge into the loop top as the loop fills. That is what re-use predicts, but it was shown only qualitatively.
+- The coronal thick target: dense loops stop electrons in the corona (Veronig & Brown 2004; validated in 3D by Fleishman et al. 2016; reanalysed by Dennis et al. 2018).
+- Loop-top electron rates exceed footpoint rates by factors 1.7–8 in some flares, interpreted as trapping (Simões & Kontar 2013). An extra loop-top source is therefore possible and must be allowed for (it only loosens our bound).
+- Theory of single elementary events with evaporation: Liu, Han & Fletcher (2010).
+
+### 1.3 The STIX era
+- Regularized imaging spectroscopy of electron flux along a loop (Volpara et al. 2024).
+- Footpoint heights versus energy and evaporation (Mikuła, Mrozek & Kułaga 2026).
+- Faint high-coronal sources, revealed by occultation (Krucker & Masuda 2026; Mrozek et al. 2026).
+- Stereoscopy with ASO-S/HXI (Ryan et al. 2024; Matsumoto et al. 2026).
+- None of these tests loop re-use pulse by pulse.
+
+### 1.4 The gap
+No study uses the evaporated plasma of earlier pulses as a tracer to measure, with a physical prediction and a conservative bound, whether later pulses re-use the same loops, nor does so for a sample of flares.
 
 ## 2. Research question and sub-questions
 
-**Main question:** stated in Section 0.
+**Main question.** In flares with several HXR pulses, what fraction φ of the electrons of pulse k (k ≥ 2) crosses the loop-top region filled with plasma evaporated by pulses 1 … k−1, and on what does φ depend?
 
-| ID | Sub-question | Main observable |
+| ID | Sub-question | Observable |
 |---|---|---|
-| Q1 | Does the spectral break (or curvature) of a time bin depend on the energy previously deposited at the same footpoints, after controlling for the instantaneous flux? | Break energy E_b (or Δγ = γ_low − γ_high) versus cumulative non-thermal energy E_cum and instantaneous flux F |
-| Q2 | Is there hysteresis: at matched flux, does the break differ between the rise and the decay of a pulse, and between an early and a late pulse? | ΔE_b at matched F |
-| Q3 | Is the pulse-to-pulse hardening confined to the energies near the break (memory, return current), or present at all energies (acceleration)? | Δγ in a low band (≈ 20–40 keV) versus a high band (≈ 50–100 keV) |
-| Q4 | Does the spectral memory reset when the emission moves to new footpoints? | Footpoint displacement between pulses from STIX imaging, as a covariate |
-| Q5 | Does the coronal (loop-top) fraction of the non-thermal emission grow with E_cum? | Imaging spectroscopy of loop-top versus footpoints |
-| Q6 | What timescale does the memory have between pulses? | Dependence of the residual effect on the waiting time between pulses |
+| Q1 | Is φ small (new loops) or large (re-use) in bright multi-pulse flares? | Distribution of φ (bound and nominal estimate) over informative pulses |
+| Q2 | Does the tracer agree with the imager? Is φ high where footpoints stay put and low where they move? | φ versus footpoint displacement between pulses |
+| Q3 | Does re-use depend on the waiting time between pulses relative to the time the plasma takes to cool and drain? | φ versus waiting time and the thermal decay time |
+| Q4 | Do confined and eruptive flares differ? | φ by eruption flag |
+| Q5 | When re-use is found, does the loop-top non-thermal spectrum show the knee E* predicted from the thermal column? | Measured R(ε) shape versus predicted E* |
 
-## 3. Hypotheses and predicted signatures
+## 3. Physical principle: the tracer
 
-| ID | Hypothesis | Prediction (pre-registered form) | Refuted if |
+### 3.1 From thermal X-rays to a column
+At the onset of pulse k, the thermal loop-top source has emission measure EM_LT and occupies a volume no larger than V_max (from its deconvolved size, inflated by its uncertainty). With a filling factor f ≤ 1:
+
+```
+n = sqrt(EM_LT / (f V))  >=  n_min = sqrt(EM_LT / V_max)
+N_LT >= N_min = n_min * l_min
+```
+
+Here l_min is the shortest plausible path of the beam through the source. Half of the smallest source extent is used, which corresponds to injection at the apex. EM_LT is the thermal emission measure attributed to the loop-top aperture by imaging spectroscopy, not the spatially integrated one (attributing hot plasma located elsewhere would overestimate n).
+
+*Computed* examples (source sphere of the FWHM, volume inflated by 50 %, Solar Orbiter at 0.95 AU, l_min = FWHM/2):
+
+| EM_LT [cm⁻³] | FWHM 10″ | FWHM 15″ |
+|---|---|---|
+| 10⁴⁹ | N_min = 6.8×10¹⁹ cm⁻² | 5.6×10¹⁹ |
+| 3×10⁴⁹ | 1.2×10²⁰ | 9.6×10¹⁹ |
+| 10⁵⁰ | 2.1×10²⁰ | 1.8×10²⁰ |
+
+### 3.2 Electrons crossing the column
+Beamed electrons lose energy by Coulomb collisions, dE/dN = −K/E, with K = 2πe⁴Λ (Λ = 20 in ionized plasma). An electron is stopped in the column if its energy is below the knee
+
+```
+E* = sqrt(2 K N)  ~  23 keV (N / 1e20 cm^-2)^(1/2)
+```
+
+| N [cm⁻²] | 5×10¹⁹ | 10²⁰ | 2×10²⁰ | 3×10²⁰ | 5×10²⁰ | 10²¹ |
+|---|---|---|---|---|---|---|
+| E* [keV] (*computed*) | 16 | 23 | 32 | 40 | 51 | 72 |
+
+Bremsstrahlung uses the Haug cross-section. The chromosphere below is neutral, where the photon yield per unit energy lost is up to 2.8 times larger (Kontar, Brown & McArthur 2002). Both are implemented in `src/toy_bias.py` and reused by `src/tracer.py`.
+
+### 3.3 Predicted ratio under full re-use
+If every electron of pulse k crosses the filled loop top (φ = 1), the loop-top/footpoint photon ratio in 25–50 keV is (*computed*, Ec = 20 keV, footpoint albedo 0.2, no leg column):
+
+| N [cm⁻²] | δ = 4 | δ = 5 | δ = 6 |
 |---|---|---|---|
-| **H0** | No history dependence: the spectral shape depends only on the instantaneous beam and its acceleration. | Coefficient of log E_cum in the regression of E_b (or Δγ) is zero | — |
-| **H_M** | Target memory: the break tracks the cumulative energy deposited at the same footpoints. | β_cum > 0 at ≥ 3σ; Δγ confined to the band around E_b; resets with new footpoints; positive hysteresis | β_cum compatible with 0, or the same hardening appears in the high band, or no reset with new footpoints |
-| **H_R** | Return current: the break tracks the instantaneous flux density. | β_F > 0 at ≥ 3σ, β_cum ≈ 0, no hysteresis | β_F compatible with 0, or hysteresis present |
-| **H_A** | Acceleration: index changes at all energies, tied to amplitude or time. | Δγ_low ≈ Δγ_high; soft-hard-soft relation with flux; no footpoint-reset dependence | Δγ_high ≪ Δγ_low |
+| 5×10¹⁹ | 0.04 | 0.08 | 0.13 |
+| 10²⁰ | 0.07 | 0.15 | 0.26 |
+| 2×10²⁰ | 0.12 | 0.29 | 0.55 |
+| 3×10²⁰ | 0.17 | 0.43 | 0.88 |
+| 5×10²⁰ | 0.26 | 0.72 | 1.61 |
+| 10²¹ | 0.45 | 1.43 | 3.91 |
 
-The hypotheses are not exclusive; the regression estimates the share of each. **A null result for H_M is a result:** an upper limit on spectral memory in bright flares, which tells analysts that pulse-by-pulse fits can ignore it. Thresholds marked *proposed* are fixed in the pre-registration (Section 6.7).
+The ratio also has a **spectral shape**. It falls steeply above E*, because electrons above the knee cross the loop top and radiate mostly at the footpoints. *Computed* example (δ = 5, Ec = 20 keV, albedo 0.2):
 
-## 4. Objectives
+| Bin [keV] | 20–25 | 25–32 | 32–40 | 40–50 | 50–63 | 63–84 |
+|---|---|---|---|---|---|---|
+| N = 3×10²⁰, φ = 1 | 0.93 | 0.57 | 0.34 | 0.21 | 0.13 | 0.08 |
+| N = 3×10²⁰, φ = 0.3 | 0.09 | 0.07 | 0.06 | 0.04 | 0.03 | 0.02 |
+| N = 10²⁰, φ = 1 | 0.30 | 0.19 | 0.11 | 0.07 | 0.05 | 0.03 |
 
-### O1 — Event selection and data (weeks 1–3)
-- **Method:** reproducible catalogue search (`scripts/stix_event_search.py`), visual check of the quick-look light curves (Figure 7), quick-look imaging previews, and observing geometry (distance, angle to Earth).
-- **Success:** two primary events plus a benchmark, each with ≥ 4 resolvable non-thermal pulses and ≳ 10⁵ counts per pulse in 25–84 keV. Science data (spectrogram and pixel data) are available for them, with attenuator and rate-control states documented.
+An instrumental amplitude error that does not depend on energy only adds a constant to the measured ratio. The fall across E* survives it. This is the second, calibration-robust handle on φ.
 
-### O2 — Pulse-resolved spectroscopy (weeks 3–10)
-- **Models per time bin:**
-  1. isothermal + cold thick target, the standard model;
-  2. isothermal + broken power law, giving E_b and Δγ;
-  3. isothermal + two-zone (nonuniform ionization), giving N*;
-  4. as a cross-check, warm target and return current where available.
-- **Instrument handling:** full instrument response, background, attenuator, and live time / pile-up handling (OSPEX or sunkit-spex; to be decided with the supervisor).
-- **Bins:** time bins adapted to counts. One per pulse phase (rise, peak, decay) where statistics allow; pulse-integrated otherwise.
-- **Success:** parameters with uncertainties for every bin; a goodness of fit recorded for every model; failed fits reported.
+### 3.4 Mixture and the conservative bound on re-use
+Let a fraction φ of the electrons cross the loop top along paths of column N_h ≥ N_min and the rest along empty paths. Let I_LT, I_rest and I_0 be the band photons emitted in the loop top, further down (legs and chromosphere), and by the same electrons in a fully neutral target (empty loop). Then, with footpoint albedo a:
 
-### O3 — History and geometry regressors (weeks 6–11)
-- **Cumulative energy E_cum,** computed in two ways (both reported):
-  - model-independent: cumulative background-subtracted counts above 25 keV;
-  - model-based: cumulative thick-target power with a fixed reference cut-off. A cut-off fitted pulse by pulse would itself be biased by memory.
-- **Instantaneous flux density F:** power divided by the footpoint area from imaging.
-- **Footpoint displacement:** STIX imaging per pulse (CLEAN or MEM_GE), as a continuous covariate, with ribbon context from AIA when the event is visible from Earth.
-- **Success:** each bin has E_cum, F and footpoint displacement with uncertainties.
+```
+R_obs (1 + a) = phi I_LT / (phi I_rest + (1 - phi) I_0)
+```
 
-### O4 — The discriminating test (weeks 10–14)
-- **Method:** mixed regression with a random effect per flare,
-  E_b (or Δγ) = β₀ + β_cum log E_cum + β_F log F + β_amp log(amplitude) + β_disp · displacement + ε.
-  Added to it: hysteresis at matched flux (Q2) and the two-band test (Q3).
-- **Success:** each β estimated with its uncertainty; the decision rules of Section 6.7 applied; the share of each process given per flare.
+Two inequalities give the bound:
+- Ionized plasma radiates less per unit energy lost than neutral plasma, so I_rest ≤ I_0 (checked numerically in `tests/test_tracer.py`).
+- I_LT grows with the column.
 
-### O5 — Forward modelling and injection–recovery (weeks 4–14, in parallel)
-- **Toy model:** add a return-current module to `src/toy_bias.py` (energy loss in the return-current region, Alaoui & Holman 2017) and the real STIX response.
-- **Calibration of the memory expectation:** with HYDRAD (and FP or RADYN if available), the expected change in E_b per unit E_cum for the event's energetics.
-- **Injection–recovery:** simulate each process separately and check that the regression of O4 recovers the right β with the event's counts and time bins. This is the **power test**, gate G2.
-- **Success:** the recovery matrix (true process → inferred β) with false-positive and false-negative rates.
+Together they give
 
-### O6 — Paper and pipeline (weeks 15–20)
-- Proof-of-concept paper with two to four flares, the regression results and an interpretation backed by the forward models.
-- Pipeline published with the paper.
+```
+phi  <=  phi_max = R_obs,max (1 + a_max) * max over (delta, Ec) of [ I_0 / I_LT(N_min) ]
+```
 
-## 5. Data and event selection (status 2026-10-03)
+`tests/test_tracer.py` checks on 60 random "true" configurations that φ_max never falls below the true φ. That includes filling factors below one, leg columns and albedo.
 
-Procedure (`scripts/stix_event_search.py`):
-1. STIX flare list sorted by the 50–84 keV quick-look band.
-2. Particle-background entries rejected (a flare has more net counts at 15–25 keV than at 50–84 keV).
-3. Net 25–50 keV peak ≥ 2×10⁴ counts per 4 s.
-4. Quick-look curves of the best candidates and of three events known for their pulses inspected by eye (Figure 7). The automatic pulse counter is not reliable in large events, because of background-window choice and attenuator steps, so it is used only for ranking.
-
-| Event | GOES / STIX class | SolO r [AU] | Angle to Earth | Peak net counts per 4 s, 25–50 / 50–84 keV | Net 25–84 keV counts in ±12 min | Non-thermal pulses (by eye) | Role |
-|---|---|---|---|---|---|---|---|
-| 2023-12-31 21:50 | X5.0 / X5 | 0.95 | 18° | 1.2×10⁴ / 5.0×10³ | 1.6×10⁶ | ≥ 6 over ~14 min | **Primary.** Earth view; also observed by ASO-S/HXI (triangulation paper exists) |
-| 2025-11-11 10:01 | X5.2 / X4 | 0.83 | 20° | 6.9×10⁴ / 2.7×10⁴ | 3.0×10⁶ | 4–5 over ~8 min | **Primary.** Earth view |
-| 2022-03-30 17:2x | X1.3 / — | 0.34 | 96° | 1.2×10⁴ / 1.4×10³ | 5.7×10⁵ | ~8–10 (quasi-periodic) | **Benchmark.** Pulse-resolved fits published (Collier et al. 2024); counts per pulse marginal |
-| 2024-10-03 12:12 | X9.1 / X3 | 0.30 | 85° | 1.4×10⁵ / 3.5×10⁴ | 7.3×10⁶ | 5–6 over ~6 min | **Stress case.** Highest counts; pile-up risk at 0.30 AU; the same flare is studied by another group (Litwicka et al., with a different question) |
-| 2024-05-14 16:47 | X8.8 / X8 | 0.74 | 168° | 3.1×10⁵ / 1.6×10⁵ | 1.2×10⁷ | 1 dominant + several smaller | Reserve; heavily studied |
-| 2024-10-09 01:35 | X1.8 / M3 | 0.35 | 54° | 2.9×10⁴ / 8.4×10³ | 2.8×10⁶ | 3–5 over ~10 min | Reserve; STIX class well below GOES (partial occultation to be checked) |
-| 2024-08-01 20:51 | — / X4 | 0.88 | 158° | 3.4×10⁴ / 1.1×10⁴ | 1.4×10⁶ | 3–5 | Reserve; far side for Earth |
-| 2021-10-28 15:30 | X1.0 / — | 0.80 | 4° | 5.1×10³ / 1.3×10³ | 3.0×10⁵ | main pulse + bumps; 12 rate-control changes | Soft-hard-harder angle: associated with the GLE73 proton event; counts marginal |
-
-Quick-look counts are compressed and summed over detectors. They rank events but are not spectroscopic data. "Pulses by eye" must be confirmed with the science data.
-
-![Figure 7](figures/fig7_stix_candidates.png)
-
-*Figure 7.* STIX quick-look 25–50 keV (blue) and 50–84 keV (orange) light curves of the candidates (`scripts/plot_stix_candidates.py`). Gray lines mark attenuator and rate-control changes; an asterisk marks a class estimated by STIX for events occulted from Earth.
-
-## 6. Methodology
-
-### 6.1 Pulses and time bins
-Pulses are defined in the 25–84 keV science light curve. Overlapping pulses are not forced apart; the analysis works on time bins, with the pulse phase (rise, peak, decay) as a label. Bins are adaptive, with a minimum number of counts above 25 keV fixed in the pre-registration (*proposed:* 3×10⁴).
-
-### 6.2 Spectral models
-1. Standard: isothermal (or two thermal components when a superhot plasma is present, cf. the 2026 STIX superhot study) + cold thick target.
-2. Broken power law: E_b, γ_low, γ_high.
-3. Two-zone (nonuniform ionization): N*, δ, Ec, Ṅ.
-4. Cross-checks: warm target, and return current if an implementation is available. Otherwise the toy return-current module is used as the fitting model.
-
-Albedo is included or excluded consistently for all bins of a flare. Its effect is nearly constant for fixed footpoints and varies with heliocentric angle.
-
-### 6.3 Systematics that can imitate the signal
-| Systematic | Why it matters | Handling |
+| Effect | Direction | Treatment |
 |---|---|---|
-| Pile-up and live time at high rates | Produces flux-correlated spurious hardening, which imitates return current or acceleration | Prefer events at larger distance and rates within the documented limits; compare attenuator and rate-control states; include pile-up in the injection–recovery |
-| Attenuator insertion | Changes the low-energy response abruptly | Fit only within constant states, or with the state-dependent response; exclude bins at transitions |
-| Thermal (superhot) emission | Raises the lower limit of the non-thermal fit to 25–30 keV; hides breaks below it | Two-temperature models; report the usable lower energy per bin; the memory test needs E_b ≳ 30 keV |
-| Background at high energies | Biases γ_high | Background from the dedicated detector; stop the fit where the source drops below a fixed signal-to-noise ratio |
-| Memory bias in Ṅ and Ec | Makes model-based E_cum circular | Use the count-based E_cum as the primary regressor |
+| Filling factor f < 1 | Raises the true column | Use f = 1 (N_min) — conservative |
+| Pitch angles (μ < 1) | More coronal stopping | Use beamed electrons — conservative |
+| Trapping or an acceleration-region source at the loop top | Raises R_obs | Ignored in the bound — conservative; tested separately by the R(ε) shape |
+| Thermal emission left in the loop-top flux | Raises R_obs | Conservative for the bound; must be subtracted before claiming re-use |
+| Pre-flare coronal column on empty paths | Raises R_obs | Conservative |
+| Albedo | Raises footpoint flux | Use the upper value a_max (heliocentric angle seen from Solar Orbiter) |
+| Spectral parameters (δ, Ec) | Change I_0/I_LT | Maximize over the posterior range |
+| Warm target | < 1 % at ≥ 25 keV for T ≤ 30 MK | Neglected; to be verified numerically in OE1 |
+| **Return current** | **Not covered by the argument** | Bound separately: FP-solver runs for the highest flux densities, or exclusion of pulses above the return-current regime (Alaoui & Holman 2017) |
+| Emission-measure attribution | Overestimating EM_LT is not conservative | Use the imaging-derived loop-top share with its lower uncertainty |
 
-### 6.4 History and geometry regressors
-Section O3. E_cum is reset for an emitting region when its footpoint moves by more than a source size (*proposed:* one FWHM of the STIX point-spread function at the event distance).
+### 3.5 What sensitivity the test needs (the main risk)
+The loop-top upper limit R_obs,max needed for φ_max ≤ 0.3 is small (*computed*, Ec 15–20 keV, a_max = 0.2):
 
-### 6.5 Imaging
-Per pulse, in 20–30 and 30–60 keV:
-- footpoint centroids and separation;
-- loop-top fraction, where the dynamic range allows;
-- ribbon context from AIA 1600/1700 Å for events visible from Earth.
+| N_min [cm⁻²] | δ = 4 | δ = 5 | δ = 6 |
+|---|---|---|---|
+| 10²⁰ | 0.016 | 0.030 | 0.042 |
+| 3×10²⁰ | 0.033 | 0.053 | 0.067 |
+| 10²¹ | 0.054 | 0.074 | 0.083 |
 
-### 6.6 Forward modelling
-- **Toy model:** two-zone target plus return-current module, with the STIX response, used for the injection–recovery (O5).
-- **Expected size of the memory effect:** HYDRAD gives the growth of the column with deposited energy. Its present limit is NaN for F ≥ 2.5×10¹⁰ erg cm⁻² s⁻¹ (`docs/06`, Section 7).
-- **FP:** photons with warm target and return current, run on HYDRAD snapshots (`docs/05`).
-- **RADYN (optional):** recombination timescale of hydrogen after a pulse, which sets the between-pulse memory (Q6).
+These are a few percent of the footpoint flux, at or beyond the dynamic range usually quoted for indirect imaging. Positive detections of re-use (R ≈ R_pred, often 0.2–1) are much easier. Four measures address this:
+1. **Use the energy dependence R(ε).** It is calibration-robust (Section 3.3).
+2. **Select informative pulses** before measuring: dense, soft-spectrum pulses (N_min ≥ 2×10²⁰ cm⁻², δ ≥ 5), defined only from thermal and spatially integrated quantities.
+3. **Use stereoscopic occultation for selected events.** When the footpoints are behind the limb for Solar Orbiter but visible from Earth (ASO-S/HXI), STIX sees the loop top without footpoint contamination.
+4. **Report two numbers per pulse:** the conservative φ_max and a nominal φ (best estimates, f = 1), each with its assumptions.
 
-### 6.7 Decision rules (to be pre-registered before the regression is run on real data)
-- **Memory detected:** β_cum > 0 at ≥ 3σ (*proposed*) for the count-based E_cum, robust to the model-based E_cum. It must also show either confinement (|Δγ_high| < |Δγ_low| / 2, *proposed*) or a footpoint reset.
-- **Return current favoured:** β_F > 0 at ≥ 3σ with β_cum compatible with 0 and no hysteresis.
-- **Acceleration favoured:** Δγ_low and Δγ_high equal within errors and β_cum, β_F compatible with 0.
-- **Multiple comparisons:** the number of tested coefficients is fixed in advance; Holm correction.
-- **All fits reported,** including failed and degenerate ones.
+Whether this is enough is decided at gate G1 by measuring R_min on real STIX visibilities.
 
-## 7. Possible outcomes and what each means
+### 3.6 Physical dimensionality
+- **Transport and emission:** 1D along the field line (columns), as in the thick-target model.
+- **Measurements:** 2D projected images from one viewpoint.
+- **3D:** only for stereoscopic events. No MHD or RHD simulation is part of the core measurement.
 
-| Outcome | Meaning | Contribution |
-|---|---|---|
-| Memory detected | Later pulses see a target modified by earlier ones; part of the pulse-to-pulse hardening is a transport effect | A new diagnostic of evaporation and ionization from hard X-rays alone; a caveat for acceleration studies and for soft-hard-harder interpretations |
-| Return current favoured | Breaks are set by the instantaneous beam | An independent, time-domain test supporting return-current models |
-| Acceleration favoured | Spectral evolution reflects the injected electrons | Supports current acceleration interpretations; an upper limit on target effects |
-| Not decidable at STIX statistics | Degenerate within errors | The injection–recovery power curve tells what counts and cadence a future instrument needs |
+## 4. Hypotheses and pre-registered decision rules
 
-## 8. Deliverables
+| ID | Hypothesis | Prediction | Refuted if |
+|---|---|---|---|
+| H_new | Later pulses use new loops | Informative pulses give R_obs ≪ R_pred and φ_max well below 1 | R_obs ≈ R_pred with the predicted knee in a substantial fraction of informative pulses |
+| H_reuse | Later pulses re-use the filled loops | R_obs ≈ R_pred and the R(ε) knee at E* (from N_min, nominal f = 1) | Non-detection with R_min well below R_pred |
+| H_extra | An additional loop-top source (trapping or acceleration region) dominates | R_obs ≫ R_pred, with a smooth R(ε) without the knee | R(ε) follows the column-predicted shape |
 
-| ID | Deliverable | Status |
-|---|---|---|
-| D1 | Event selection: procedure, catalogue query, candidate table, light curves | **Done (quick-look level)** (`scripts/stix_event_search.py`, Figure 7) |
-| D2 | Science-data reduction for the selected events | Pending |
-| D3 | Pulse-resolved fits with four models | Pending |
-| D4 | Regressors E_cum, F, displacement; imaging per pulse | Pending |
-| D5 | Regression and hysteresis tests | Pending |
-| D6 | Toy model with return-current module and real response; injection–recovery | Toy model **done without return current**; rest pending |
-| D7 | Calibration of the expected memory effect (HYDRAD/FP/RADYN) | **Partial** (`docs/06`) |
-| D8 | Paper and public pipeline | Pending |
+The hypotheses can coexist across flares; Q2–Q4 ask when each one holds.
 
-Existing infrastructure kept from v1 and v2:
-- beam tables, the E1–E5 matrix and the RADYN `ftab` encoder;
-- the FP atmosphere reader and writer;
-- HYDRAD scripts and the toy model.
+*Proposed* rules, to be fixed in the pre-registration before the full sample is measured:
+- A pulse is **informative** if a non-detection at the measured R_min would give φ_max ≤ 0.5.
+- A pulse is classed **new loops** if φ_max ≤ 0.5, and **re-use** if the nominal φ ≥ 0.7 with the knee detected at the 3σ level.
+- A sample statement "pulses predominantly use new loops" requires ≥ 75 % of informative pulses to be classed new loops, with a 95 % bootstrap interval excluding 50 %.
 
-All of it serves O5.
+The definition of informative uses only thermal and spatially integrated quantities, so selection cannot follow the answer.
 
-## 9. Timeline (20 weeks) and gates
+## 5. Objectives
+
+**General objective.** Measure, with STIX and a physically conservative method, whether successive HXR pulses re-use the loops filled by earlier pulses, and in which conditions, delivering a public pulse-by-pulse catalogue.
+
+| ID | Objective | Output | Success criterion | Weeks |
+|---|---|---|---|---|
+| OE1 | **Validate the method** end-to-end: synthetic STIX visibilities with known φ and N; positive controls; warm-target and return-current checks | Validation report; recovery and coverage tables | Coverage of φ_max ≥ 95 % on synthetic data; positive controls within a factor of 3 of R_pred | 1–4 |
+| OE2 | **Pilot** on X5.0 2023-12-31 and benchmark X1.3 2022-03-30 | R_pred, R_min, φ_max per pulse | Gate G1 (Section 10) | 1–3 |
+| OE3 | **Sample** from the STIX catalogue with pre-registered criteria | Event list with selection log | ≥ 15 flares with informative pulses (G2) | 3–8 |
+| OE4 | **Measurements** per pulse on the cluster: spectroscopy, thermal geometry, non-thermal imaging in energy bins, detection limits | Catalogue v1 | Every pulse has values or flagged failures | 5–10 |
+| OE5 | **Analysis**: distribution of φ; dependence on footpoint displacement, waiting time, eruption, pulse index; robustness | Results and figures | Conclusions stable across algorithms and bands (G3) | 9–13 |
+| OE6 | **Publication**: paper, catalogue with DOI, code | Submitted manuscript; Zenodo record; tagged release | Submitted by week 20 | 13–20 |
+
+## 6. Data and sample
+
+### 6.1 Sources
+- **STIX L1 data from SOAR:** pixel data (cpd, 8 pixels, 0.5 s bins where available) and spectrograms. Access is via the SOAR TAP service; the working queries are recorded in the project notes and `scripts/stix_event_search.py`.
+- **STIX data center API:** flare list, quick-look light curves, ephemerides.
+- **SDO/AIA** (Earth view), for loop geometry when the flare is visible from Earth.
+- **ASO-S/HXI**, for stereoscopic events, if access is obtained.
+- **CME catalogues** (SOHO/LASCO CDAW) and EUI/AIA eruption signatures, for the confined/eruptive flag.
+
+### 6.2 Catalogue numbers (*computed*, flare list cached 2021-01-01 to 2026-10-02)
+
+| Net 25–50 keV peak [counts / 4 s] | ≥ 2×10³ | ≥ 5×10³ | ≥ 2×10⁴ | ≥ 10⁵ |
+|---|---|---|---|---|
+| Flares (particle-background entries removed) | 364 | 167 | 49 | 11 |
+
+### 6.3 Selection criteria (*proposed*, pre-registered)
+1. Net 25–50 keV peak ≥ 5×10³ counts per 4 s.
+2. At least two resolvable non-thermal pulses after the first (k ≥ 2), from the 25–50 keV light curve.
+3. Pixel data with 8 pixels available for the pulse windows; attenuator and rate-control state constant within each window.
+4. Loop-top/footpoint separation ≥ 2 imaging resolution elements (≈ 14″ with sub-collimators 3–10) as seen from Solar Orbiter, or a stereoscopic configuration.
+5. At least one informative pulse (Section 4).
+
+**Expected yield:** 20–60 flares, 100–300 informative pulses (estimate, verified at G2).
+
+### 6.4 Controls
+- **Positive controls:** STIX flares with a strong non-thermal loop-top source of coronal-thick-target type, or with an evaporation sequence like Liu et al. (2006). Chosen with the supervisor before the main sample is measured.
+- **Negative control:** the first pulse of each flare, where little evaporated plasma exists yet, so R_pred is small and no "re-use" should be found.
+
+## 7. Method, step by step
+
+Each flare is one cluster job (steps S1–S9); S10 runs on the catalogue.
+
+| Step | What | How | Output |
+|---|---|---|---|
+| S1 | Retrieve data | SOAR TAP queries; cpd and spectrogram files | Local files with checksums |
+| S2 | Define pulses | 25–50 keV light curve (0.5–4 s); background; pulses separated by significant minima; check attenuator and rate-control state | Pulse windows (onset, peak, end) |
+| S3 | Integrated spectroscopy per pulse and at each onset | Isothermal (+ superhot second component if needed) + cold thick target + albedo; MCMC posteriors; sunkit-spex or OSPEX, cross-checked on the benchmark | T, EM, δ, Ec, Ṅ with uncertainties |
+| S4 | Thermal geometry at each onset | 6–10 and 10–15 keV visibilities: forward fit (ellipse or loop) plus CLEAN; deconvolved size; loop-top share of the thermal flux; loop length from footpoint separation (and AIA or stereo where possible) | EM_LT, V_max, l_min, N_min, E* |
+| S5 | Non-thermal imaging per pulse in energy bins (20–25, 25–32, 32–40, 40–50, 50–84 keV) | Visibility forward fit with two footpoints + a loop-top component fixed at the thermal position and shape (optionally a free fourth source); MCMC; CLEAN and MEM_GE as cross-checks; bootstrap of counts | R_obs(ε) with posterior; footpoint positions |
+| S6 | Detection limits | Inject synthetic loop-top sources (R = 0.01–0.5) into the observed visibilities with matched noise; refit | R_min(ε) at 95 % recovery |
+| S7 | Prediction and bound | `src/tracer.py`: R_pred(ε); φ_max (conservative); nominal φ from fitting R_obs(ε) with the mixture model plus an energy-independent offset | φ_max, φ_nominal, flags |
+| S8 | Covariates | Footpoint displacement between pulses (S5), waiting time, thermal decay time, flux density (return-current check), eruption flag, flare class | Covariates per pulse |
+| S9 | Catalogue entry | All quantities with uncertainties and flags | One row per pulse |
+| S10 | Sample analysis | Classification (Section 4); distributions; dependence on covariates with flare-level bootstrap (or a hierarchical model with a random effect per flare); robustness across algorithms, bands and assumptions | Results, figures |
+
+## 8. Validation
+
+1. **Synthetic end-to-end (must pass before the sample).** Simulated STIX visibilities (two footpoints and a loop top, realistic counts, noise and calibration errors) with known φ ∈ {0, 0.3, 1} and N, run through S5–S7. Required: coverage of φ_max ≥ 95 %, and the power to recover the knee when φ = 1.
+2. **Positive controls** (Section 6.4): R_obs within a factor of 3 of R_pred, with the knee where predicted.
+3. **Negative control:** first pulses show no re-use signal beyond the false-positive rate.
+4. **Physics checks:**
+   - warm-target correction at ≥ 25 keV;
+   - return current: FP-solver runs (`docs/05_fp_solver_verification.md`) for the highest flux densities, or an exclusion rule;
+   - albedo model as a function of the heliocentric angle from Solar Orbiter.
+5. **Robustness:** conclusions unchanged across CLEAN, MEM_GE and forward fitting, across energy bins, and across the conservative and nominal assumptions.
+
+## 9. What is used and at what scale
+
+### 9.1 Software
+
+| Purpose | Tool |
+|---|---|
+| STIX data, visibilities, calibration | stixpy 0.3.0 (`requirements-stix.txt`, Python ≥ 3.10) |
+| Imaging | xrayvision (CLEAN, MEM), own visibility forward fit with MCMC (numpy, scipy, emcee) |
+| Spectroscopy | sunkit-spex (or OSPEX in IDL if preferred by the group), with the STIX response |
+| Physics of the tracer | `src/tracer.py` on `src/toy_bias.py` (thick target, ionized and neutral zones, Haug cross-section) |
+| Context and geometry | sunpy, AIA data; ASO-S/HXI where available |
+| Workflow | Slurm job arrays (one flare per job), pinned environments, fixed random seeds, a run manifest per flare |
+
+### 9.2 Compute and storage (estimates, to be measured in the pilot)
+- **Data:** the X5.0 pixel-data file is 153 MB; typical flares need 10–150 MB, so 5–15 GB of raw data for 60 flares, plus products.
+- **Per pulse:**
+
+  | Task | CPU-minutes |
+  |---|---|
+  | Spectral fits with MCMC | 5–20 |
+  | Forward-fit imaging with MCMC, 5 bins | 25–100 |
+  | Cross-check images | ~10 |
+  | Injection–recovery (6 amplitudes × 20 noise realizations × 5 bins) | 60–150 |
+
+  Total: about 100–300 CPU-minutes per pulse, so **0.5–1.5 thousand CPU-hours for 300 pulses**. This is small for a cluster and runs in days.
+
+### 9.3 People and roles (no names in the public repository)
+- **Doctoral researcher:** all steps.
+- **Supervisor:** physics of the coronal thick target, choice of controls, pre-registration, framing and journal.
+- **STIX imaging and calibration experts:** forward-fit validation, attenuator and calibration limits.
+- **A modelling colleague (optional):** implications of φ for multithread and single-loop models.
+
+### 9.4 Parked from earlier versions
+The radiation-hydrodynamic codes (RADYN, HYDRAD, FP) are not needed for the core result. They remain available for the return-current check and for the discussion. The v3 spectral-break regression is archived.
+
+## 10. Timeline and gates (20 weeks)
 
 | Weeks | Work | Gate |
 |---|---|---|
-| 1–2 | ADS novelty search (K1); obtain science data for the primary events; set up the spectroscopy and imaging tools with the supervisor's group | **G1:** no prior paper doing the history test; data in hand |
-| 3–5 | Reduce the first primary event; first pulse-integrated fits; injection–recovery with the real response at the event's counts | **G2 (power test):** the predicted memory effect is ≥ 3σ detectable for at least one primary event |
-| 6–10 | Time-resolved fits (four models), imaging, regressors for both primaries; benchmark against the published 2022-03-30 fits | **G3:** systematics (pile-up, attenuator) controlled |
-| 10–14 | Regression, hysteresis and two-band tests; forward-model interpretation | — |
-| 15–20 | Paper draft, pipeline cleanup, supervisor review | — |
+| 0–1 | ADS novelty check; agree the plan; write the one-page pre-registration | **G0:** no prior quantitative re-use test found; pre-registration signed |
+| 1–3 | Synthetic end-to-end test; X5.0 pilot (onset thermal fits, R_pred, R_min, φ_max); benchmark X1.3 | **G1:** synthetic coverage ≥ 95 %; on real visibilities R_min ≤ R_pred/2 for dense pulses; positive control within a factor of 3 |
+| 3–8 | Sample selection; cluster pipeline; catalogue v0 | **G2:** ≥ 15 flares with informative pulses |
+| 8–12 | Full measurements; robustness | **G3:** conclusions stable across algorithms and bands |
+| 12–16 | Interpretation (multithread versus single-loop, QPP, energetics); figures; draft | — |
+| 16–20 | Internal review; submission; catalogue and code release | — |
 
-## 10. Risks and kill criteria
+**Kill criteria and fallbacks:**
+
+| Gate failure | Fallback |
+|---|---|
+| G1: STIX cannot reach R_min ≲ R_pred/2 even with R(ε) and selection | Stereoscopic occultation case studies (fewer events, cleaner loop tops); or a short paper on the X5.0 third source if it proves robust; or the archived v3 with per-footpoint control |
+| G2: fewer than 15 flares | Case-study paper on the best 3–5 flares (lower impact, same method) |
+| G3: results depend on the algorithm | Report as a limit on the method; restrict to the robust subset |
+
+## 11. Risks
 
 | Risk | Effect | Mitigation |
 |---|---|---|
-| K1 — prior work found in ADS (history-dependence test of breaks) | Loss of novelty | Pivot to the soft-hard-harder angle (Q3 across many flares), or to the memory timescale (Q6) |
-| K2 — the power test fails (G2) | The test cannot decide at STIX statistics | Stop the core; publish the power curve and event analysis as a short paper, or return to a modelling paper on the bias (v2) |
-| K3 — pile-up or attenuator systematics comparable to the effect | False signals | Restrict to lower-rate events and bins; event at 0.83–0.95 AU first |
-| Too few independent pulses (E_cum and F correlated in time) | Coefficients not separable | Use within-pulse hysteresis and several flares; pool with random effects |
-| Tools: the nonuniform-ionization and return-current models may not exist in the chosen fitting package | Delay | Use the toy forward model as fitting function with the real response |
-| Competition (STIX team, Glasgow and Wrocław groups) | Priority | Early discussion with the supervisor; focus on the discriminating design |
+| Dynamic range of STIX imaging (Section 3.5) | Non-detections uninformative | R(ε) shape, selection of dense pulses, stereo cases; measured at G1 |
+| Superhot thermal emission at 25–50 keV | Mimics a loop-top signal | Two-temperature fits; for re-use claims, subtract and require the knee |
+| Emission-measure attribution to the loop top | Non-conservative bound if overestimated | Imaging-derived share with lower uncertainty |
+| Return current at high flux densities | Bound argument not covering it | FP-solver check or exclusion rule |
+| Attenuator and pile-up in large flares | Biased spectra and images | Windows with constant state; flag and test |
+| Small sample after cuts | Weak statistics | Gate G2; lower brightness threshold (364 flares at 2×10³ counts) |
+| Prior or parallel work | Lower novelty | ADS check (G0); ask the supervisor and the STIX team |
 
-## 11. Scope limits
-- A proof of concept on two to four flares; no population statistics in this paper.
-- Hard X-ray spectroscopy and imaging are the core; chromospheric line diagnostics are context only.
-- Simulations support the interpretation; they are not the result.
-- No detection, novelty or journal is promised.
+## 12. Deliverables
+1. Paper (A&A or ApJ; no venue promised): *Do successive hard X-ray pulses re-use flare loops? Evaporated plasma as a tracer of electron paths with STIX* (working title).
+2. Public pulse-by-pulse catalogue with a DOI.
+3. Pipeline code and the pre-registration, released with the paper.
+4. Optional: a short note on the third 25–50 keV source of the X5.0 flare, only if robust across algorithms and consistent with HXI.
 
-## 12. Open questions for the supervisor
-1. Is the discriminating design (history versus instantaneous flux versus acceleration) of interest for the group, and does it overlap with ongoing work in the STIX team?
-2. Which spectroscopy tools does the group use for STIX (OSPEX or sunkit-spex; pile-up and live-time corrections; nonuniform-ionization and return-current models)?
-3. Are the 2023-12-31 and 2025-11-11 flares suitable, or does the group know better multi-pulse events?
-4. Which imaging algorithm and dynamic range are realistic for loop-top versus footpoint separation in these events?
-5. Is RADYN access worth pursuing for the recombination timescale, or should the modelling stay with HYDRAD, FP and the toy model?
+## 13. Status (2026-10-04)
+- **Catalogue search:** reproducible (`scripts/stix_event_search.py`); numbers in Section 6.2.
+- **X5.0 first look** (`scripts/x5_first_look/`, recovered from a temporary folder):
+  - five pulses;
+  - footpoints stable within ~2″ from P2 to P5;
+  - no non-thermal loop-top component in CLEAN at 25–50 keV, which is a CLEAN threshold, not yet a limit;
+  - a third source in P4–P5;
+  - loop-top/footpoint separation ~8″, below the sample criterion, so the event is a pilot only.
+- **Physics of the tracer:** `src/tracer.py` with 10 tests, including the check that the bound is conservative.
+- **Missing:**
+  - synthetic visibility test;
+  - onset thermal fits and R_min for the X5.0;
+  - positive controls;
+  - forward-fit imaging code;
+  - ADS check;
+  - pre-registration.
 
-## 13. References (selection; to be completed and checked before citing)
-- Alaoui, M. & Holman, G. D. (2017), co-spatial return-current model of hard X-ray breaks (arXiv:1706.03897).
-- Alaoui, M., Krucker, S. & Saint-Hilaire, P. (2019), Statistical study of hard X-ray spectral breaks, Solar Physics 294, 105.
-- Allred, J. C. et al. (2020), FP: Fokker–Planck transport, ApJ 902, 16.
-- Bhattacharjee, Kontar & Luo (2025), warm-target time evolution with RHESSI and STIX, ApJ (arXiv:2506.08310).
-- Collier, H. et al. (2024), Localising pulsations in the hard X-ray and microwave emission of an X-class flare, A&A (arXiv:2402.10546).
-- Grigis, P. C. & Benz, A. O. (2004, 2005, 2008), soft-hard-soft and spectral hardening of large flares.
-- Kiplinger, A. L. (1995), soft-hard-harder and solar proton events, ApJ 453, 973.
-- Kontar, E. P., Brown, J. C. & McArthur, G. K. (2002), nonuniform target ionization, Solar Physics 210, 419.
-- Krucker, S. et al. (2020), STIX, A&A 642, A15.
-- Su, Y., Holman, G. D., Dennis, B. R. et al. (2009, 2011), ApJ 705, 1584; ApJ 731, 106.
-- Veronig, A. M. & Brown, J. C. (2004), coronal thick-target hard X-ray sources, ApJ 603, L117.
-- Prior-work reviews of v1 and v2: `docs/03_novelty_and_prior_work.md`.
+## 14. Relation to earlier versions
+| Version | Question | Why it changed |
+|---|---|---|
+| v1 (2026-10-01) | How large is the chromospheric memory after a 2nd or 3rd pulse (RHD)? | The answer, that memory exists, was near-certain and known (Kennedy et al. 2015) |
+| v2 (2026-10-02) | How much does memory bias the STIX electron inference? | Real but small and conditional |
+| v3 (2026-10-03) | Separate target memory, return current and acceleration by the time dependence of spectra | Effect sizes near systematics; time and cumulative energy are collinear without spatial control |
+| **v4 (2026-10-04)** | **Do later pulses re-use the filled loops? Memory used as a tracer** | Keeps the original question (same strand or independent filaments) with a simpler, more robust and more decisive design |
 
-## 14. History of the question
-- **v1 (2026-10-02):** how does the atmosphere respond to the second and third pulse? Dropped: the qualitative answer is known (Kennedy et al. 2015).
-- **v2 (2026-10-02):** how much does atmospheric memory bias the standard STIX fit? Tested on 2026-10-03 (`docs/06`). The effect is real, but conditional and known in mechanism; as a stand-alone paper it would be a methods note. It is kept as the forward-modelling component of v3.
-- **v3 (2026-10-03, this document):** use the time dependence of the spectra to discriminate target memory, return current and acceleration.
+## 15. Questions for the supervisor
+1. Which STIX flares are good positive controls (coronal thick target, evaporation sequences)?
+2. What dynamic range do STIX experts consider realistic for a faint loop top next to bright footpoints, and with which algorithm?
+3. Is ASO-S/HXI access possible for stereoscopic cases?
+4. OSPEX or sunkit-spex for the spectroscopy?
+5. Is there related, possibly unpublished, work in the group or in the STIX team?
+6. Which journal fits best once G1 is passed?
+
+## References (verified at least at abstract level unless noted)
+- Dennis et al. 2018, ApJ, "Coronal hard X-ray sources revisited", doi:10.3847/1538-4357/aae0f5
+- Fleishman et al. 2016, ApJ 816, 62, doi:10.3847/0004-637X/816/2/62
+- Grigis & Benz 2005, ApJ, doi:10.1086/431147 (title only)
+- Inglis & Dennis 2012, ApJ 748, 139, doi:10.1088/0004-637X/748/2/139 (title only)
+- Kennedy et al. 2015, A&A, arXiv:1504.07541
+- Kontar, Brown & McArthur 2002, Solar Physics 210, 419 (from the earlier search)
+- Krucker & Masuda 2026, A&A, doi:10.1051/0004-6361/202557120
+- Liu, Han & Fletcher 2010, ApJ 709, 58, arXiv:0912.0402
+- Liu et al. 2006, ApJ 649, 1124, arXiv:astro-ph/0603510
+- Matsumoto et al. 2026, arXiv:2606.29979
+- Mikuła, Mrozek & Kułaga 2026, A&A 706, A379, doi:10.1051/0004-6361/202555337
+- Mrozek et al. 2026, arXiv:2609.16862
+- Ning & Cao 2010, ApJ 717, 1232, doi:10.1088/0004-637X/717/2/1232
+- Reep et al. 2016, ApJ, arXiv:1607.06684
+- Rubio da Costa et al. 2016, ApJ, arXiv:1603.04951
+- Ryan et al. 2024, triangulation of the X5 flare of 2023-12-31 with ASO-S/HXI and STIX (PMC11339132)
+- Simões & Kontar 2013, A&A 551, A135, arXiv:1301.7591
+- Veronig & Brown 2004, ApJ 603, L117, doi:10.1086/383199
+- Volpara et al. 2024, A&A, doi:10.1051/0004-6361/202348553
+- Warren 2006, ApJ (multithread flare model; cited via Rubio da Costa et al. 2016, not read)
+- Alaoui & Holman 2017, ApJ, doi:10.3847/1538-4357/aa98de

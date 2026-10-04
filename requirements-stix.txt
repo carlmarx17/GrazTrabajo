@@ -1,0 +1,10 @@
+# STIX imaging and spectroscopy environment (Python >= 3.10; tested with CPython 3.12 via uv).
+# The base environment (requirements.txt, Python 3.9) runs the models and tests; stixpy needs this one.
+#   uv venv -p 3.12 .venv-stix && uv pip install --python .venv-stix -r requirements-stix.txt
+stixpy==0.3.0
+sunpy==8.0.0
+xrayvisim==0.2.1   # PyPI name of TCDSolar xrayvision (imported as `xrayvision`)
+astropy==8.0.1
+numpy==2.5.3
+scipy==1.18.1
+matplotlib==3.11.2
