@@ -2,7 +2,9 @@
 
 **Author:** Carlos Alberto Martínez Sibaja
 **Date:** 2026-10-03
-**Sources read:** the manual `doc/FP.pdf` of [solarFP/FP](https://github.com/solarFP/FP) (10 pages, 532 895 bytes; read, not stored in the repository), plus `python/readatm.py` and `python/fpbrem.py` (viewed online). The FP code itself was **not** downloaded, compiled or run, and the paper (Allred et al. 2020, ApJ 902, 16) was read only at abstract level. Everything below is therefore "documented", not "tested".
+**Sources read:** the manual `doc/FP.pdf` of [solarFP/FP](https://github.com/solarFP/FP) (10 pages, 532 895 bytes; read, not stored in the repository), plus `python/readatm.py` and `python/fpbrem.py` (viewed online). At the initial documentation pass the FP code had **not** been downloaded, compiled or run (Section 6 records later file-I/O and Python checks); the paper (Allred et al. 2020, ApJ 902, 16) was read only at abstract level. The initial capability assessment is documentation-based; Section 6 identifies the tests that were subsequently executed.
+
+> **Current role (v5.1, 2026-10-05):** these are dated capability and verification notes, not evidence of a completed solver run. Section 6 supersedes the earlier missing-writer status: `src/fp_atmosphere.py` exists and its file-format checks passed. The Fortran transport solve and production FP–RHD feedback remain unverified here. Snapshot post-processing is exploratory; the current solver routes are in [the methodology](00_objectives_and_methodology.md), Section 4; standalone FP is the transport-sensitivity extension E7. Legacy SQ labels below refer to earlier designs.
 
 **Licence:** Apache-2.0 (keep the NOTICE/licence text if code is redistributed; cite Allred et al. 2020; the repository provides `paper.bib`).
 
@@ -35,27 +37,27 @@
 
 ## 3. Gaps and cautions found
 
-1. **Atmosphere file format.** `readatm.py` reads an unformatted Fortran file (SciPy `FortranFile`): three int32 (`nz`, `nions`, `nneutrals`), then one real array in the order `zin`, `tg`, `bfield`, `dni[nz,nions]`, `dnn[nz,nneutrals]`, `mion`, `Zion`, `Zn`, `Enion`. There is **no writer** in the repository, so we must write one and validate it by reading back the bundled example atmospheres (`examples/atm.13Mm.3MK.dat`). Real-precision (single or double) and index order must be checked against those files.
+1. **Atmosphere file format.** `readatm.py` reads an unformatted Fortran file (SciPy `FortranFile`): three int32 (`nz`, `nions`, `nneutrals`), then one real array in the order `zin`, `tg`, `bfield`, `dni[nz,nions]`, `dnn[nz,nneutrals]`, `mion`, `Zion`, `Zn`, `Enion`. At the initial inspection there was **no project writer**; Section 6 records the subsequently implemented writer and its validation by reading back the bundled example atmospheres (`examples/atm.13Mm.3MK.dat`). The example-file checks resolved the record layout and precision; physically valid conversion of production atmospheres remains a separate task.
 2. **Ionization state from HYDRAD.** FP needs ion and neutral densities per species. HYDRAD gives total density and temperature and its own hydrogen ionization treatment (to be checked). The corona is fully ionized, which is where η_cor is decided; the chromospheric neutral fraction affects where the rest of the beam stops.
 3. **Quasi-static assumption.** The electron transit time over a 13–26 Mm path is about 0.3 s for 20 keV, short compared with the 10 s pulses but comparable to the 0.2 s ramps. Declare it and exclude the ramps from the photon comparison.
 4. **Bremsstrahlung treatment** (`fpbrem.py`): Haug (1997) electron–ion cross-section; **no electron–electron bremsstrahlung, no angular dependence, no albedo**; ions through a mean-Z² factor. This is adequate for a *differential* result: the same treatment applies to pulse 1 and pulse 2, so ΔB = B₂ − B₁ largely cancels common systematics, whereas the absolute B₁ does not. The standard cold-thick-target fit uses another cross-section, so B₁ ≠ 0 is expected and is part of the baseline. Albedo should be added to both or to neither.
-5. **No bundled warm-target electron photon validation.** `compare_fp_t86` covers protons; `compare_fp_e78` covers cold electrons. We must validate the electron photons in a warm target ourselves, for example FP on an isothermal uniform atmosphere versus the analytic warm-target function of OSPEX (`f_thick_warm`). This validation is also the negative control of `docs/00` (Section 6.9).
+5. **No bundled warm-target electron photon validation.** `compare_fp_t86` covers protons; `compare_fp_e78` covers cold electrons. We must validate the electron photons in a warm target ourselves, for example FP on an isothermal uniform atmosphere versus the analytic warm-target function of OSPEX (`f_thick_warm`). This is a potential transport-verification check, distinct from the history-omission controls in v5; match assumptions before interpreting agreement.
 6. **Energy grid.** The default `Emax = 2000·Ecut` (tens of MeV) with `nE = 100` would be coarse in the 4–100 keV STIX range; set `Emax` lower and test convergence in `nE`. `Emin = 1 keV` is adequate for kT of a few keV.
 7. **Geometry.** The beam is injected at the loop top (z measured from the photosphere in `zin`, from the loop top in `z`); only a half loop is described. Our HYDRAD loop has to be mapped to a half loop with a uniform field (`inc_magmirror` off).
 8. **Build.** Needs a Fortran compiler, MPI and HDF5 with Fortran bindings. None is installed on this Mac; it needs either a package-manager install or the cluster. Smaller dependency chain than RADYN (no NASA CDF library), but not trivial.
 9. **Cost unknown.** Each run is an iterative nonlinear solve (`maxiter` 100, tolerances in the manual); the wall time per snapshot and beam is not documented.
 
-## 4. Consequence for the plan
+## 4. Consequences for the v5 plan
 
-- **A more decisive first test.** With FP the gate no longer needs to rest on the column ratio. Take two HYDRAD snapshots (relaxed atmosphere and atmosphere at the onset of pulse 2), run FP with the same beam on both and compare the fraction of `heatrate` deposited above the transition region (η_cor) and the photon spectra. This addresses the criticism that the column ratio was neither necessary nor sufficient for the inference bias. It requires the FP build (Section 3, item 8) and the atmosphere writer (item 1). The column ratio stays as a first, cheaper look.
-- **The forward model shrinks.** The expensive custom-transport step of the 20-week plan is replaced by an existing, published solver. What remains to build: the atmosphere writer, the thermal-emission calculation, the STIX response, the fit, and the validation of item 5.
-- **Consistency check.** `heatrate(z)` from FP on a snapshot can be compared directly with HYDRAD's Hawley–Fisher heating on the same snapshot, bounding the circularity of letting HYDRAD heat the atmosphere with the cold-target assumption.
-- **Still open:** whether the photon spectra of FP, fitted with the standard model, give a ΔB larger than the Poisson noise of a real STIX event. This is the value question and is not answered by any documentation.
+- **Exploratory transport check:** FP on relaxed and previously heated HYDRAD snapshots with the same test beam can reveal changes in energy deposition and photons. This is useful before a large ensemble, but does not reproduce a published atmospheric benchmark or establish the feedback on the atmosphere.
+- **Production requirement:** establish a verified coupled route that updates transport with the evolving atmosphere and uses consistent deposition and applicable atomic source terms. Compare FP and analytic heating as a sensitivity check; a difference in deposition must be propagated through the dynamics or bounded before treating snapshot post-processing as an adequate approximation.
+- **Reusable work:** the atmosphere writer is implemented and its file format tested. Physical species/ionization mapping, actual FP execution, energy accounting, convergence and production diagnostic synthesis remain to be verified.
+- **Science endpoint:** the main v5 quantity is the incremental atmospheric and observable response to a later pulse, and whether it can be distinguished under uncertainty. Spectral-inference bias remains an optional consequence; a small bias is not a reason by itself to reject the atmospheric-memory study.
 
 ## 5. Next verification steps (cheap, in this order)
 
 1. Install the toolchain (compiler, MPI, HDF5 with Fortran bindings) or use the cluster; build FP and run the bundled examples `compare_fp_e78` and `compare_fp_h12`.
-2. Write the atmosphere writer and verify it by round trip with `readatm.py` and by reproducing an example.
+2. File-format writer verification is completed in Section 6; next validate the species, geometry and ionization mapping for actual solver snapshots.
 3. Convert one HYDRAD snapshot (E5 at pulse-2 onset) to an FP atmosphere and run FP with the base beam.
 4. Time the run and check convergence in `nE`, `nmu` and `Emax`.
 

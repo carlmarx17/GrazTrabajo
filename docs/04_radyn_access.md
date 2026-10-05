@@ -1,6 +1,6 @@
-# RADYN as an optional upgrade: what was verified and what is missing
+# RADYN verification notes and v5 production requirements
 
-**Project decision (updated 2026-10-03):** RADYN with Fokker–Planck is now an **optional upgrade**, not the single production solver. The atmosphere with history comes from HYDRAD and the electron transport and photons from the open-source FP solver (solarFP/FP, Apache-2.0) run on its snapshots (`docs/00_objectives_and_methodology.md`, Sections 6.3 and 6.7). RADYN would make the beam heating self-consistent with FP; it stays optional because compilation, license and verification can cost 1–2 months. The rest of this document records what was verified about the RADYN distribution.
+**Current role (v5.1, 2026-10-05):** RADYN with verified FP coupling is the preferred route for chromospheric diagnostics of the core experiment, once it is built, one F-CHROMA model is reproduced and restart branching is verified (test T6). HYDRAD is the pilot route. See [the methodology](00_objectives_and_methodology.md), Sections 4 and 5. The technical findings below record the distribution inspected in October 2026; no production RADYN run has been validated here. Installation/access notes must be rechecked before execution.
 
 **Source of what was verified:** the downloaded distribution (`radyn_fchroma.tar`, 87 844 352 bytes, SHA-256 `827948d913cdb33768a6f501cf42a7c8c3d6935fcd264b16a183f070ba70bf14`) from [folk.universitetetioslo.no/matsc/radyn](https://folk.universitetetioslo.no/matsc/radyn/), with its manual (`doc/radyn_manual.pdf`, dated February 2023) and its source code. It is not included in this repository (Section 1).
 
@@ -26,7 +26,7 @@
 | Initial atmospheres | VAL3C and 1 MK loops already prepared in `input/` | distribution |
 | Output | CDF files; analysis with IDL (not available here) or with [RadynPy](https://pypi.org/project/radynpy/) | manual |
 
-**Not verified:** whether the FP output stores the electron distribution (flux by position and energy), which is needed for the HXR photon computation (route (a) in `docs/00`, Section 6.7), and whether the treatment of the gas temperature and `thermE` is an adequate warm-target description for pulse 2.
+**Not verified:** whether the FP output stores the electron distribution (flux by position and energy), which would be needed for HXR photon synthesis in the selected production route, and whether the treatment of the gas temperature and `thermE` is an adequate warm-target description for pulse 2.
 
 **Adaptive grid:** variable indices do not correspond to a fixed height; the analysis routines handle it. Energy conservation is formulated on that grid and is not trivial to interpret (manual, Section 1).
 
@@ -58,7 +58,7 @@ Particularities that constrain the design (`prog/rftab.f`, `prog/beam.f`):
 - **Maximum time step** of 0.1 s recommended (`dtmax`) and frequent output.
 - The flux is an energy flux at the loop top; the area A remains unconstrained by STIX and is kept as a parameter with uncertainty.
 
-## 5. Verification gate before retiring HYDRAD
+## 5. Verification gate before production use
 
 1. Install a Fortran compiler and NASA's CDF library (**neither is installed**; it requires downloads that must be authorized).
 2. Compile the dynamic version (`dyn`) and reproduce a model of the public F-CHROMA database (96 models, VAL3C, δ = 3–8, Ec = 10–25 keV, 20 s triangular pulse) comparing with its published CDF.
@@ -67,7 +67,7 @@ Particularities that constrain the design (`prog/rftab.f`, `prog/beam.f`):
 5. Check whether the FP output contains the electron flux needed for the photon computation.
 6. Confirm the license with Mats Carlsson.
 
-Only after that is `vendor/HYDRAD/` removed from the repository (it stays in the git history).
+Completing these checks does not require removing `vendor/HYDRAD/`; retain useful reference and comparison infrastructure. For the core experiment, steps 2–5 plus synthesis of the chosen diagnostic are enough (test T6 in the methodology). Reproducing a published flare simulation is extension E3.
 
 ## 6. Risks
 
