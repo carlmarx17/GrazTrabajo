@@ -1,105 +1,125 @@
-# Do Successive Hard X-ray Pulses Re-use Flare Loops? Evaporated Plasma as a Tracer of Electron Paths with STIX
+# Atmospheric Memory under Repeated Electron-Beam Heating: When Does the Independent-Pulse Approximation Fail?
 
 **Author:** Carlos Alberto Martínez Sibaja ([@carlmarx17](https://github.com/carlmarx17))
-**Status:** research plan, version 4 (2026-10-04). Pilot data of one event (X5.0, 2023-12-31) retrieved and looked at; the tracer physics is implemented and tested. The full design is in `docs/00_objectives_and_methodology.md`; earlier versions are in `docs/archive/`.
 
-## The question
+**Status:** research plan v5.1, 2026-10-05. The core experiment's inputs and analysis code are implemented and tested; the HYDRAD pilot driver builds and runs, but its first smoke test showed that branch B1 (second pulse) is expensive with the default mesh refinement. Production runs, the chromospheric route and the extensions remain to be done.
 
-When the second or third hard X-ray pulse of a flare arrives, do its electrons travel through the loops that earlier pulses already filled with evaporated plasma (**re-use**), or through new, still empty loops? Flare models assume either answer without an observational test:
-- single-loop radiation-hydrodynamic runs heat the same loop again;
-- multithread models light a new thread for every burst.
+## Research question
 
-Imaging alone cannot decide, because a new loop next to an old one lies within one resolution element.
+**When does treating each electron pulse as if it struck the initial, relaxed atmosphere misrepresent the response to a later pulse by more than the beam, numerical and observational uncertainties of a chosen diagnostic?**
 
-## The idea: the atmosphere's memory is the measuring instrument
+Multithread and observation-driven flare models usually heat each strand once from a relaxed state. This project measures, in simulations, when that independent-pulse approximation fails for a loop that is struck again, and why.
 
-1. Earlier pulses evaporate plasma into their loops. STIX sees it as the thermal loop-top source, with a measurable emission measure and size.
-2. That plasma is dense enough to stop electrons in the corona: a column N stops every electron below E* = √(2KN), about 23 keV for 10²⁰ cm⁻² and 40 keV for 3×10²⁰ cm⁻².
-3. If a later pulse uses those loops, the loop top **must** shine in non-thermal hard X-rays. The ratio of loop-top to footpoint flux, and its fall above E*, follows from the thermal data alone.
-4. Comparing the observed ratio with the predicted one measures the re-use fraction φ. All the usual unknowns (filling factor, pitch angles, trapping, residual thermal emission, albedo) can only make the derived **upper bound on φ** larger, so the bound is robust. The return current is the exception and is checked separately.
+## Core experiment
 
-## What will be done
+All runs start from the same atmosphere; pulse 1 and the test pulse b are identical:
 
-1. Select bright multi-pulse STIX flares reproducibly. 167 flares from 2021–2026 have a net 25–50 keV peak of ≥ 5×10³ counts per 4 s; an estimated 20–60 survive the cuts.
-2. For each pulse:
-   - fit the spatially integrated spectrum (thermal + thick target);
-   - measure the thermal loop-top source at the pulse onset, giving the column and E*;
-   - image the non-thermal emission in energy bins with visibility forward fitting, giving the loop-top/footpoint ratio R(ε);
-   - obtain detection limits by injection–recovery.
-3. Compute the predicted ratio and the conservative bound on φ with `src/tracer.py`.
-4. Study how φ depends on footpoint motion, waiting time between pulses, and confined versus eruptive flares.
-5. Publish a paper, a public pulse-by-pulse catalogue and the pipeline.
+```text
+A0  no beam                         B0  test pulse b on the relaxed atmosphere
+A1  pulse 1, no test pulse          B1  pulse 1, waiting time tau, then b
 
-The core needs STIX only (thermal and non-thermal from one instrument), an analytic thick-target model and a cluster for the parallel imaging and injection–recovery runs. No radiation-hydrodynamic simulation is required.
+M_D(tau, t') = [D(B1) - D(A1)] - [D(B0) - D(A0)]      at equal time t' after the onset of b
+```
 
-## Decision gates (20-week plan)
+- **Error measure:** M_D is the error, for the diagnostic D, of the independent-pulse approximation.
+- **Decision rule:** the approximation fails where |M_D| > k·σ_tot. σ_tot combines numerical, beam and observational uncertainties, fixed before any contrast is computed.
+- **Relaxation:** whether pulse 1 has relaxed is judged from the state of A1 versus A0, not from M_D → 0.
+- **Outputs:** the waiting time τ* below which the approximation fails, its dependence on beam flux, and the physical mechanism.
 
-| Gate | Week | Passes if |
-|---|---|---|
-| G0 | 1 | ADS finds no prior quantitative re-use test; pre-registration agreed |
-| G1 | 3 | Synthetic end-to-end test recovers φ with ≥ 95 % coverage; on real STIX visibilities the loop-top detection limit is ≤ half the predicted ratio for dense pulses; a positive control agrees within a factor of 3 |
-| G2 | 8 | ≥ 15 flares with informative pulses |
-| G3 | 12 | Conclusions stable across imaging algorithms and energy bins |
+The pilot uses HYDRAD in its documented stable domain: F ≈ 1.3×10¹⁰ erg cm⁻² s⁻¹, 30 s pulses, 26 Mm loop, with coronal proxies. RADYN with Fokker–Planck transport is the preferred route for chromospheric lines, once it is built and verified.
 
-The main risk is the dynamic range of STIX imaging. A conservative bound φ ≤ 0.3 needs loop-top limits of a few percent of the footpoint flux (`docs/00`, Section 3.5). G1 measures it before any large investment.
+## Ready to test
 
-## What exists and what does not
+```bash
+.venv/bin/python -m pytest -q
+```
 
-| Item | Status |
+```bash
+.venv/bin/python src/experiments.py
+```
+
+```bash
+scripts/build_hydrad_scratch.sh ../hydrad-scratch
+```
+
+```bash
+.venv/bin/python scripts/hydrad_paired_branches.py ../hydrad-scratch --taus 10 30 60 120
+```
+
+1. The tests cover the beam tables, the paired branches and the contrast/decision code.
+2. `src/experiments.py` writes the HYDRAD and RADYN beam tables of the paired branches (`results/paired_branches/`).
+3. `build_hydrad_scratch.sh` copies `vendor/HYDRAD` to a scratch directory and builds it with beam heating.
+4. `hydrad_paired_branches.py` runs the four branches per waiting time and writes `results/paired_branches_hydrad/summary.json`.
+   - The summary contains the pre-test identity check, relaxation at t_k and M_D for coronal proxies.
+   - Add `--sigma sigma.json`, written before the run, to apply the decision rule.
+
+## Extensions to discuss
+
+These are not part of the committed core:
+
+- STIX pulse-resolved observations of re-struck footpoints and waiting times;
+- STIX-conditioned inference (same HXR, different histories);
+- benchmark reproduction of a published case;
+- full distinguishability calibration;
+- a third pulse;
+- independent-thread bookkeeping;
+- FP transport sensitivity;
+- the X5.0 third hard X-ray source;
+- collaboration with groups running RADYN or FLARIX;
+- the archived v4 loop-re-use tracer.
+
+See [the plan](docs/00_objectives_and_methodology.md), Section 8.
+
+## Current implementation
+
+| Component | Role |
 |---|---|
-| Tracer physics: column bound, knee energy, predicted ratio R(ε), conservative bound on φ | Done (`src/tracer.py`); 10 tests, including a check that the bound never falls below the true φ |
-| STIX catalogue search and candidate light curves | Done (`scripts/stix_event_search.py`) |
-| X5.0 2023-12-31 pilot: data, pulse images, first loop-top/footpoint ratios | First look done (`scripts/x5_first_look/`); CLEAN only, no uncertainties, no detection limits yet |
-| Onset thermal fits, visibility forward fitting, injection–recovery, synthetic end-to-end test | Not started |
-| Sample selection, catalogue, analysis | Not started |
-| Earlier infrastructure (beam tables, HYDRAD runs, FP and RADYN notes, toy inject-reinfer model) | Kept; not needed for the core result (`docs/01`–`docs/06`) |
+| `src/experiments.py` | Paired branches A0/B0/A1/B1 (core); E1–E5 matrix kept for extensions |
+| `src/memory_contrast.py` | Contrast M_D, σ_tot, k σ rule, τ*, relaxation check |
+| `scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py` | HYDRAD pilot of the core |
+| `src/beam_tables.py`, `src/radyn_ftab.py` | Beam encoding for HYDRAD and RADYN, with energy checks |
+| `src/fp_atmosphere.py` | FP atmosphere file reader/writer |
+| `src/toy_bias.py`, `src/tracer.py` | Earlier simplified inference model and archived v4 tracer |
+| STIX search and X5.0 first look | Exploratory observational infrastructure (extensions) |
+
+The Python tests validate these utilities. They do not validate a production solver, a published benchmark or a detected memory signature.
 
 ## Documentation
 
-- `docs/00_objectives_and_methodology.md`: v4 plan. Question, tracer physics with computed numbers, hypotheses and decision rules, objectives, data, step-by-step method, validation, tools, scale, timeline, risks.
-- `docs/03_novelty_and_prior_work.md`: prior work. Section 10 covers v4.
-- `docs/archive/`: v2 and v3 designs.
-- `docs/01`, `docs/02`, `docs/04`, `docs/05`, `docs/06`: infrastructure and tests from earlier versions (HYDRAD, pulse report, RADYN access, FP solver, usefulness tests).
-- `scripts/x5_first_look/README.md`: what the pilot scripts do and how far their results go.
-- `skills/stix-rhd-memory/SKILL.md`: working guidance for this project.
-
-## Repository contents
-
-- `src/tracer.py`: the tracer physics (v4 core).
-- `src/toy_bias.py`: thick-target transport and bremsstrahlung (two zones, Haug cross-section) used by the tracer, plus the earlier inject-reinfer toy.
-- `scripts/x5_first_look/`: pilot imaging of the X5.0 flare and early ratio predictions.
-- `scripts/stix_event_search.py`, `scripts/plot_stix_candidates.py`: catalogue search.
-- `src/beam_tables.py`, `src/radyn_ftab.py`, `src/experiments.py`, `src/fp_atmosphere.py`, `src/make_*.py`, HYDRAD scripts: earlier forward-modelling infrastructure.
-- `vendor/HYDRAD/`: upstream HYDRAD source (MIT, Rice University Solar Physics Research Group).
-- `tests/`: 60 pytest checks.
-- `data/`, `results/`: STIX data and products, git-ignored.
+- [Objectives and methodology](docs/00_objectives_and_methodology.md): authoritative v5.1 plan with the core experiment, decision rule, ready-to-test list, flexible work plan and extensions.
+- [Prior work and novelty](docs/03_novelty_and_prior_work.md): current assessment in Section 11; earlier sections are historical.
+- [HYDRAD implementation](docs/01_hydrad_code.md), [RADYN verification notes](docs/04_radyn_access.md) and [FP verification notes](docs/05_fp_solver_verification.md) describe solver capabilities and outstanding checks.
+- [Earlier usefulness tests](docs/06_usefulness_tests.md): exploratory column and spectral-bias results; the source of the pilot domain.
+- [X5.0 first look](scripts/x5_first_look/README.md): exploratory imaging.
+- [Project working guide](skills/stix-rhd-memory/SKILL.md).
+- Archived designs: [v4 loop re-use](docs/archive/00_objectives_v4_loop_reuse.md), [v3 spectral memory](docs/archive/00_objectives_v3_spectral_memory.md), [v2 inference bias](docs/archive/00_objectives_v2_inference_bias.md).
 
 ## Environments
 
-Two environments are used. The base one (Python 3.9) runs the models and tests:
+The base environment runs the models, the HYDRAD drivers and the tests:
 
-    python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-    .venv/bin/python -m pytest -q
+```bash
+python3 -m venv .venv
+```
 
-The STIX one (Python ≥ 3.10; stixpy, sunpy, xrayvision) runs the data analysis:
+```bash
+.venv/bin/pip install -r requirements.txt
+```
 
-    uv venv -p 3.12 .venv-stix && uv pip install --python .venv-stix -r requirements-stix.txt
+STIX analysis uses a separate Python ≥ 3.10 environment:
 
-## Pipeline
+```bash
+uv venv -p 3.12 .venv-stix
+```
 
-    STIX catalogue → selection (brightness, ≥ 3 pulses, loop-top/footpoint separation, informative pulses)
-            ↓
-    per pulse: integrated spectrum (T, EM, δ, Ec)  +  thermal loop-top image at onset (EM_LT, size)
-            ↓                                               ↓
-    non-thermal images in energy bins                 column N_min, knee E*, predicted R(ε)  [src/tracer.py]
-    (forward fit; CLEAN, MEM_GE)
-            ↓                                               ↓
-    observed R(ε) + detection limits (injection–recovery)  →  φ_max (conservative), φ (nominal)
-            ↓
-    catalogue → distribution of φ and its dependence on footpoint motion, waiting time, eruption
+```bash
+uv pip install --python .venv-stix -r requirements-stix.txt
+```
 
-## Reproducibility and cluster work
+HYDRAD is built from `vendor/HYDRAD` with the system C++ compiler. RADYN and FP are not installed by these commands; their requirements are in the solver notes.
 
-- **One flare per job:** pinned environments, fixed seeds and a manifest recording data files, versions, settings, wall time and failures.
-- **Failures stay in the record:** failed fits and images are kept and reported, never silently dropped.
-- **Pre-registration first:** selection criteria and decision thresholds are fixed before the full sample is measured.
+Record configuration, beam tables, initial states, code revisions, σ values and failed runs for every production run. Data and generated results are git-ignored.
+
+## Attribution
+
+The repository includes upstream HYDRAD source under its MIT licence. Cite the upstream simulation, transport, atomic-data and observational tools actually used; see [third-party notices](THIRD_PARTY_NOTICES.md).

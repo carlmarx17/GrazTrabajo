@@ -1,4 +1,10 @@
-"""The five-experiment matrix of the STIX -> RHD project on the bias of STIX electron inference.
+"""Beam inputs of the experiments: the paired branches of the core and the E1-E5 matrix.
+
+The core experiment (docs/00, Section 3) uses four paired branches, built by
+build_paired_branches: A0 (no beam), B0 (test pulse on the relaxed atmosphere),
+and, for every waiting time tau, A1 (pulse 1 only) and B1 (pulse 1, then the
+same test pulse).  The older E1-E5 matrix is kept for the extensions
+(independent threads E3a/E3b, continuous heating E4).
 
 Every experiment is described by one or more *components*.  A component is one
 flux tube (filament) simulated by one solver run with its own beam table.  The
@@ -19,7 +25,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 from beam_tables import (BeamTable, Pulse, build_table, energy_flux, ndot_from_flux)
 from radyn_ftab import to_radyn_ftab
@@ -187,8 +193,67 @@ def build_experiments(base: BaseCase = BaseCase()) -> List[Experiment]:
     return exps
 
 
-def write_experiments(base: BaseCase, outdir: str) -> List[Experiment]:
-    exps = build_experiments(base)
+#: Core pilot (docs/00, Section 3.2): the stable HYDRAD case with the largest column growth
+#: (F = 1.3e10 erg cm^-2 s^-1, 30 s pulse; run it in a 26 Mm loop, docs/06 variant V5).
+PILOT = BaseCase(duration=30.0)
+PILOT_TAUS = (10.0, 30.0, 60.0, 120.0)
+
+
+def _no_beam_table(t_end: float, ec_kev: float, delta: float) -> BeamTable:
+    """Zero-flux table over the whole run (A0).  RADYN still applies its 0.1 floor."""
+    return BeamTable(((0.0, 0.0, ec_kev, delta), (t_end, 0.0, ec_kev, delta)))
+
+
+def build_paired_branches(base: BaseCase = PILOT,
+                          taus: Sequence[float] = PILOT_TAUS) -> List[Experiment]:
+    """A0, B0 and, for every waiting time tau, A1 and B1 (docs/00, Section 3.1).
+
+    Pulse 1 and the test pulse b are identical copies of the base pulse.  Every
+    branch is one run in its own solver time from the same initial atmosphere;
+    marks["test_onset"] is the solver time at which b starts (or would start),
+    so responses are compared at equal t' = t - test_onset.  tau runs from the
+    end of pulse 1 to the onset of b.  A0 runs as long as the longest branch: it
+    is the baseline of B0 and the relaxed reference of every A1 at its t_k.
+    """
+    if not taus:
+        raise ValueError("at least one waiting time is needed")
+    if len(set(taus)) != len(taus):
+        raise ValueError("waiting times must be distinct")
+    p = base.pulses()[0]
+    after = p.duration + base.tail                # simulated time after every test onset
+    t_k = {tau: p.t_end + tau for tau in taus}    # build_table rejects tau <= ramp
+    t_end_max = max(t_k.values()) + after
+    one = build_table([p], base.ramp)
+
+    marks0 = {"test_onset": p.t_start}
+    marks0.update({"t_k(tau=%gs)" % tau: t for tau, t in t_k.items()})
+    exps = [
+        Experiment("A0_no_beam", "Initial atmosphere, no beam",
+                   "Baseline of B0 at equal solver time, and relaxed reference for A1 at t_k.",
+                   [Component("tube", _no_beam_table(t_end_max, p.ec_kev, p.delta),
+                              base.area_cm2, 0.0, t_end_max, ())], t_end_max, marks0),
+        Experiment("B0_test_relaxed", "Test pulse on the relaxed atmosphere",
+                   "Response assumed by the independent-pulse approximation: Delta D_0 = B0 - A0.",
+                   [Component("tube", one, base.area_cm2, 0.0, p.t_start + after, (p,))],
+                   p.t_start + after, {"test_onset": p.t_start}),
+    ]
+    for tau in taus:
+        b = p.shifted(t_k[tau] - p.t_start)
+        end = t_k[tau] + after
+        marks = {"pulse1_onset": p.t_start, "test_onset": t_k[tau]}
+        exps.append(Experiment(
+            "A1_tau%gs" % tau, "Pulse 1 only (tau = %g s)" % tau,
+            "State left by pulse 1 without the test pulse; identical to B1 before t_k.",
+            [Component("tube", one, base.area_cm2, 0.0, end, (p,))], end, dict(marks)))
+        exps.append(Experiment(
+            "B1_tau%gs" % tau, "Pulse 1, then the test pulse after %g s" % tau,
+            "Response with history: Delta D_1 = B1 - A1; M = Delta D_1 - Delta D_0.",
+            [Component("tube", build_table([p, b], base.ramp), base.area_cm2, 0.0, end, (p, b))],
+            end, dict(marks)))
+    return exps
+
+
+def _write(exps: List[Experiment], outdir: str, header: dict) -> None:
     for e in exps:
         for c in e.components:
             d = os.path.join(outdir, e.name, c.label)
@@ -198,14 +263,32 @@ def write_experiments(base: BaseCase, outdir: str) -> List[Experiment]:
             with open(os.path.join(d, "ftab.dat"), "w") as fh:                  # RADYN ibeam = 8
                 fh.write(to_radyn_ftab(c.table, c.t_end_sim, note=e.name + "/" + c.label))
     with open(os.path.join(outdir, "manifest.json"), "w") as fh:
-        json.dump({"base_case": base.__dict__, "synthetic": True,
-                   "experiments": [e.manifest() for e in exps]}, fh, indent=2)
+        json.dump(dict(header, experiments=[e.manifest() for e in exps]), fh, indent=2)
+
+
+def write_experiments(base: BaseCase, outdir: str) -> List[Experiment]:
+    exps = build_experiments(base)
+    _write(exps, outdir, {"base_case": base.__dict__, "synthetic": True})
+    return exps
+
+
+def write_paired_branches(base: BaseCase, taus: Sequence[float], outdir: str) -> List[Experiment]:
+    """Beam tables of the core branches.  With RADYN, branch B1 from A1 by restart: the
+    tensioned spline of ftab.dat can couple rows on both sides of t_k."""
+    exps = build_paired_branches(base, taus)
+    _write(exps, outdir, {"base_case": base.__dict__, "synthetic": True,
+                          "waiting_times_s": list(taus),
+                          "contrast": "M = (B1 - A1) - (B0 - A0) at equal t' = t - test_onset"})
     return exps
 
 
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
-    out = os.path.join(here, "..", "results", "experiments")
-    for e in write_experiments(BaseCase(), out):
-        print("%-28s E = %.4e erg  A_tot = %.2e cm2  components = %d"
-              % (e.name, e.energy_erg(), e.total_area_cm2(), len(e.components)))
+    for name, exps in (
+            ("paired_branches", write_paired_branches(PILOT, PILOT_TAUS,
+                                                      os.path.join(here, "..", "results", "paired_branches"))),
+            ("experiments", write_experiments(BaseCase(), os.path.join(here, "..", "results", "experiments")))):
+        print("results/%s:" % name)
+        for e in exps:
+            print("  %-28s E = %.4e erg  A_tot = %.2e cm2  components = %d"
+                  % (e.name, e.energy_erg(), e.total_area_cm2(), len(e.components)))

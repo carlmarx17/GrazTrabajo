@@ -4,7 +4,9 @@
 **Date:** 2026-10-03
 **Code:** `src/toy_bias.py` (forward model and fits, 8 unit tests in `tests/test_toy_bias.py`), `scripts/toy_bias_sweep.py`, `scripts/plot_toy_bias.py`, `scripts/hydrad_column_test.py`, `scripts/hydrad_gate_variants.py`. Numerical outputs go to `results/` (git-ignored); every number below can be regenerated with those scripts.
 
-## 0. Bottom line
+> **v5.1 interpretation (2026-10-05):** this is a historical exploratory report on spectral-inference bias and column growth. The active objective is [when the independent-pulse approximation fails](00_objectives_and_methodology.md); variant V5 (26 Mm, 30 s, F = 1.3×10¹⁰) sets its HYDRAD pilot domain. A small bias in inferred electron parameters does not exclude a substantial velocity, ionization or line-emission response. These toy results and temperature-proxy columns do not validate coupled FP–RHD, a real STIX response or production chromospheric synthesis. Older gate labels and next-step priorities below belong to the earlier designs.
+
+## 0. Recorded findings
 
 1. **The mechanism exists and has a definite sign.** When the first pulse raises the ionized column that the second pulse must cross, the standard fit (isothermal + cold, fully ionized thick target) returns a **harder δ** (by 0.1–0.3) and a **lower electron rate** (by up to a factor of ~2) for an identical injected beam. In this toy it is the known nonuniform-ionization effect of Kontar, Brown & McArthur (2002) acting from pulse to pulse, not thermal contamination, which pushes δ the other way.
 2. **It matters only if two conditions hold together.** First, the ionized column at the onset of pulse 2 must reach about 5×10¹⁹–10²⁰ cm⁻², comparable to the stopping column of the electrons near Ec. Second, the pulses must be bright: about 10⁵ counts or more per pulse in 6–100 keV with the illustrative response used here. For a beam like the first burst of Collier et al. (2024) with comparable statistics (σ_δ ≈ 0.1), the bias stays below 2σ.
@@ -130,7 +132,7 @@ The E2 and E5 runs are identical up to the pulse-2 ramp (difference 0), as the s
 
 ## 8. What this means, and the next decisive tests
 
-**Update 2026-10-03:** these results led to the v3 design of `docs/00`. The bias studied here becomes the forward-modelling component of a test that separates target memory, return current and acceleration with real STIX data. The real-data test of item 1 below is now objective O2–O4 there, with the events of `docs/00`, Section 5.
+**Update 2026-10-03:** these results led to the [archived v3 design](archive/00_objectives_v3_spectral_memory.md). The bias studied here becomes the forward-modelling component of a test that separates target memory, return current and acceleration with real STIX data. The real-data test of item 1 below was proposed there under its then-current objectives and event list; v5 priorities are defined in the active methodology.
 
 - **The usefulness is conditional, not refuted.** The bias is large enough to matter (Δδ ≈ −0.2 to −0.3, apparent Ṅ drop up to ×2) only for energetic first pulses in short loops, observed with ~10⁵ counts per pulse or more.
 - **Making the code survive realistic fluxes is now the bottleneck,** more than the physics. The options are fixing HYDRAD, using RADYN+FP, or accepting the toy for the parameter map.

@@ -1,4 +1,6 @@
-# First look at SOL2023-12-31 X5.0 (pilot event of v4)
+# First look at SOL2023-12-31 X5.0 (historical v4 pilot)
+
+> **Current status (v5.1):** this remains an exploratory imaging dataset. It belongs to the extensions to discuss (E1 observational part, E8 third source), not to the core; see [the active plan](../../docs/00_objectives_and_methodology.md), Section 8.
 
 Recovered on 2026-10-04 from a temporary session folder; paths are now relative to the
 repository. Run with the STIX environment (`requirements-stix.txt`, Python >= 3.10).

@@ -3,7 +3,7 @@
 **Author:** Carlos Alberto Martínez Sibaja
 **Search date:** 2026-10-02 (second pass, deeper than the earlier one on the same day).
 
-> **Scope warning.** Sections 1–7 assess the **previous** research question (v1: "how much atmospheric memory is there after successive pulses"). The project question is now the **bias of STIX electron inference in successive pulses** (`docs/00_objectives_and_methodology.md`, v2). Sections 1–7 remain valid as a literature map but the novelty verdict does **not** transfer; the current question is assessed only preliminarily in Section 8.
+> **Current scope (v5.1, 2026-10-05):** the active question is when the independent-pulse approximation (each pulse treated as if it struck the relaxed atmosphere) fails for a chosen diagnostic. See **Section 11** for the current assessment and [the methodology](00_objectives_and_methodology.md). Sections 1–10 preserve the searches and provisional verdicts for earlier versions; they do not establish novelty for v5.1. No exhaustive updated ADS search has been completed.
 
 **Summary of the v1 assessment:** there is a real but **narrow** gap. The STIX → RHD pipeline, the qualitative effect that the stopping depth changes with the atmosphere, and the "filaments versus continuous" comparison are **already done**. No study was found that quantifies the **pulse-by-pulse memory of the same tube** with a controlled counterfactual, nor its **detectability** with STIX uncertainties.
 
@@ -177,3 +177,58 @@ ADS queries to run (gate G0):
 2. `abs:("multithread" OR "multi-thread") AND abs:("hard X-ray") AND abs:("imaging" OR "loop top")`
 3. `abs:"STIX" AND abs:("loop-top" OR "coronal source") AND abs:("footpoint")`
 4. Citations of Liu et al. 2006, Ning & Cao 2010 and Simões & Kontar 2013.
+
+
+## 11. Current assessment (v5.1, 2026-10-05): when does the independent-pulse approximation fail?
+
+### 11.1 What the paper proposes
+
+For two identical pulses in one loop, compare the response to the second pulse with the response of a relaxed atmosphere using four paired branches (no beam; test pulse only; pulse 1 only; pulse 1 and the test pulse). The contrast M_D(τ) is the error of the independent-pulse approximation for a diagnostic D. Map it against the waiting time τ and the beam flux, explain it with the state left by pulse 1, and judge it against numerical, beam and observational uncertainties fixed in advance ([methodology](00_objectives_and_methodology.md), Section 3). Benchmark reproduction, observational application and full distinguishability calibration are extensions, not the core.
+
+This update incorporates a focused review of primary papers made during the project discussion and a critical review of v5. It is not an exhaustive literature search or evidence that no equivalent study exists.
+
+### 11.2 Closest precedents and the distinction to establish
+
+| Prior work | Established contribution | Required distinction for this project |
+|---|---|---|
+| [Kennedy et al. 2015](https://arxiv.org/abs/1504.07541) | Observed RHESSI beam evolution drives RADYN; atmospheric response and changing stopping depths are studied | History is retained implicitly; isolate its effect with paired branches |
+| [Polito et al. 2018](https://arxiv.org/abs/1804.05970) | RADYN nanoflare strands; the initial loop state and Ec change where the beam deposits energy | Preheating as an initial condition, not as the history of an earlier pulse |
+| [Cho, Testa, De Pontieu & Polito 2023](https://arxiv.org/abs/2211.06832) | Table 2 includes a RADYN model with 20 s of heating, a 60 s pause and 20 s more (F = 6×10⁸ erg cm⁻² s⁻¹, Ec = 10 keV, δ = 7); models are compared statistically with IRIS footpoint brightenings | Simulating two separated episodes is not new. Distinction: flare fluxes, a waiting-time scan and a paired fresh-atmosphere control. Read the full text to confirm that the second response is not compared with a fresh one |
+| [Kerr, Polito, Xu & Allred 2024](https://arxiv.org/abs/2405.02799) | 100 s of weak electron heating (5×10⁸) before flare fluxes changes the Mg II ribbon-front response; front lifetime measures the weak-heating duration | Weak → strong preconditioning with an observable is established. Distinction: strong → strong pulses separated by τ, with paired controls and a decision rule |
+| [Litwicka, Heinzel & Kašparová 2025](https://doi.org/10.3847/1538-4357/adc393) | Filamentary (four consecutive pulses) versus continuous beam heating, on VAL-C and preheated VAL-C, changes synthetic chromospheric emission | Separate same-strand temporal memory from spatial mixing, pulse shape, area and energy-flux differences |
+| [Litwicka et al., 2026 conference abstract](https://plan.events.mpg.de/event/453/contributions/3104/) | Nearby work on STIX/IRIS-constrained filamentary heating | Check subsequent publications and precise overlap; an abstract is not a completed peer-reviewed result |
+| [Kašparová et al. 2009](https://arxiv.org/abs/0904.2084) | Sub-second electron-beam pulses and time-dependent hydrogen lines | Sub-second pulse trains, not waiting times of tens of seconds |
+| [Rubio da Costa et al. 2016](https://arxiv.org/abs/1603.04951); [Reep et al. 2018](https://arxiv.org/abs/1802.08884) | Observation-driven multithread modelling; duration of heating on unresolved loops | They use the approximation under test; the result tells when it holds |
+| [Allred et al. 2020](https://arxiv.org/abs/2008.10671); [Carlsson et al. 2023](https://arxiv.org/abs/2304.02618) | FP transport and radiation/deposition modelling; the public F-CHROMA grid (20 s triangular beam plus 30 s, closed boundaries, 10 Mm loop) | Tools and data: use and verify them; the grid alone covers τ ≤ 30 s |
+| [Collier et al. 2024](https://arxiv.org/abs/2411.09319) | STIX fits drive a RADYN first-burst calculation with an EUV comparison | Optional benchmark (extension); a first burst carries no history |
+| [Druett, Ruan & Keppens 2023](https://arxiv.org/abs/2310.11226) | Beam-driven evaporation in multidimensional MHD modelling | Adding MHD is not automatically novel; the core stays within prescribed geometry |
+
+### 11.3 Strength of the proposed claim
+
+- **Not novel by itself:** simulating two heating episodes; showing that preheating changes deposition or a line; STIX → RHD input tables; using FP; releasing a pipeline.
+- **Incremental contribution:** a paired-branch map, at flare fluxes, of the error of the independent-pulse approximation versus τ and flux, with its physical origin, judged against uncertainties fixed before the contrast is computed.
+- **Stronger result (extensions):** observed pulses struck again within the waiting times where the approximation fails, or a diagnostic that separates histories given the same STIX data.
+- **Useful bound:** the approximation is adequate in the explored domain for the chosen diagnostic. Solver failures, or no visible effect without stated uncertainties, do not establish that.
+
+Do not describe the work as the first such study before completing the targeted search. No journal outcome or impact level is guaranteed by this design.
+
+### 11.4 Searches needed before the core runs
+
+Search abstracts and full texts for repeated, successive, intermittent or recurrent electron-beam heating; reheating of the same strand; atmospheric preconditioning; time-dependent ionization and recombination; restart or counterfactual experiments. Include RADYN, HYDRAD, FLARIX and FP, and both solar and relevant stellar studies. Read the full texts of Cho et al. 2023, Kerr et al. 2024 and Litwicka et al. 2025 first.
+
+Suggested ADS starting queries (adapt syntax as required):
+
+```text
+abs:("RADYN" OR "HYDRAD" OR "FLARIX") AND abs:("repeated" OR "successive" OR "intermittent" OR "reheating" OR "preheated" OR "memory")
+abs:("electron beam" OR "electron-beam") AND abs:("preheating" OR "preconditioning" OR "pause" OR "waiting time") AND abs:"flare"
+abs:("multithread" OR "multi-thread") AND abs:("flare") AND abs:("RADYN" OR "HYDRAD")
+citations(identifier:"arXiv:2405.02799") OR citations(identifier:"arXiv:2211.06832") OR citations(doi:"10.3847/1538-4357/adc393")
+```
+
+Follow citations of the closest studies, read methods rather than only abstracts, record search dates and access limits, and revisit the assessment before submission.
+
+### 11.5 Corrections to the historical v4 interpretation
+
+[Liu et al. 2006](https://arxiv.org/abs/astro-ph/0603510) inferred an evolving density profile from loop brightness as well as describing source evolution; characterizing that precedent as only qualitative understates its scope.
+
+The old tracer's EM-derived rms density is not a general lower bound on density along an electron path in nonuniform unresolved plasma. Tests that impose a true column above the estimated column verify the model conditional on that assumption. A monotonically declining ratio spectrum also does not establish a uniquely identifiable knee or exclude every trapping/acceleration alternative. These issues motivate keeping the tracer as optional historical infrastructure, not the premise of v5 or v5.1.

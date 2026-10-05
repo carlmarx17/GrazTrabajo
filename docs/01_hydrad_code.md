@@ -1,4 +1,4 @@
-# First reading of HYDRAD
+# HYDRAD implementation and current role
 
 HYDRAD does not solve the full MHD equations. Along a fixed field line it solves mass, momentum and electron and ion energy, with gravity, thermal conduction, radiation and heating. For this project the decisive term is the beam heating, `Q_beam(s,t)`.
 
@@ -37,8 +37,8 @@ The HYDRAD solver is not modified. The code in `src/` does the reproducible tran
 STIX fit(t) → F(t), Ec(t), δ(t) → beam_heating_model.cfg → Q_beam(s,t) profile
 ```
 
-No compiled executable is stored in the repository. The upstream configuration does not define `BEAM_HEATING` and the build scripts are Windows `.bat` files; a macOS build worked with `-DBEAM_HEATING -include cstdlib -include cstring -std=gnu++14` (see the README for the known NaN failure with strong or abruptly switched-off beams).
+No compiled executable is stored in the repository. The upstream configuration does not define `BEAM_HEATING` and the build scripts are Windows `.bat` files; a macOS build worked with `-DBEAM_HEATING -include cstdlib -include cstring -std=gnu++14` (see [the exploratory tests](06_usefulness_tests.md) for failures in the tested heating configurations).
 
 ## Important limit for the diagnostics
 
-HYDRAD includes radiation and a forward model for optically thin lines, useful for AIA/Fe XVIII. Its treatment does not replace the NLTE radiative transfer of RADYN for an Hα profile. HYDRAD is also not equivalent to RADYN with Fokker–Planck transport: its beam heating is analytic (collisional, fixed normal incidence). In this project it is used for the column test and as a coronal fallback until RADYN is verified (`docs/00_objectives_and_methodology.md`, Section 6.3).
+HYDRAD includes radiation and a forward model for optically thin lines, useful for AIA/Fe XVIII. Its treatment does not replace the NLTE radiative transfer of RADYN for an Hα profile. HYDRAD is also not equivalent to RADYN with Fokker–Planck transport: its beam heating is analytic (collisional, fixed normal incidence). In v5.1 it is the pilot route of the core experiment, for coronal and transition-region proxies (`scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py`). Chromospheric claims require the RADYN route; see [the current methodology](00_objectives_and_methodology.md), Section 4. Full chromospheric line synthesis depends on enabled atomic and radiative physics, not only the code name. FP post-processing of an analytically heated atmosphere does not by itself establish consistent FP–RHD feedback.
