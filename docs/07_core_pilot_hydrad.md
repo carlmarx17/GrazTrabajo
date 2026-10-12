@@ -287,4 +287,42 @@ Around the end of the pulse (t′ ≈ 15–45 s), a beam changed by its fit erro
 
 ## 7. Consequences for review R1
 
-To be completed after Sections 5 and 6.
+Review R1 of [the plan](00_objectives_and_methodology.md), Section 6, asks two questions and offers four options. This section answers them from Sections 2–6 and records the decision.
+
+### 7.1 The R1 questions
+
+| Question | Answer | Where |
+|---|---|---|
+| Do the four branches run cleanly? | Yes, with `SAFETY_CONDUCTION = 0.2` and an 8 Mm chromosphere, for τ = 10, 30 and 60 s over the full 89 s window, at about 2 h of wall time on 6 cores. τ = 120 s is not usable: its B1 develops the grid-scale oscillation as soon as the test pulse starts, and the analysis now ends a window at the first profile above `OSC_MAX` | 2.2, 6.1 |
+| Are the pre-test states identical? | By construction: B1 restarts from the A1 profile just before t_k, so A1 and B1 share one trajectory rather than two runs that must agree. The restart itself costs 2 % of the peak \|M\| for the emission measure and 13 % of its contrast for the coronal column | 1, 4.1, 4.2 |
+| Is a contrast above σ_num for at least one proxy? | Yes, for four. With the 8 Mm chromosphere the peak \|M\| is 9 σ_num for the hot emission measure, 21 σ_num for the EM-weighted temperature, 9 σ_num for the apex temperature and 9 σ_num for the apex density. Only the coronal column fails, because its 3×10⁴ K threshold sits on the condensations and on the radiation floor | 5, 6.2 |
+| Is a RADYN route within reach? | Not yet. None of the six gate items of [docs/04](04_radyn_access.md), Section 5, is done: no Fortran compiler or NASA CDF library is installed, no F-CHROMA model has been reproduced, restart has not been shown to restore atomic populations, and the licence is unconfirmed. The distribution has been read, not run | [docs/04](04_radyn_access.md) |
+
+The σ_num of Section 5 covers the conduction time step only. Spatial resolution has not been varied, so every ratio above is an upper bound on the margin.
+
+### 7.2 Decision: option (a), with the RADYN gate in parallel
+
+**Continue the core map with HYDRAD and coronal proxies** (option (a)), and keep the RADYN gate (T5, T6) as a parallel task rather than a prerequisite. The reasons:
+
+- The pilot answers the R1 criterion. The contrast is not a numerical residue: in the first ~14 s and again after the pulse it exceeds 3 (σ_num ⊕ σ_beam), and it has a mechanism — the corona is already filled, so the beam stops in it, the apex warms less and the hot emission needs no evaporation delay.
+- The two independent configurations of Section 4 (26 and 60 Mm, different radiation and restriction settings) and the deeper chromosphere of Section 6 give the same signs. The numerical treatment is not driving the result.
+- The RADYN gate is a toolchain and licence problem, not a physics one, and its cost is unknown until a compiler exists. Making the core wait on it would stall Phase 1.
+
+Options (b) and (c) are not rejected but deferred: they are the route to a chromospheric diagnostic, which is the natural second half of the question and which HYDRAD cannot answer at all (Section 7.4). Option (d) does not apply, since M is not below σ_num.
+
+### 7.3 What Phase 1 needs before the core map
+
+The pilot leaves five items that must be settled before the τ × F map is run, not after it.
+
+1. **Spatial σ_num.** Vary the refinement thresholds and the maximum refinement level, not only the conduction step. Until then the error budget is incomplete. This also decides whether the second A1 episode of Section 6.1 — a rise of the hot EM and of the apex temperature between t ≈ 85 and 130 s with no beam and conserved mass — is loop dynamics or a resolution artefact. It overlaps the windows of τ = 30 and 60 s and the relaxation phase that precedes τ = 120 s, so the interpretation of the longer waiting times depends on it.
+2. **σ_obs and a pre-registered decision.** Sections 5.1 and 6.2 are exploratory by construction: σ_obs is missing and the σ values were measured after the contrasts, which inverts the order the plan requires. Phase 1 must name the instrument that would measure the chosen proxy, write σ into the manifest with `--sigma` before the runs, and only then compute M.
+3. **A τ grid that reaches relaxation.** The 5 % criterion fails at every sampled τ, so τ* > 120 s for this loop and beam: the pilot cannot bound it from above. Either the grid extends well past 120 s — which needs `SAFETY_CONDUCTION = 0.1` for the oscillation, at a higher cost — or the domain moves to a weaker pulse 1, where the loop relaxes within the window.
+4. **One primary diagnostic, chosen on robustness.** The hot emission measure and the EM-weighted temperature are the stable pair. The point diagnostics at the apex change sign with t′ and τ as the evaporation fronts arrive, and are unusable in the 26 Mm loop when a condensation crosses the apex cell; the coronal column fails σ_num. The flux levels of the plan should be added only where the chosen diagnostic keeps a mass-conserving window.
+5. **The beam-degeneracy limit, stated as a result.** Around the end of the pulse a beam varied within its STIX fit errors moves the emission measure as much as history does. That is a finding about the diagnostic, not a defect of the run, and it belongs in the write-up next to the contrast.
+
+### 7.4 What this route cannot deliver
+
+- **No chromospheric claim.** The beam heating is analytic and the losses optically thin; there is no NLTE transfer. Mg II, Si IV and Hα statements need RADYN or a collaborator ([docs/01](01_hydrad_code.md)).
+- **No statement about 5×10¹⁰ erg cm⁻² s⁻¹ or above.** The stable conduction step did not cure those failures (Section 2.4), so the flux axis of the core map is bounded well below the fluxes of the F-CHROMA grid.
+- **Condensations and sloshing are model properties.** The colliding evaporation flows of a symmetric 1D loop produce coronal condensations in every surviving configuration, including 60 Mm. Any memory result in this loop is conditional on that treatment.
+- **One loop, one beam shape.** Identical boxcars in a single geometry. Nothing here separates history from loop length, from pulse shape or from asymmetry.

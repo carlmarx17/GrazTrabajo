@@ -178,6 +178,8 @@ Options at R1:
 - (c) ask a group with a working solver for runs;
 - (d) if M stays below σ_num throughout the stable domain, extend flux or duration only where the solver is stable, or report the bound in a short note.
 
+**R1 outcome (2026-10-05).** Option (a): the four branches run cleanly with `SAFETY_CONDUCTION = 0.2` and an 8 Mm chromosphere, and the contrast exceeds σ_num for four coronal proxies, so the core map continues with HYDRAD while the RADYN gate (T5, T6) runs in parallel. The reasoning and the five items Phase 1 must settle first are in [docs/07](07_core_pilot_hydrad.md), Section 7.
+
 The core is expected to take roughly 3–6 months, depending on the route. Extensions add time and are agreed with the supervisor.
 
 ## 7. Implementation status
