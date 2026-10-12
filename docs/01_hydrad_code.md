@@ -42,3 +42,8 @@ No compiled executable is stored in the repository. The upstream configuration d
 ## Important limit for the diagnostics
 
 HYDRAD includes radiation and a forward model for optically thin lines, useful for AIA/Fe XVIII. Its treatment does not replace the NLTE radiative transfer of RADYN for an Hα profile. HYDRAD is also not equivalent to RADYN with Fokker–Planck transport: its beam heating is analytic (collisional, fixed normal incidence). In v5.1 it is the pilot route of the core experiment, for coronal and transition-region proxies (`scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py`). Chromospheric claims require the RADYN route; see [the current methodology](00_objectives_and_methodology.md), Section 4. Full chromospheric line synthesis depends on enabled atomic and radiative physics, not only the code name. FP post-processing of an analytically heated atmosphere does not by itself establish consistent FP–RHD feedback.
+
+**Pilot findings (2026-10-05, [docs/07](07_core_pilot_hydrad.md)).**
+
+- **Conduction step.** With the shipped `SAFETY_CONDUCTION = 1.0`, a second pulse into a dense, evaporated corona triggers a grid-scale instability of the explicit conduction step; `SAFETY_CONDUCTION = 0.2` (`scripts/build_hydrad_scratch.sh --set`) removes it and keeps conservation. The same setting lets a 30 s pulse at 1.3×10¹⁰ run in a 60 Mm loop. It does not cure the failures at 5×10¹⁰.
+- **Thin chromosphere.** The shipped initial conditions use a 5 Mm isothermal chromosphere. After a 30 s pulse at 1.3×10¹⁰ the loop loses mass through the fixed boundary cells from ~50 s after the pulse, once the adaptive grid reaches them.

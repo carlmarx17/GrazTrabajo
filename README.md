@@ -2,7 +2,7 @@
 
 **Author:** Carlos Alberto Martínez Sibaja ([@carlmarx17](https://github.com/carlmarx17))
 
-**Status:** research plan v5.1, 2026-10-05. The core experiment's inputs and analysis code are implemented and tested; the HYDRAD pilot driver builds and runs, but its first smoke test showed that branch B1 (second pulse) is expensive with the default mesh refinement. Production runs, the chromospheric route and the extensions remain to be done.
+**Status:** research plan v5.1, 2026-10-05. The core experiment's inputs and analysis code are implemented and tested. The HYDRAD pilot has run for 26 and 60 Mm loops ([results](docs/07_core_pilot_hydrad.md)). With the shipped thin chromosphere, the loop mass is conserved only for ~50 s after a 30 s pulse, so the first contrasts cover τ = 10–30 s and the impulsive response. The waiting-time scan, the chromospheric route and the extensions remain to be done.
 
 ## Research question
 
@@ -26,7 +26,7 @@ M_D(tau, t') = [D(B1) - D(A1)] - [D(B0) - D(A0)]      at equal time t' after the
 - **Relaxation:** whether pulse 1 has relaxed is judged from the state of A1 versus A0, not from M_D → 0.
 - **Outputs:** the waiting time τ* below which the approximation fails, its dependence on beam flux, and the physical mechanism.
 
-The pilot uses HYDRAD in its documented stable domain: F ≈ 1.3×10¹⁰ erg cm⁻² s⁻¹, 30 s pulses, 26 Mm loop, with coronal proxies. RADYN with Fokker–Planck transport is the preferred route for chromospheric lines, once it is built and verified.
+The pilot uses HYDRAD with F ≈ 1.3×10¹⁰ erg cm⁻² s⁻¹, 30 s pulses and 26 or 60 Mm loops, with coronal proxies. RADYN with Fokker–Planck transport is the preferred route for chromospheric lines, once it is built and verified.
 
 ## Ready to test
 
@@ -39,18 +39,19 @@ The pilot uses HYDRAD in its documented stable domain: F ≈ 1.3×10¹⁰ erg cm
 ```
 
 ```bash
-scripts/build_hydrad_scratch.sh ../hydrad-scratch
+scripts/build_hydrad_scratch.sh ../hydrad-scratch --set SAFETY_CONDUCTION=0.2
 ```
 
 ```bash
-.venv/bin/python scripts/hydrad_paired_branches.py ../hydrad-scratch --taus 10 30 60 120
+.venv/bin/python scripts/hydrad_paired_branches.py ../hydrad-scratch --length-cm 6.0e9 --taus 10 30 --label L60
 ```
 
 1. The tests cover the beam tables, the paired branches and the contrast/decision code.
 2. `src/experiments.py` writes the HYDRAD and RADYN beam tables of the paired branches (`results/paired_branches/`).
-3. `build_hydrad_scratch.sh` copies `vendor/HYDRAD` to a scratch directory and builds it with beam heating.
-4. `hydrad_paired_branches.py` runs the four branches per waiting time and writes `results/paired_branches_hydrad/summary.json`.
-   - The summary contains the pre-test identity check, relaxation at t_k and M_D for coronal proxies.
+3. `build_hydrad_scratch.sh` copies `vendor/HYDRAD` to a scratch directory and builds it with beam heating. The conduction safety factor 0.2 avoids the instability described in [docs/07](docs/07_core_pilot_hydrad.md).
+4. `hydrad_paired_branches.py` runs A0, B0 and A1, then restarts B1 for every waiting time from A1, all in parallel. It writes `results/paired_branches_hydrad/<label>/`.
+   - The summary contains relaxation at t_k, the restart error, the mass-conserving window and M_D for coronal proxies.
+   - `--analyze-only` recomputes the analysis from existing runs.
    - Add `--sigma sigma.json`, written before the run, to apply the decision rule.
 
 ## Extensions to discuss
@@ -76,7 +77,7 @@ See [the plan](docs/00_objectives_and_methodology.md), Section 8.
 |---|---|
 | `src/experiments.py` | Paired branches A0/B0/A1/B1 (core); E1–E5 matrix kept for extensions |
 | `src/memory_contrast.py` | Contrast M_D, σ_tot, k σ rule, τ*, relaxation check |
-| `scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py` | HYDRAD pilot of the core |
+| `scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py`, `scripts/hydrad_numerical_error.py`, `scripts/hydrad_beam_error.py`, `scripts/pilot_uncertainty.py`, `scripts/plot_paired_branches.py` | HYDRAD pilot of the core: build with numerical settings, paired runs by restart, mass-conservation window, numerical and beam error, uncertainty map, figures |
 | `src/beam_tables.py`, `src/radyn_ftab.py` | Beam encoding for HYDRAD and RADYN, with energy checks |
 | `src/fp_atmosphere.py` | FP atmosphere file reader/writer |
 | `src/toy_bias.py`, `src/tracer.py` | Earlier simplified inference model and archived v4 tracer |
@@ -89,6 +90,7 @@ The Python tests validate these utilities. They do not validate a production sol
 - [Objectives and methodology](docs/00_objectives_and_methodology.md): authoritative v5.1 plan with the core experiment, decision rule, ready-to-test list, flexible work plan and extensions.
 - [Prior work and novelty](docs/03_novelty_and_prior_work.md): current assessment in Section 11; earlier sections are historical.
 - [HYDRAD implementation](docs/01_hydrad_code.md), [RADYN verification notes](docs/04_radyn_access.md) and [FP verification notes](docs/05_fp_solver_verification.md) describe solver capabilities and outstanding checks.
+- [Core pilot with HYDRAD](docs/07_core_pilot_hydrad.md): numerical stability, mass-conservation limits and first paired-branch contrasts.
 - [Earlier usefulness tests](docs/06_usefulness_tests.md): exploratory column and spectral-bias results; the source of the pilot domain.
 - [X5.0 first look](scripts/x5_first_look/README.md): exploratory imaging.
 - [Project working guide](skills/stix-rhd-memory/SKILL.md).

@@ -140,7 +140,7 @@ A crashed or unconverged run is not a physical result. The analysis code rejects
 
 | Route | Use | Required before production |
 |---|---|---|
-| **HYDRAD (available now)** | Pilot and coronal/transition-region proxies. Analytic collisional beam heating; optically thin power-law losses as shipped | Stable four-branch runs in the adopted domain; σ_num from a second resolution. It cannot support chromospheric-line claims ([HYDRAD notes](01_hydrad_code.md)) |
+| **HYDRAD (available now)** | Pilot and coronal/transition-region proxies. Analytic collisional beam heating; optically thin power-law losses as shipped | The pilot ([docs/07](07_core_pilot_hydrad.md)) needs `SAFETY_CONDUCTION = 0.2`. With the shipped 5 Mm isothermal chromosphere the loop loses mass from ~50 s after a 30 s pulse at 1.3×10¹⁰, so only τ ≲ 30 s and the impulsive window are usable. A deeper or optically thick chromosphere is needed for the waiting-time scan. It cannot support chromospheric-line claims ([HYDRAD notes](01_hydrad_code.md)) |
 | **RADYN with FP (preferred for chromospheric lines)** | F-CHROMA distribution with FP (Allred et al. 2015 version), restart branching, NLTE radiative transfer | Build on the cluster (Fortran, NASA CDF); reproduce one F-CHROMA model; verify that restart preserves atomic populations; measure wall time; confirm the licence and permission with M. Carlsson ([RADYN notes](04_radyn_access.md)) |
 | **Collaborator runs** | RADYN or FLARIX run by a group where the solver already works | To be discussed (Section 8, E9) |
 | **Standalone FP on snapshots** | Transport sensitivity only | Build and bundled examples ([FP notes](05_fp_solver_verification.md)); not a substitute for coupled FP–RHD |
@@ -153,8 +153,8 @@ In every branch, account for injected versus deposited energy. Do not add FP hea
 |---|---|---|---|
 | T1 | Paired-branch inputs | A0, B0, A1 and B1 beam tables per τ; identical rows before t_k; equal test-pulse energy | Implemented and tested (`build_paired_branches` in `src/experiments.py`). `.venv/bin/python src/experiments.py` writes `results/paired_branches/` |
 | T2 | Contrast and decision code | M_D on a common t′ grid, σ_tot, the k σ rule, τ*, relaxation check; NaN rejected | Implemented and tested (`src/memory_contrast.py`, `tests/test_memory_contrast.py`) |
-| T3 | HYDRAD pilot | Four branches per τ; pre-test identity; relaxation at t_k; M_D for coronal proxies | `scripts/build_hydrad_scratch.sh <scratch dir>`, then `.venv/bin/python scripts/hydrad_paired_branches.py <scratch dir> [--sigma sigma.json]`. Status: see Section 7 |
-| T4 | Numerical error | σ_num from a second resolution | Configure after T3 |
+| T3 | HYDRAD pilot | Four branches per τ; pre-test identity; relaxation at t_k; M_D for coronal proxies | `scripts/build_hydrad_scratch.sh <scratch dir>`, then `.venv/bin/python scripts/hydrad_paired_branches.py <scratch dir> [--sigma sigma.json]`. Run on 2026-10-05 for 26 and 60 Mm loops; results in [docs/07](07_core_pilot_hydrad.md) |
+| T4 | Numerical error | σ_num from a second time step or resolution, plus the restart error | `scripts/hydrad_numerical_error.py`; restart error measured, time-step variant in [docs/07](07_core_pilot_hydrad.md) |
 | T5 | F-CHROMA reading | Read public RADYN outputs; compare the end state (t = 50 s) with the initial one; deposition of b on both | Needs a download of a few models; whether radynpy reads the CDF files without the NASA library is to be checked. Covers τ ≤ 30 s only, with closed boundaries |
 | T6 | RADYN build and branching | One F-CHROMA model reproduced; restart preserves populations; wall time | Needs the cluster toolchain and licence confirmation |
 | T7 | Diagnostic synthesis | D from solver output for the chosen diagnostic | After the route is chosen |
@@ -187,7 +187,7 @@ The core is expected to take roughly 3–6 months, depending on the route. Exten
 | `src/beam_tables.py` | Core: pulse, flux and energy encoding for HYDRAD tables |
 | `src/experiments.py` | Core: paired branches (T1). The E1–E5 matrix is kept for extensions (E3a/E3b independent threads, E4 continuous heating) |
 | `src/memory_contrast.py` | Core: contrast and decision rule (T2) |
-| `scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py` | Core: HYDRAD pilot (T3). Build verified on 2026-10-05. Smoke test at τ = 30 s: A0, B0 and A1 completed; in B1 the adaptive mesh grew from ~630 to ~28 000 cells once the test pulse started, slowing the run to ~30 s of wall time per model second. Run cost of B1 is the first thing to resolve at R1 (refinement settings, or a coarser grid for the pilot) |
+| `scripts/build_hydrad_scratch.sh`, `scripts/hydrad_paired_branches.py`, `scripts/hydrad_numerical_error.py`, `scripts/hydrad_beam_error.py`, `scripts/pilot_uncertainty.py`, `scripts/plot_paired_branches.py` | Core: HYDRAD pilot (T3, T4). The B1 runaway was a conduction time-step instability, fixed with `SAFETY_CONDUCTION = 0.2`. Branches restart from A1, run in parallel and are masked where the loop mass is not conserved. First contrasts are in the impulsive window at τ = 10–30 s ([docs/07](07_core_pilot_hydrad.md)) |
 | `src/radyn_ftab.py` | RADYN route: beam tables. Energy checked under log-linear interpolation only |
 | `src/fp_atmosphere.py` | Extension: FP atmosphere file I/O |
 | `src/toy_bias.py` | Extension E2: STIX-conditioned inference |
