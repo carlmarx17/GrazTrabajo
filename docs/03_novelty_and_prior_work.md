@@ -1,7 +1,7 @@
 # Prior work and novelty assessment
 
 **Author:** Carlos Alberto Martínez Sibaja
-**Search date:** 2026-10-02 (second pass, deeper than the earlier one on the same day).
+**Search date:** 2026-10-02 (second pass, deeper than the earlier one on the same day). **Closest full texts read 2026-10-13: see Section 11.6.**
 
 > **Current scope (v5.1, 2026-10-05):** the active question is when the independent-pulse approximation (each pulse treated as if it struck the relaxed atmosphere) fails for a chosen diagnostic. See **Section 11** for the current assessment and [the methodology](00_objectives_and_methodology.md). Sections 1–10 preserve the searches and provisional verdicts for earlier versions; they do not establish novelty for v5.1. No exhaustive updated ADS search has been completed.
 
@@ -193,6 +193,9 @@ This update incorporates a focused review of primary papers made during the proj
 |---|---|---|
 | [Kennedy et al. 2015](https://arxiv.org/abs/1504.07541) | Observed RHESSI beam evolution drives RADYN; atmospheric response and changing stopping depths are studied | History is retained implicitly; isolate its effect with paired branches |
 | [Polito et al. 2018](https://arxiv.org/abs/1804.05970) | RADYN nanoflare strands; the initial loop state and Ec change where the beam deposits energy | Preheating as an initial condition, not as the history of an earlier pulse |
+| [Bakke et al. 2022](https://arxiv.org/abs/2201.11961) | RADYN nanoflare loops at 1 and 3 MK; the 3 MK loop "represents a previously heated strand" and its electrons "deposit more of their energy in the corona" | **The mechanism, published as an initial condition.** Distinction: history delivered by a simulated earlier pulse, with a waiting time and paired controls |
+| [Reep, Warren, Crump & Simões 2016](https://arxiv.org/abs/1607.06684) | **Seven electron-beam heating bursts on a single HYDRAD loop** (Emslie thick target, Ec ≈ 11 keV, δ ≈ 6, peak flux 5×10⁹ erg cm⁻² s⁻¹), rejected against observed Si IV / C II redshifts: "woefully inadequate" | **Closest precedent in code and physics.** But: no relaxed-loop control (the comparison is against observations), intervals neither stated nor scanned, sub-flare flux, and the aim is to reject the single-loop model for a TR diagnostic, not to measure the approximation's error |
+| [Barnes, Bradshaw & Viall 2019](https://arxiv.org/abs/1906.03350); [Cargill 2014](https://ui.adsabs.harvard.edu/abs/2014ApJ...784...49C) | Repeated same-strand nanoflares with the heating frequency defined as ε = ⟨t_wait⟩/τ_cool (ε = 0.1 / 1 / 5), where a high-frequency strand "is not allowed to fully cool before being heated again"; forward-modelled AIA EM slopes and time lags | **Same-strand waiting time controlling a diagnostic is established; do not claim it.** But: ad-hoc volumetric heating with no beam ("does not assume any specific physical heating mechanism"), two-fluid EBTEL integrated over the corona rather than a resolved loop, no modelled chromospheric evaporation, waiting time coupled to event energy (t_wait ∝ q), and no paired counterfactual. It cannot address where a beam stops. **Report τ* in units of τ_cool to connect to this literature** |
 | [Cho, Testa, De Pontieu & Polito 2023](https://arxiv.org/abs/2211.06832) | Table 2 includes a RADYN model with 20 s of heating, a 60 s pause and 20 s more (F = 6×10⁸ erg cm⁻² s⁻¹, Ec = 10 keV, δ = 7); models are compared statistically with IRIS footpoint brightenings | Simulating two separated episodes is not new. Distinction: flare fluxes, a waiting-time scan and a paired fresh-atmosphere control. Read the full text to confirm that the second response is not compared with a fresh one |
 | [Kerr, Polito, Xu & Allred 2024](https://arxiv.org/abs/2405.02799) | 100 s of weak electron heating (5×10⁸) before flare fluxes changes the Mg II ribbon-front response; front lifetime measures the weak-heating duration | Weak → strong preconditioning with an observable is established. Distinction: strong → strong pulses separated by τ, with paired controls and a decision rule |
 | [Litwicka, Heinzel & Kašparová 2025](https://doi.org/10.3847/1538-4357/adc393) | Filamentary (four consecutive pulses) versus continuous beam heating, on VAL-C and preheated VAL-C, changes synthetic chromospheric emission | Separate same-strand temporal memory from spatial mixing, pulse shape, area and energy-flux differences |
@@ -232,3 +235,134 @@ Follow citations of the closest studies, read methods rather than only abstracts
 [Liu et al. 2006](https://arxiv.org/abs/astro-ph/0603510) inferred an evolving density profile from loop brightness as well as describing source evolution; characterizing that precedent as only qualitative understates its scope.
 
 The old tracer's EM-derived rms density is not a general lower bound on density along an electron path in nonuniform unresolved plasma. Tests that impose a true column above the estimated column verify the model conditional on that assumption. A monotonically declining ratio spectrum also does not establish a uniquely identifiable knee or exclude every trapping/acceleration alternative. These issues motivate keeping the tracer as optional historical infrastructure, not the premise of v5 or v5.1.
+
+### 11.6 Gate 0: the closest full texts, read 2026-10-13
+
+**Search and reading date:** 2026-10-13. This closes the Phase 0 item left open at R1. It is **not** the exhaustive ADS sweep of Section 11.4, which remains to be run.
+
+**Read in full text.**
+
+| Paper | Access | What the full text settles |
+|---|---|---|
+| [Cho et al. 2023](https://arxiv.org/abs/2211.06832) | arXiv full text | Model **E6** is the only two-episode run: 20 s heating, 60 s pause, 20 s again, F = 6×10⁸ erg cm⁻² s⁻¹, Ec = 10 keV, δ = 7, 15 Mm loop, one of 13 models. **No control containing only the second pulse, no statement about what the first episode changed, and no discussion of preheating, memory or waiting times anywhere in the paper.** E6 appears only in the grid, the Table 2 listing and the Figure 2 overlays, compared statistically with IRIS. The distinction assumed in Section 11.2 is therefore confirmed, not assumed |
+| [Kerr et al. 2024](https://arxiv.org/abs/2405.02799) | arXiv full text | 100 s of weak heating at 5×10⁸ followed directly by an ad-hoc ramp to 1×10¹¹ over 100 s, on an 11 Mm half-loop. **No pause between the phases, no strong-only control on the relaxed atmosphere, no waiting-time scan, and no estimate of how much the preheated atmosphere changes the strong-phase response.** The scan is over the weak-phase duration (25–150 s) at matched total energy. The paper calls its own experiments "overly simplified" and the post-weak timing "arbitrary" |
+
+**New precedent found, not previously in this review.**
+
+[Bakke et al. 2022](https://arxiv.org/abs/2201.11961) (A&A 659, A186) — six RADYN nanoflare runs, 15 Mm half-loop, one 10 s beam each, F ≈ 1.2×10⁹ erg cm⁻² s⁻¹, δ = 7, Ec = 5/10/15 keV, apexes at 1 and 3 MK. The paper calls the 3 MK loop "pre-heated" and says it "represents a previously heated strand", and reports that "due to the higher initial density of the loops, the injected electrons deposit more of their energy in the corona" with a slower atmospheric response.
+
+**Consequence for the claim.** This is the physical mechanism of the core, published as an **initial-condition** effect, as in Polito et al. 2018. The project must stop presenting the mechanism as its own finding. Objective O2 (explaining M through the state left by pulse 1) stays necessary as evidence that M is causal and not numerical, but it is **not** the novel element.
+
+**Still inaccessible.**
+
+[Litwicka, Heinzel & Kašparová 2025](https://doi.org/10.3847/1538-4357/adc393) (ApJ 983, 155) — HTTP 403 at IOP on 2026-10-02 and again on 2026-10-13; no arXiv preprint found by title, author or DOI. A paper citing it ([arXiv:2508.05875](https://arxiv.org/html/2508.05875v1)) describes it as FLARIX modelling in which flare heating is delivered as short pulses in unresolved filaments, to reduce the mismatch between modelled and observed chromospheric line intensities. **Second-hand, and not usable as a verdict.** To obtain: institutional access, the supervisor, or a request to the authors. The distinction to establish is unchanged from Section 11.2: separate same-strand temporal memory from spatial filamentation, area and flux differences.
+
+### 11.7 Positioning sentence (written 2026-10-13)
+
+> Two separated heating episodes have been simulated before, at nanoflare fluxes and without a fresh-atmosphere control (Cho et al. 2023); weak preheating is known to change a later strong response, without a waiting time or a paired control (Kerr et al. 2024); and a denser, previously heated strand is known to stop more of a beam in the corona, as an initial condition (Polito et al. 2018; Bakke et al. 2022). What this work adds is the **measurement of the error itself**: a paired-branch contrast, at flare fluxes, between the response of a re-struck loop and the response of a relaxed one, as a function of the waiting time and the beam flux, judged against numerical, beam and observational uncertainties fixed before the contrast is computed.
+
+**Superseded by Section 11.8**, which concedes two further precedents found on the same day. Use the sentence in 11.8.
+
+### 11.8 Third targeted pass, verified (2026-10-13): nanoflare frequency and repeated beam bursts
+
+**What this pass was and was not.** A further targeted public-web pass was run on 2026-10-13 for repeated, recurrent and intermittent beam heating, same-strand waiting times and atmospheric preconditioning. **The NASA ADS search was again inaccessible**, so the exhaustive sweep of Section 11.4 is *still outstanding* and no absence-of-prior-work claim follows from this pass. Two precedents it surfaced were then checked by this author against the primary full texts, because an earlier pass in this same session wrongly reported that Bakke et al. 2022 contained two separated episodes.
+
+**Verified precedent 1 — [Barnes, Bradshaw & Viall 2019](https://arxiv.org/abs/1906.03350)** (ApJ 880, 56). Confirmed from the full text: discrete triangular heating pulses of 200 s on a single strand, event energies from a power law of slope −2.5, heating frequency ε = ⟨t_wait⟩/τ_cool with ε = 0.1 (high), 1 (intermediate) and 5 (low), the waiting time defined as the gap between the end of one event and the start of the next, and a high-frequency strand that "is not allowed to fully cool before being heated again", with "multiple reheatings before the end of the cooling and draining cycle".
+
+*Correction to the report that surfaced it,* which described this as field-aligned hydrodynamics with high core overlap. The code is **two-fluid EBTEL**, which "solves the time-dependent, two-fluid hydrodynamic equations spatially-integrated over the corona": not a resolved loop. Heating is **ad hoc and volumetric** into the electrons, and the paper "does not assume any specific physical heating mechanism" — there is no beam, no stopping column and **no modelled chromospheric evaporation**. The waiting time is **coupled to the event energy** (t_wait ∝ q, after Cargill 2014), so it is not a controlled scan, and the single-event "cooling" model is a population baseline, not a paired counterfactual.
+
+*Consequence.* The nanoflare-frequency literature owns the idea that same-strand waiting time, measured against the cooling time, controls what a diagnostic shows. **This project must cite it and must not present waiting-time dependence as its own idea.** It cannot address the mechanism at issue here. Actionable improvement: report τ* **in units of τ_cool** as well as in seconds, so the result is legible to that community.
+
+**Verified precedent 2 — [Reep, Warren, Crump & Simões 2016](https://arxiv.org/abs/1607.06684)** (ApJ 827, 145). The report inferred this from the introduction of Reep et al. 2018 and asked for verification. Verified, and **stronger than the report thought**: §III.1 states "We first attempted to model this event with a single loop, on which seven heating bursts occurred", with an **electron beam** under the collisional thick-target model of Emslie (1978), Ec ≈ 11 keV, δ ≈ 6, peak flux 5×10⁹ erg cm⁻² s⁻¹, **in HYDRAD** — the same code as this pilot. The conclusion is that "a persistent down-flow cannot be explained by constant heating, or with any number of heating bursts on a single loop", and §IV calls the single-loop model "woefully inadequate".
+
+*Consequence.* Repeated electron-beam bursts in one HYDRAD loop have been run before. The framing "nobody has fired repeated beam pulses into the same loop" is dead. What survives: there is no relaxed-loop control (the comparison is against observations), the intervals are neither stated nor scanned, the flux is sub-flare, and the purpose is to reject a single-loop model for Si IV and C II rather than to measure the error of an approximation. The full figures of Reep et al. 2016 should still be read before the write-up.
+
+**Litwicka et al. 2025 — partially cracked, and it helps.** A ResearchGate entry exposes substantial indexed primary text of *Filamentary Electron-beam Heating in Solar Flares*. The indexed passages state that the heated area is divided into **four subareas, each heated by one pulse in succession**, with the emergent Hα and Mg II k emission averaged over the subareas. The four pulses therefore **do not re-heat one strand**: the contrast is filamentary sequential-area heating versus continuous heating, which is a spatial experiment, not a same-strand temporal one. Status: **substantial primary text read in indexed extract; the PDF is still not verified page by page** (the page then returned HTTP 429). Not "fully read", and no longer "second-hand only".
+
+**What the claim is now.** Three successive honest passes have each narrowed it. Conceded to prior work: repeated same-strand heating; waiting-time dependence normalised by a cooling time; repeated beam bursts in one HYDRAD loop; two separated beam episodes; preheating changing deposition; the mechanism itself. **What remains is purely methodological**, and that is the whole contribution: the paired counterfactual, the pre-registered uncertainty rule, and the resulting τ × F map at flare fluxes for a named diagnostic.
+
+**Positioning sentence — superseded by Section 11.11.** Kept for the record:
+
+> Repeated heating of the same strand is standard in nanoflare modelling, where the waiting time relative to the cooling time defines the heating frequency and controls the predicted diagnostics (Cargill 2014; Barnes et al. 2019); repeated electron-beam bursts on a single loop have been run in HYDRAD and rejected against observed transition-region redshifts (Reep et al. 2016); two separated beam episodes have been simulated at nanoflare fluxes without a fresh-atmosphere control (Cho et al. 2023); weak preheating is known to change a later strong response, without a waiting time or a paired control (Kerr et al. 2024); and a denser, previously heated strand stops more of a beam in the corona, as an initial condition (Polito et al. 2018; Bakke et al. 2022). This work adds none of those. It measures **the error itself**: a paired-branch contrast, at flare fluxes, between the response of a re-struck loop and that of a relaxed one, mapped against the waiting time and the beam flux, and judged against numerical, beam and observational uncertainties fixed before the contrast is computed.
+
+**Still open, in priority order.**
+
+1. **The ADS sweep of Section 11.4 has never been run** — three passes, three failures to reach it. It needs a human with ADS access, or the [search prompt](novelty_search_prompt.md) given to an agent that can actually query ADS. Until then, no first-of-its-kind claim.
+2. Read the Litwicka et al. 2025 PDF end to end.
+3. Read the full figures and methods of Reep et al. 2016 for its repeated-single-loop tests.
+4. Screen the nanoflare-frequency literature properly (Cargill, Klimchuk, Bradshaw, Viall, Barnes) — it was absent from every earlier pass of this review and is the body of work this result must be legible to.
+5. Repeat the search immediately before submission.
+
+### 11.11 Fourth pass, verified (2026-10-13): Reep et al. 2016 already ran the contrast
+
+**A correction of this review's own earlier statement.** Section 11.8 of this document reported, from a summarised read of Reep et al. 2016, that the seven-burst single loop was "compared against observations, not against a relaxed loop" and that "no relaxed-loop control is described". **That was wrong.** A direct re-read of the primary text settles it.
+
+**Verified verbatim, Reep, Warren, Crump & Simões 2016, §3.1 and Figure 2:**
+
+- "We first attempted to model this event with a single loop, on which seven heating bursts occurred."
+- "We also attempted to model this event using a multi-threaded loop composed of seven strands, on each of which one heating burst occurred."
+- Figure 2 caption: "Synthesized Si iv emission relative to IRIS for the two simulations: seven bursts of heating on a single loop (left) and seven threads with one heating burst each (right). The top plots show the synthesized intensity as a function of time while the bottom plots show the Doppler shift as a function of time."
+- "in the monolithic loop simulation, the Doppler velocity shows only a single strong red-shift at the time of the first heating burst", against "the multi-threaded simulation shows seven strong red-shifts, corresponding to a heating event on each thread".
+- Mechanism: "once evaporation brings material into the corona, later heating bursts cannot cause a strong velocity flow" … "due to the increased inertia".
+
+**So, in 2016, in HYDRAD, with an electron beam (Ec ≈ 11 keV, δ ≈ 6, peak 5×10⁹ erg cm⁻² s⁻¹):** re-heating one loop was placed side by side with heating fresh strands, the synthetic diagnostic was shown to differ, and the difference was explained by the corona already being filled. **That is the qualitative contrast of this project, published, with a mechanism, ten years earlier.** No claim of discovering it can stand.
+
+**What their experiment does not do, and this is now the whole distinction.**
+
+1. **It is not a matched contrast.** One loop with seven bursts versus *seven* strands with one burst each differ in thread count, area and total mass, not only in history. That seven fresh strands give seven redshifts is in part a consequence of there being seven of them. Their design therefore cannot separate history from area and multiplicity. M_D is defined per unit area of **one** loop, with A0, B0, A1 and B1 sharing an identical geometry and an identical test pulse, so history is the only thing that varies.
+2. **No difference-in-differences.** There is no no-beam baseline and no "test pulse alone on the relaxed atmosphere" branch, so the *incremental* response to a single later pulse is never isolated.
+3. **No scan.** The burst times come from the observed hard X-ray light curve; neither the waiting time nor the flux is varied.
+4. **No error budget and no threshold** fixed in advance, and the flux is below flare level.
+5. **The aim is the opposite:** both toy models are rejected in favour of a >60-thread model. The question "when is the independence assumption adequate?" is never asked.
+
+**An opportunity, from the same paper.** Reep et al. 2016 is HYDRAD with a beam and synthetic Si IV — the same solver as this pilot. It is therefore the **cheapest available benchmark** for this project's pipeline, and reproducing its Figure 2 qualitatively would answer the standing criticism that nothing here has been validated against a published result (extension E3), in the code that is already built. The biggest threat to the novelty claim is also the best validation target.
+
+**Earlier still — [Emslie, Li & Mariska 1992](https://ui.adsabs.harvard.edu/abs/1992ApJ...399..714E)** (ApJ 399, 714), *Diagnostics of electron-heated solar flare models. III. Effects of tapered loop geometry and preheating*. Access level: **abstract only** (the full article was not obtained). Hydrodynamic simulations of electron-heated flare atmospheres compare preheated with non-preheated conditions, preheating parameterised by the initial upper-chromospheric pressure, with synthetic Ca XIX: in the preheated case "the atmosphere responds slowly" to collisional electron heating. Preheating there is an **initial condition**, as in Polito et al. 2018 and Bakke et al. 2022, not the end state of a simulated pulse — but it dates the preheated-versus-relaxed comparison to **1992**. Any framing in which that comparison is new is dead. Obtain the full text before writing the introduction.
+
+**A verified opening, and it is the best card in this file — [Lörinčík, Polito, Kerr, Hayes & Russell 2025](https://arxiv.org/abs/2504.10619)** (ApJ 986, 73). Verified verbatim, §6.3: "all models considered in our study for simplicity assume a single instance of constant heating", and "Whether repeated heating of a single loop can reproduce the quasi-periodic intensity peaks … remains to be simulated in the future." Their observed Si IV peaks before Mg II by 1–6 s, quasi-periodic at 16–18 s, and §5.2 notes that "the modeled Si IV and Mg II lightcurves usually consisted of a single peak only".
+
+*Why it matters:* Polito and Kerr are authors of Cho et al. 2023 and Kerr et al. 2024, the closest precedents in this file. In 2025 they state in print that repeated heating of a single loop remains to be simulated. That is the sentence this project's introduction should open on. *The caveat, which must not be dropped:* their open question is about multi-line chromospheric timing — Si IV, C II, Mg II — which the HYDRAD route **cannot** answer (no NLTE transfer). Pointing at this opening is an argument for the RADYN route or a collaborator at R2, not a claim the current route fulfils.
+
+**Governing positioning sentence (current; overrides Sections 11.7, 11.8 and 11.9).**
+
+> That a previously heated atmosphere responds differently to an electron beam has been modelled since Emslie, Li & Mariska (1992); that the waiting time relative to the cooling time controls a strand's predicted emission is standard in nanoflare modelling (Cargill 2014; Barnes et al. 2019); and Reep et al. (2016) placed seven beam bursts on one loop beside seven freshly heated strands and showed that the synthetic Si IV response differs, because evaporation has already filled the corona. This work claims none of that. It asks the question those studies leave open, and which Lörinčík et al. (2025) state remains to be simulated: **how large is the error**, for a stated diagnostic, of modelling a later flare-strength pulse on a relaxed atmosphere instead of the one its predecessor left — measured with four matched branches that hold geometry, area and test pulse fixed so that history is the only variable, mapped against the waiting time and the beam flux, and judged against numerical, beam and observational uncertainties declared before the contrast is computed.
+
+**Standing after four passes.** Each pass has narrowed the claim, and this one removed its qualitative core. What remains is a **validity-boundary study**: not that memory exists, not that it changes a diagnostic, but *where the independence assumption is and is not good enough*, at matched conditions, with a pre-declared rule. That is a legitimate contribution and a modest one. It also makes Objective **O3 — the range where the approximation is adequate — the most valuable part of the project**, not a fallback: it is the only part no prior study provides.
+
+**Open, and unchanged in priority.** The ADS sweep has still never been run (four passes, four failures to reach it). Then: the Emslie et al. 1992 full text; Reep et al. 2016 Figure 2 in detail, as a benchmark target rather than only a precedent; the Litwicka et al. 2025 PDF; and forward-citation screening of Reep 2016, Emslie 1992, Barnes 2019 and Lörinčík 2025 up to the submission date.
+
+### 11.12 Systematic forward-citation screen (2026-10-13), and why the keyword half failed
+
+**First reproducible step in this file.** Run against the OpenAlex REST API (open, no token; ADS still unreachable). Script kept with the session notes; it is reproducible from the seed list below.
+
+**Part A — keyword sweep: UNRELIABLE, do not cite its counts.** `title_and_abstract.search` is a fuzzy relevance search, not a boolean operator. Two demonstrations: ANDing *RADYN OR HYDRAD OR FLARIX* with *repeated OR successive OR intermittent OR reheating* returned **0 hits**, which is impossible; and a flare + "same loop" + "repeated" query returned poetry, hydroponics and dermatology papers. Twenty such queries were run and discarded. Keyword coverage of this literature still requires ADS.
+
+**Part B — forward-citation screen: reliable, and complete for its seeds.** Each seed resolved by DOI or exact title to an OpenAlex work id, then every citing work retrieved through the `cites:` filter with full pagination, and title **plus** indexed abstract screened against a concept pattern (repeat, reheat, preheat, memory, waiting time, second/later pulse, multiple heating, counterfactual, same loop/strand/thread, pulse train, recurrent, multi-episode, heating frequency, episodic, intermittent).
+
+| Seed | Citing works screened | Flagged | Collision? |
+|---|---|---|---|
+| Reep et al. 2016 | 36 | 5 | No |
+| Reep et al. 2018 | 28 | 3 | No |
+| Cho et al. 2023 | 12 | 3 | No |
+| Kerr et al. 2024 | 10 | 0 | No |
+| Barnes et al. 2019 (2021 companion) | 9 | 2 | No |
+| Bakke et al. 2022 | 10 | 1 | No |
+| Litwicka et al. 2025 | 2 | 0 | No |
+| Lörinčík et al. 2025 | 8 | 1 | No |
+| Emslie, Li & Mariska 1992 | 50 | 10 | No |
+| Rubio da Costa et al. 2016 | 30 | 0 | No |
+| **Total** | **195** | **25** | **none** |
+
+Most flags are pattern false positives ("independent", "successful"). **No citing work contains a paired-branch measurement of the approximation's error, a scanned waiting time at flare fluxes with matched controls, or a pre-declared adequacy threshold.** This is the first systematic screening in this review, and it does not overturn Section 11.11.
+
+**Items to add to the citation list** (relevant, not collisions):
+
+- [Tian et al. 2018](https://doi.org/10.3847/1538-4357/aaad10), *Multi-episode Chromospheric Evaporation Observed in a Solar Flare* — **observational motivation**: repeated evaporation episodes in one event. The best available answer to "does this happen in real flares?" without claiming same-strand re-use.
+- Hori et al. 1997, 1998 — *Pseudo-two-dimensional hydrodynamic modeling* and *Single and Multiple Solar Flare Loops*: successive-loop hydrodynamics with Ca XIX, 1990s. Multi-loop rather than same-loop, but early and worth reading before the introduction.
+- [Reep et al. 2020](https://doi.org/10.3847/1538-4357/ab75ac), *Simulating Solar Flare Irradiance with Multithreaded Models of Flare Arcades* — another user of the approximation under test; a natural citer of the boundary (O3).
+- Nóbrega-Siverio et al. 2018 — non-equilibrium ionization of Si IV and O IV: the ionization channel of memory that HYDRAD cannot represent.
+- Mondal et al. 2024; Sow Mondal et al. 2025 — nanoflare heating-frequency determination: the community that τ* in units of τ_cool speaks to.
+
+**Limits of this pass, stated.** Not ADS. OpenAlex abstract coverage of older solar papers is patchy, so some citing works were screened on title alone; a collision with an uninformative title and no indexed abstract would be missed. No backward (reference-list) screening. Conference proceedings and pre-1990 literature are thin. The two closest seeds initially failed to resolve by guessed DOI and were recovered through their arXiv DOIs — a reminder that a null result here depends on the seed resolving at all.
+
+**Standing.** The residual novelty risk is lower than after any previous pass, and for the first time it is quantified rather than asserted. ADS remains necessary for a priority claim, but it is no longer the only evidence: 195 citing works of the ten closest papers have now been screened without a collision.

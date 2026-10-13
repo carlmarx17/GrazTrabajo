@@ -10,11 +10,13 @@
 
 **Main question:** When does treating each electron pulse as if it struck the initial, relaxed atmosphere misrepresent the response to a later pulse by more than the beam, numerical and observational uncertainties of a chosen diagnostic? This treatment is called here the *independent-pulse approximation*.
 
-**Core objective (committed):** For two identical pulses in one loop and one primary diagnostic:
+**Core objective (committed; reordered 2026-10-13).** For two identical pulses in one loop and one primary diagnostic, in this order of priority:
 
-- measure the history contrast M_D with paired simulation branches, as a function of the waiting time τ and of the beam energy flux;
-- explain it through the atmospheric state left by the first pulse;
-- state the range of τ in which the approximation fails or is adequate.
+- **O3 (primary):** state the range of τ in which the approximation is **adequate**, and the range in which it fails. τ*(F) is the deliverable a multithread modeller can act on, and the only one of the three that no prior study provides;
+- **O1 (the means):** measure the history contrast M_D with four matched paired branches, as a function of the waiting time τ and of the beam energy flux;
+- **O2 (evidence):** explain it through the atmospheric state left by the first pulse, which shows M_D is causal rather than numerical. The mechanism itself is prior work (Section 2).
+
+The reordering follows the literature verification of 2026-10-13: the effect, its mechanism and the waiting-time dependence are all published, so the boundary is the contribution. See [the prior-work review](03_novelty_and_prior_work.md), Sections 11.11 and 11.12.
 
 **Why it matters:** multithread and observation-driven flare models usually heat each strand once, from a relaxed state. If a strand is struck again within the waiting times where the approximation fails, those models misstate its response. Otherwise the approximation is justified in the explored domain. Either answer can be reported.
 
@@ -43,20 +45,25 @@ Archived designs: [v4 loop re-use](archive/00_objectives_v4_loop_reuse.md), [v3 
 |---|---|---|
 | [Kennedy et al. 2015](https://arxiv.org/abs/1504.07541) | Observed RHESSI beam evolution drives RADYN; stopping depths change as the atmosphere evolves | History is retained implicitly; its effect is not isolated with a counterfactual |
 | [Polito et al. 2018](https://arxiv.org/abs/1804.05970) | RADYN nanoflare strands: the initial loop temperature and density and the cutoff energy Ec change where the beam deposits energy | Preheating enters as an initial condition, not as the history of an earlier pulse |
-| [Cho, Testa, De Pontieu & Polito 2023](https://arxiv.org/abs/2211.06832) | A RADYN model with 20 s of heating, a 60 s pause and 20 s more (F = 6×10⁸ erg cm⁻² s⁻¹, Ec = 10 keV, δ = 7), compared statistically with IRIS footpoint brightenings | Two separated heating episodes are not new. A controlled comparison of the second response with a fresh-atmosphere response was not found; the full text is still to be read |
-| [Kerr, Polito, Xu & Allred 2024](https://arxiv.org/abs/2405.02799) | 100 s of weak electron heating (5×10⁸) before flare fluxes (10¹⁰–10¹¹) changes the Mg II ribbon-front response; the front lifetime is proposed as a measure of the weak-heating duration | Weak → strong preconditioning, with an observable, is done. Strong → strong pulses with a waiting time and paired controls remain |
+| [Bakke et al. 2022](https://arxiv.org/abs/2201.11961) | RADYN nanoflare loops at 1 and 3 MK. In the denser loop the electrons "deposit more of their energy in the corona" and the response is slower; the 3 MK loop "represents a previously heated strand". Read 2026-10-13 | **The mechanism of this core is already published as an initial-condition effect.** What remains is history delivered by a simulated earlier pulse, a waiting time, paired controls and a decision rule |
+| [Reep, Warren, Crump & Simões 2016](https://arxiv.org/abs/1607.06684) | **§3.1 and Fig. 2 place seven beam bursts on one HYDRAD loop beside seven strands heated once each**, and show the synthetic Si IV response differs because evaporation has filled the corona ("later heating bursts cannot cause a strong velocity flow … due to the increased inertia"). Ec ≈ 11 keV, δ ≈ 6, peak 5×10⁹. Verified 2026-10-13 | **The qualitative contrast and its mechanism are theirs.** What remains: their comparison is 1 loop vs 7 strands, so history is confounded with area and thread count; there is no no-beam baseline and no isolated test pulse, no τ or F scan, no error budget, and sub-flare flux. Also the cheapest available benchmark for this pipeline |
+| [Emslie, Li & Mariska 1992](https://ui.adsabs.harvard.edu/abs/1992ApJ...399..714E) | Electron-heated flare hydrodynamics comparing preheated with non-preheated atmospheres (initial chromospheric pressure), Ca XIX: the preheated atmosphere "responds slowly". Abstract only | **Preheated versus relaxed dates to 1992.** Preheating as an initial condition, not as a simulated pulse's end state. Obtain the full text before the introduction |
+| [Lörinčík, Polito, Kerr, Hayes & Russell 2025](https://arxiv.org/abs/2504.10619) | High-cadence IRIS Si IV / C II / Mg II timing versus RADYN grids; §6.3: "all models considered in our study for simplicity assume a single instance of constant heating" and whether "repeated heating of a single loop" reproduces the quasi-periodic peaks "remains to be simulated in the future" | **The published opening this project answers** — but their question is multi-line chromospheric timing, which HYDRAD cannot address. An argument for the RADYN route at R2 |
+| [Barnes, Bradshaw & Viall 2019](https://arxiv.org/abs/1906.03350); Cargill 2014 | Repeated same-strand nanoflares with heating frequency ε = ⟨t_wait⟩/τ_cool; a high-frequency strand "is not allowed to fully cool before being heated again". Verified 2026-10-13 | **Same-strand waiting-time dependence is established; do not claim it.** But ad-hoc volumetric heating, no beam, two-fluid EBTEL integrated over the corona, no modelled evaporation, and t_wait coupled to event energy. Report τ* in units of τ_cool |
+| [Cho, Testa, De Pontieu & Polito 2023](https://arxiv.org/abs/2211.06832) | A RADYN model with 20 s of heating, a 60 s pause and 20 s more (F = 6×10⁸ erg cm⁻² s⁻¹, Ec = 10 keV, δ = 7, 15 Mm loop), compared statistically with IRIS footpoint brightenings | Two separated heating episodes are not new. **Full text read 2026-10-13:** that model (E6) is one entry in a 13-model grid, with no fresh-atmosphere control and no analysis of what the first episode left behind; the paper does not discuss preheating, memory or waiting times |
+| [Kerr, Polito, Xu & Allred 2024](https://arxiv.org/abs/2405.02799) | 100 s of weak electron heating (5×10⁸) before flare fluxes (10¹⁰–10¹¹) changes the Mg II ribbon-front response; the front lifetime is proposed as a measure of the weak-heating duration | Weak → strong preconditioning, with an observable, is done. **Full text read 2026-10-13:** no pause between the weak and the strong phase, no strong-only control, no waiting-time scan and no comparison against uncertainties; the scan is over the weak-phase duration at matched total energy. Strong → strong pulses separated by τ, with paired controls, remain |
 | [Litwicka, Heinzel & Kašparová 2025](https://doi.org/10.3847/1538-4357/adc393) | FLARIX: continuous heating versus four consecutive filamentary pulses, on VAL-C and preheated VAL-C; Hα and Mg II change | Same-strand temporal memory must be separated from filamentation, area and flux changes |
 | [Kašparová et al. 2009](https://arxiv.org/abs/0904.2084) | Sub-second electron-beam pulses and time-dependent hydrogen lines | Pulse trains on sub-second time scales, not waiting times of tens of seconds |
 | [Rubio da Costa et al. 2016](https://arxiv.org/abs/1603.04951); [Reep et al. 2018](https://arxiv.org/abs/1802.08884) | Observation-driven multithread modelling; duration of heating on unresolved loops | Users of the approximation under test |
 | Allred et al. [2020](https://arxiv.org/abs/2008.10671) (and 2015); [Carlsson et al. 2023](https://arxiv.org/abs/2304.02618); [Collier et al. 2024](https://arxiv.org/abs/2411.09319) | FP transport in RADYN; the public F-CHROMA grid (20 s triangular beam plus 30 s of evolution, closed boundaries, 10 Mm loop); STIX-driven RADYN modelling of a first burst | Tools, data and an optional benchmark, not competitors |
 
-**Provisional gap.** Two separated heating episodes have been simulated (Cho et al. 2023), and weak earlier heating is known to change a later strong response (Kerr et al. 2024). This focused review did not find:
+**Gap, after three targeted passes and the closest full texts (2026-10-13).** Repeated same-strand heating with a waiting time normalised by the cooling time is standard in nanoflare modelling (Cargill 2014; Barnes et al. 2019); **Reep et al. 2016 placed seven beam bursts on one HYDRAD loop beside seven freshly heated strands and showed the synthetic Si IV response differs, with the mechanism**; two separated beam episodes have been simulated at nanoflare fluxes (Cho et al. 2023); weak earlier heating is known to change a later strong response (Kerr et al. 2024); and the *mechanism* — a denser loop stops more of the beam in the corona — is published as an initial-condition effect going back to Emslie, Li & Mariska (1992), and again in Polito et al. 2018 and Bakke et al. 2022. None of them contains:
 
 - a paired-branch measurement, at flare fluxes, of the error of the independent-pulse approximation;
 - as a function of τ;
 - judged against the uncertainties of a specified diagnostic.
 
-That is an incremental contribution. It stays provisional until the targeted search of Phase 0 (Section 6). The full comparison is in [the prior-work review](03_novelty_and_prior_work.md), Section 11.
+**What this project may not claim as its own:** the mechanism, repeated same-strand heating, waiting-time dependence, repeated beam bursts in one loop, or the qualitative finding that a re-struck loop responds differently. **What remains, and it is the whole contribution:** *how large the error is and where it matters* — four matched branches holding geometry, area and test pulse fixed so history is the only variable, scanned in τ and F at flare fluxes, with a decision rule fixed in advance. This makes **O3, the range where the approximation is adequate, the most valuable objective**, not a fallback: it is the only part no prior study provides. That is an incremental contribution. It stays provisional for the remaining items of Section 11.6 of [the prior-work review](03_novelty_and_prior_work.md): the full text of Litwicka et al. 2025, still inaccessible, and the exhaustive ADS sweep.
 
 ## 3. Core experiment
 
@@ -88,8 +95,9 @@ Rules:
 - **Waiting times:** start with τ = 10, 30, 60 and 120 s. Extend until the relaxation criterion of Section 3.4 is met.
 - **Flux:** add 2–3 flux levels after the pilot, only where all four branches run cleanly and converge.
 - **Diagnostic:** choose one before the runs, according to the solver route (Section 4).
-  - With HYDRAD: coronal proxies, namely the emission measure and EM-weighted temperature of the T > 1 MK plasma, the apex density and the coronal column.
-  - With RADYN: one chromospheric or transition-region line, such as Mg II k, Si IV or Hα, chosen for data relevance and for the synthesis the solver supports.
+  - **With HYDRAD, the primary candidate is Si IV 1402.77 Å — intensity and Doppler shift.** It is a transition-region line, inside what the shipped solver supports, and [Reep et al. 2016](https://arxiv.org/abs/1607.06684) already synthesized it from HYDRAD under beam heating, which both proves it is computable here and makes their Figure 2 a reproducible benchmark. It is also the currency the multithread literature actually fits (Rubio da Costa et al. 2016; Reep et al. 2018, 2020) and the line whose repeated-heating timing [Lörinčík et al. 2025](https://arxiv.org/abs/2504.10619) leave open. **σ_obs is then nameable: IRIS**, with published noise and calibration. *Caveat to declare:* Si IV formation is sensitive to non-equilibrium ionization (Nóbrega-Siverio et al. 2018) and HYDRAD assumes ionization equilibrium with n_e = n_H; Reep et al. 2016 carried the same limitation. State it, bound it, do not hide it.
+  - Fallback and cross-check with HYDRAD: coronal proxies, namely the emission measure and EM-weighted temperature of the T > 1 MK plasma. These are the stable pair measured in the pilot, but no target community fits them; the apex point diagnostics and the coronal column failed robustness ([docs/07](07_core_pilot_hydrad.md), Section 7.3).
+  - With RADYN: a chromospheric line such as Mg II k or Hα, which needs NLTE transfer and therefore the RADYN gate or a collaborator.
 
 ### 3.3 Mechanism
 
@@ -167,7 +175,8 @@ The phases have indicative durations and review points; there is no fixed deadli
 |---|---|---|
 | 0. Essentials | T1–T3 pilot; targeted ADS search on the precedents of Section 2; choose the diagnostic and the solver route; start T5/T6 in parallel | 2–4 weeks |
 | **Review R1** | Do the four branches run cleanly, with identical pre-test states and a contrast above σ_num for at least one proxy? Is a RADYN route within reach? | — |
-| 1. Core map | τ grid × 2–3 flux levels; σ_num and σ_beam; mechanism | 1–2 months |
+| 1a. Gates | Spatial σ_num; σ_obs from the named instrument, pre-registered; a τ grid that reaches relaxation; Si IV synthesis plus the Reep et al. 2016 benchmark; the beam-degeneracy limit | 6 weeks |
+| 1b. Core map | τ grid × 2–3 flux levels; mechanism at t_k | 4 weeks |
 | **Review R2** | Is M understood and robust to resolution? Add a chromospheric diagnostic or any extension? | — |
 | 2. Write-up | Paper on when the independent-pulse approximation fails; reproducible configuration | ~1 month |
 
@@ -199,6 +208,13 @@ The core is expected to take roughly 3–6 months, depending on the route. Exten
 The Python tests verify these utilities. They do not validate a production solver, a published benchmark or a detected memory signature.
 
 ## 8. Extensions to discuss with the supervisor (not committed)
+
+**Sequencing of the STIX work, decided 2026-10-13.** STIX is already inside the committed core, as the source of σ_beam: the beam variants follow a STIX fit (electron rate ±12 %, cutoff ±4 %, δ ±0.1, after Collier et al. 2024) and run in `scripts/hydrad_beam_error.py`. Beyond that:
+
+- **E1 is modular and belongs after the core.** Pulse-resolved beam parameters and observed waiting times set *which part* of the τ × F map matters. It constrains the domain; it does not change the simulation design, the branches or the decision rule. Nothing in the core has to wait for it, and nothing in it has to be redone if the core moves.
+- **E2 is not a bolt-on.** "Same STIX data, different histories" needs photon synthesis from the transport, i.e. RADYN+FP or the standalone FP solver. It is a second machine, not an addition.
+- **With Si IV as the primary diagnostic, IRIS becomes the observational partner and STIX the beam-side constraint.** That division is cleaner than before: IRIS fixes σ_obs and therefore the boundary; STIX fixes the input beam and its uncertainty.
+- **Collision warning.** STIX + IRIS on a multipulse flare is the Litwicka group's own approach (their 2026 abstract: FLARIX, the X9 of 3 October 2024, STIX + IRIS + CHASE). If E1 is taken up, pick a different event and a different question from theirs, as already noted in [the prior-work review](03_novelty_and_prior_work.md), Section 5.
 
 | ID | Extension | Why it may be worth it | Cost and risk |
 |---|---|---|---|

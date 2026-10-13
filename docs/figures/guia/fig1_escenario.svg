@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" width="880" height="470" font-family="Helvetica, Arial, sans-serif">
+  <rect width="880" height="470" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#1a1a1a">1. El escenario: un pulso de electrones sobre un bucle coronal</text>
+  <text x="20" y="48" font-size="12" fill="#666666">Esquema conceptual (no es una simulacion). El modelo es 1D: una linea de campo fija, con los dos pies anclados en la cromosfera.</text>
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#c0392b"/></marker>
+    <marker id="ag" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#16a085"/></marker>
+    <marker id="ab" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#555555"/></marker>
+  </defs>
+
+  <rect x="20" y="62" width="840" height="276" fill="#eef4fb"/>
+  <text x="34" y="82" font-size="12" fill="#2b5c8a">CORONA   T ~ 1 MK,  n ~ 10&#8313; cm&#8315;&#179;   (tenue: el haz la cruza casi sin frenarse)</text>
+  <rect x="20" y="338" width="840" height="58" fill="#fbe9d8"/>
+  <rect x="20" y="396" width="840" height="22" fill="#f0e2cf"/>
+  <text x="440" y="368" font-size="12" fill="#a05a1a">CROMOSFERA   T ~ 10&#8308; K,  n ~ 10&#185;&#185;&#8211;10&#185;&#179; cm&#8315;&#179;   (densa: aqui frena el haz)</text>
+  <text x="440" y="386" font-size="11" fill="#a05a1a">entre ambas, la zona de transicion (TR): se mueve durante la fulguracion</text>
+  <text x="34" y="411" font-size="11" fill="#8a6a3a">fotosfera: frontera cerrada del modelo (la masa del bucle deberia conservarse)</text>
+
+  <!-- loop -->
+  <path d="M 190 348 C 220 130, 650 130, 680 348" fill="none" stroke="#9cc3e6" stroke-width="26" stroke-linecap="round"/>
+  <path d="M 190 348 C 220 130, 650 130, 680 348" fill="none" stroke="#1f4e79" stroke-width="1.2" stroke-dasharray="4 4"/>
+  <text x="435" y="300" font-size="12" text-anchor="middle" fill="#1f4e79">bucle: longitud total L = 26 o 60 Mm</text>
+  <text x="166" y="330" font-size="11" text-anchor="end" fill="#1f4e79">pie 1</text>
+  <text x="706" y="330" font-size="11" fill="#1f4e79">pie 2</text>
+
+  <!-- acceleration -->
+  <circle cx="435" cy="138" r="16" fill="#fdf0d5" stroke="#c0392b" stroke-width="2"/>
+  <text x="435" y="144" font-size="14" text-anchor="middle" fill="#c0392b">&#9889;</text>
+  <text x="435" y="112" font-size="11.5" text-anchor="middle" fill="#c0392b">aceleracion: NO se modela, el haz se inyecta como dato</text>
+
+  <!-- beam down the left leg -->
+  <path d="M 412 174 C 345 200, 255 248, 208 314" fill="none" stroke="#c0392b" stroke-width="3" marker-end="url(#ar)"/>
+  <text x="36" y="196" font-size="12" font-weight="bold" fill="#c0392b">haz de electrones</text>
+  <text x="36" y="213" font-size="11.5" fill="#c0392b">F  flujo de energia [erg cm&#8315;&#178; s&#8315;&#185;]</text>
+  <text x="36" y="229" font-size="11.5" fill="#c0392b">E&#8339; corte de baja energia [keV]</text>
+  <text x="36" y="245" font-size="11.5" fill="#c0392b">&#948;  indice de la ley de potencias</text>
+  <path d="M 150 252 L 246 268" fill="none" stroke="#c0392b" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <!-- deposition -->
+  <ellipse cx="206" cy="344" rx="26" ry="11" fill="#c0392b" fill-opacity="0.25" stroke="#c0392b"/>
+  <ellipse cx="664" cy="344" rx="26" ry="11" fill="#c0392b" fill-opacity="0.25" stroke="#c0392b"/>
+  <text x="20" y="445" font-size="11.5" fill="#c0392b">El haz deposita su energia donde la columna de gas acumulada N alcanza la columna de frenado N&#8336;(E) &#8776; E&#178;/K: en una atmosfera fresca, eso ocurre abajo.</text>
+  <text x="20" y="461" font-size="11.5" fill="#16a085">La cromosfera calentada se sobrepresuriza y se expande: ese es el motor de la evaporacion. El dibujo separa haz (izquierda) y evaporacion (derecha); ocurren en ambas patas.</text>
+
+  <!-- evaporation up the right leg -->
+  <path d="M 658 314 C 612 248, 528 198, 462 180" fill="none" stroke="#16a085" stroke-width="3" marker-end="url(#ag)"/>
+  <text x="712" y="200" font-size="12" font-weight="bold" fill="#16a085">evaporacion</text>
+  <text x="712" y="217" font-size="11.5" fill="#16a085">cromosferica:</text>
+  <text x="712" y="233" font-size="11.5" fill="#16a085">plasma caliente y</text>
+  <text x="712" y="249" font-size="11.5" fill="#16a085">denso sube y llena</text>
+  <text x="712" y="265" font-size="11.5" fill="#16a085">la corona</text>
+  <text x="712" y="281" font-size="11.5" fill="#16a085">(10&#185;&#8304;&#8211;10&#185;&#185; cm&#8315;&#179;)</text>
+
+  <!-- condensation down -->
+  <path d="M 206 358 L 206 390" fill="none" stroke="#555555" stroke-width="2" marker-end="url(#ab)"/>
+  <text x="196" y="378" font-size="11" text-anchor="end" fill="#555555">condensacion</text>
+  <text x="196" y="392" font-size="11" text-anchor="end" fill="#555555">(hacia abajo)</text>
+
+  <!-- apex collision note -->
+  <text x="435" y="244" font-size="11.5" text-anchor="middle" fill="#8e44ad">los flujos de las dos patas chocan cerca del apice</text>
+  <text x="435" y="260" font-size="11.5" text-anchor="middle" fill="#8e44ad">&#8594; condensaciones coronales (propiedad del modelo 1D simetrico)</text>
+</svg>

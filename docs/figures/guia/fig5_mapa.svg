@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 620" width="880" height="620" font-family="Helvetica, Arial, sans-serif">
+  <rect width="880" height="620" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#1a1a1a">5. De donde viene el proyecto y hacia donde va</text>
+  <defs>
+    <marker id="m1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#555"/></marker>
+    <marker id="m2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#8e44ad"/></marker>
+  </defs>
+
+  <!-- version history -->
+  <text x="20" y="58" font-size="12.5" font-weight="bold" fill="#555555">Las cuatro versiones del proyecto (lo archivado explica lo que NO se hace)</text>
+  <g font-size="11">
+    <rect x="24" y="70" width="190" height="96" fill="#f6f6f6" stroke="#cccccc"/>
+    <text x="34" y="88" font-size="11.5" font-weight="bold" fill="#777777">v2 &#183; sesgo de inferencia</text>
+    <text x="34" y="106" fill="#555555">&#191;cuanto sesga la memoria</text>
+    <text x="34" y="121" fill="#555555">los parametros (N&#775;, E&#8339;, &#948;)?</text>
+    <text x="34" y="142" fill="#c0392b">&#8594; efecto ya conocido;</text>
+    <text x="34" y="156" fill="#c0392b">daria una nota de metodos</text>
+
+    <rect x="240" y="70" width="190" height="96" fill="#f6f6f6" stroke="#cccccc"/>
+    <text x="250" y="88" font-size="11.5" font-weight="bold" fill="#777777">v3 &#183; memoria vs. corriente</text>
+    <text x="250" y="106" fill="#555555">separar blanco, corriente de</text>
+    <text x="250" y="121" fill="#555555">retorno y aceleracion con STIX</text>
+    <text x="250" y="142" fill="#c0392b">&#8594; exige sintesis de fotones</text>
+    <text x="250" y="156" fill="#c0392b">y datos reales: muy grande</text>
+
+    <rect x="456" y="70" width="190" height="96" fill="#f6f6f6" stroke="#cccccc"/>
+    <text x="466" y="88" font-size="11.5" font-weight="bold" fill="#777777">v4 &#183; reuso de bucles</text>
+    <text x="466" y="106" fill="#555555">&#191;los pulsos reusan los bucles</text>
+    <text x="466" y="121" fill="#555555">ya llenos? (plasma trazador)</text>
+    <text x="466" y="142" fill="#c0392b">&#8594; la EM no acota la columna</text>
+    <text x="466" y="156" fill="#c0392b">en una fuente no resuelta</text>
+
+    <rect x="672" y="70" width="190" height="96" fill="#fdf2f0" stroke="#c0392b" stroke-width="1.8"/>
+    <text x="682" y="88" font-size="11.5" font-weight="bold" fill="#c0392b">v5.1 &#183; ACTIVO</text>
+    <text x="682" y="106" fill="#1a1a1a">&#191;cuando falla la aproximacion</text>
+    <text x="682" y="121" fill="#1a1a1a">de pulsos independientes?</text>
+    <text x="682" y="142" fill="#16a085">&#8594; pregunta cerrada, medible</text>
+    <text x="682" y="156" fill="#16a085">y con respuesta publicable</text>
+  </g>
+  <line x1="216" y1="118" x2="238" y2="118" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+  <line x1="432" y1="118" x2="454" y2="118" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+  <line x1="648" y1="118" x2="670" y2="118" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+
+  <!-- phases -->
+  <text x="20" y="202" font-size="12.5" font-weight="bold" fill="#555555">El plan de trabajo y los puntos de revision</text>
+  <g font-size="11">
+    <rect x="24" y="214" width="152" height="72" fill="#eaf6ee" stroke="#16a085" stroke-width="1.6"/>
+    <text x="34" y="234" font-size="11.5" font-weight="bold" fill="#16a085">Fase 0 &#183; HECHA</text>
+    <text x="34" y="252" fill="#1a1a1a">T1&#8211;T3: insumos,</text>
+    <text x="34" y="267" fill="#1a1a1a">analisis y piloto</text>
+    <text x="34" y="281" fill="#1a1a1a">HYDRAD (26, 60 Mm)</text>
+
+    <rect x="198" y="214" width="104" height="72" fill="#eaf6ee" stroke="#16a085" stroke-width="1.6"/>
+    <text x="208" y="234" font-size="11.5" font-weight="bold" fill="#16a085">R1 &#183; DECIDIDO</text>
+    <text x="208" y="252" fill="#1a1a1a">opcion (a):</text>
+    <text x="208" y="267" fill="#1a1a1a">seguir con</text>
+    <text x="208" y="281" fill="#1a1a1a">HYDRAD</text>
+
+    <rect x="324" y="214" width="186" height="72" fill="#fff8e6" stroke="#d68910" stroke-width="1.8"/>
+    <text x="334" y="234" font-size="11.5" font-weight="bold" fill="#d68910">Fase 1 &#183; AQUI ESTAMOS</text>
+    <text x="334" y="252" fill="#1a1a1a">mapa &#964; &#215; F, &#963;_num y &#963;_haz,</text>
+    <text x="334" y="267" fill="#1a1a1a">mecanismo. 1&#8211;2 meses</text>
+    <text x="334" y="281" fill="#1a1a1a">(antes: los 5 puntos de abajo)</text>
+
+    <rect x="532" y="214" width="104" height="72" fill="#f6f6f6" stroke="#aaaaaa"/>
+    <text x="542" y="234" font-size="11.5" font-weight="bold" fill="#777777">R2</text>
+    <text x="542" y="252" fill="#555555">&#191;M entendido</text>
+    <text x="542" y="267" fill="#555555">y robusto? &#191;anadir</text>
+    <text x="542" y="281" fill="#555555">cromosfera?</text>
+
+    <rect x="658" y="214" width="204" height="72" fill="#f6f6f6" stroke="#aaaaaa"/>
+    <text x="668" y="234" font-size="11.5" font-weight="bold" fill="#777777">Fase 2 &#183; escritura</text>
+    <text x="668" y="252" fill="#555555">un paper: cuando falla la</text>
+    <text x="668" y="267" fill="#555555">aproximacion, con configuracion</text>
+    <text x="668" y="281" fill="#555555">reproducible. ~1 mes</text>
+  </g>
+  <line x1="178" y1="250" x2="196" y2="250" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+  <line x1="304" y1="250" x2="322" y2="250" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+  <line x1="512" y1="250" x2="530" y2="250" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+  <line x1="638" y1="250" x2="656" y2="250" stroke="#555" stroke-width="1.4" marker-end="url(#m1)"/>
+
+  <!-- five items -->
+  <rect x="24" y="312" width="486" height="136" fill="#fffdf5" stroke="#d68910"/>
+  <text x="36" y="332" font-size="12" font-weight="bold" fill="#d68910">Lo que la Fase 1 debe cerrar ANTES del mapa (docs/07, &#167;7.3)</text>
+  <g font-size="11" fill="#1a1a1a">
+    <text x="36" y="353">1. &#963;_num espacial: variar el refinamiento, no solo el paso de conduccion.</text>
+    <text x="36" y="371">2. &#963;_obs y decision pre-registrada: nombrar el instrumento y escribir &#963; antes de correr.</text>
+    <text x="36" y="389">3. Una rejilla de &#964; que llegue a la relajacion (o un pulso 1 mas debil).</text>
+    <text x="36" y="407">4. Un diagnostico primario elegido por robustez (EM caliente y T ponderada).</text>
+    <text x="36" y="425">5. El limite de degeneracion con el haz, reportado como resultado, no como defecto.</text>
+    <text x="36" y="441" fill="#666666">El punto 1 decide tambien si el segundo episodio de A1 (t &#8776; 85&#8211;130 s, sin haz) es fisica o artefacto.</text>
+  </g>
+
+  <!-- RADYN gate -->
+  <rect x="528" y="312" width="334" height="88" fill="#f4f6fb" stroke="#1f4e79"/>
+  <text x="540" y="332" font-size="12" font-weight="bold" fill="#1f4e79">En paralelo: la puerta RADYN (T5, T6)</text>
+  <g font-size="11" fill="#1a1a1a">
+    <text x="540" y="352">compilador Fortran + libreria CDF de la NASA (no instalados),</text>
+    <text x="540" y="370">reproducir un modelo F-CHROMA, verificar el <tspan font-style="italic">restart</tspan>,</text>
+    <text x="540" y="388">medir tiempo de calculo, confirmar la licencia.</text>
+  </g>
+  <line x1="417" y1="288" x2="560" y2="308" stroke="#8e44ad" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#m2)"/>
+
+  <!-- extensions -->
+  <rect x="528" y="412" width="334" height="88" fill="#f8f8f8" stroke="#aaaaaa"/>
+  <text x="540" y="432" font-size="12" font-weight="bold" fill="#777777">Extensiones (E1&#8211;E10), no comprometidas</text>
+  <g font-size="11" fill="#555555">
+    <text x="540" y="452">STIX observacional &#183; inferencia condicionada a STIX &#183; benchmark</text>
+    <text x="540" y="470">publicado &#183; tercer pulso &#183; hilos independientes &#183; sensibilidad FP &#183;</text>
+    <text x="540" y="488">tercera fuente del X5.0 &#183; colaboracion RADYN/FLARIX &#183; trazador v4</text>
+  </g>
+
+  <!-- outcomes -->
+  <rect x="24" y="464" width="486" height="56" fill="#eef4fb" stroke="#1f4e79"/>
+  <text x="36" y="484" font-size="11.5" font-weight="bold" fill="#1f4e79">Cualquiera de los tres desenlaces es publicable:</text>
+  <text x="36" y="501" font-size="11" fill="#1a1a1a">falla para &#964; &lt; &#964;*(F) &#183; existe pero no es visible en ese diagnostico &#183;</text>
+  <text x="36" y="516" font-size="11" fill="#1a1a1a">es adecuada en todo el dominio explorado (y se reporta ese dominio).</text>
+
+  <!-- what cannot be claimed -->
+  <rect x="24" y="536" width="838" height="70" fill="#fdf2f0" stroke="#c0392b"/>
+  <text x="36" y="556" font-size="12" font-weight="bold" fill="#c0392b">Lo que esta ruta NO puede afirmar</text>
+  <g font-size="11" fill="#1a1a1a">
+    <text x="36" y="576">&#8226; nada sobre lineas cromosfericas (Mg II, Si IV, H&#945;): hace falta RADYN con transporte NLTE   &#8226; nada por encima de F &#8776; 5&#215;10&#185;&#8304; erg cm&#8315;&#178; s&#8315;&#185;</text>
+    <text x="36" y="594">&#8226; las condensaciones y el vaiven son propiedades del modelo 1D simetrico   &#8226; un solo bucle, una sola forma de pulso: no separa historia de longitud ni de asimetria</text>
+  </g>
+</svg>

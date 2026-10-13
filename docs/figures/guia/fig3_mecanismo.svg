@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="880" height="500" font-family="Helvetica, Arial, sans-serif">
+  <rect width="880" height="500" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#1a1a1a">3. El mecanismo: el mismo haz no encuentra el mismo blanco</text>
+  <text x="20" y="48" font-size="12" fill="#666666">Una pata del bucle, vista de lado. Esquema conceptual; los numeros son los del piloto HYDRAD (60 Mm, F = 1.3&#215;10&#185;&#8304;, 30 s).</text>
+  <defs>
+    <marker id="r1" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker>
+    <marker id="g1" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a085"/></marker>
+  </defs>
+
+  <!-- ===== PANEL A ===== -->
+  <rect x="24" y="62" width="404" height="340" fill="#fcfdfe" stroke="#d0d7de"/>
+  <text x="40" y="84" font-size="13.5" font-weight="bold" fill="#1f4e79">B0 &#183; atmosfera fresca (relajada)</text>
+  <!-- tube -->
+  <rect x="150" y="96" width="86" height="210" fill="#eef4fb" stroke="#9cc3e6"/>
+  <rect x="150" y="306" width="86" height="76" fill="#fbe9d8" stroke="#e8c49a"/>
+  <line x1="150" y1="306" x2="236" y2="306" stroke="#8e44ad" stroke-width="2"/>
+  <text x="246" y="140" font-size="11" fill="#2b5c8a">corona vacia</text>
+  <text x="246" y="155" font-size="11" fill="#2b5c8a">n &#8776; 10&#8313; cm&#8315;&#179;</text>
+  <text x="246" y="302" font-size="10.5" fill="#8e44ad">TR</text>
+  <text x="246" y="330" font-size="11" fill="#a05a1a">cromosfera densa</text>
+  <!-- sparse dots -->
+  <g fill="#9cc3e6"><circle cx="170" cy="130" r="2"/><circle cx="205" cy="180" r="2"/><circle cx="185" cy="240" r="2"/><circle cx="220" cy="270" r="2"/></g>
+  <!-- beam -->
+  <line x1="193" y1="92" x2="193" y2="312" stroke="#c0392b" stroke-width="4" marker-end="url(#r1)"/>
+  <text x="60" y="200" font-size="11.5" fill="#c0392b">el haz cruza</text>
+  <text x="60" y="215" font-size="11.5" fill="#c0392b">la corona casi</text>
+  <text x="60" y="230" font-size="11.5" fill="#c0392b">sin perder</text>
+  <text x="60" y="245" font-size="11.5" fill="#c0392b">energia</text>
+  <text x="54" y="328" font-size="11" fill="#c0392b">deposita abajo:</text>
+  <text x="54" y="343" font-size="11" fill="#c0392b">N &#8776; N&#8336;(E) solo</text>
+  <text x="54" y="358" font-size="11" fill="#c0392b">en la cromosfera</text>
+  <!-- evaporation -->
+  <line x1="222" y1="300" x2="222" y2="120" stroke="#16a085" stroke-width="2.6" marker-end="url(#g1)"/>
+  <text x="252" y="212" font-size="11" fill="#16a085">la corona debe</text>
+  <text x="252" y="227" font-size="11" fill="#16a085">llenarse primero:</text>
+  <text x="252" y="242" font-size="11" fill="#16a085">RETARDO de</text>
+  <text x="252" y="257" font-size="11" fill="#16a085">evaporacion</text>
+
+  <!-- ===== PANEL B ===== -->
+  <rect x="452" y="62" width="404" height="340" fill="#fcfdfe" stroke="#d0d7de"/>
+  <text x="468" y="84" font-size="13.5" font-weight="bold" fill="#c0392b">B1 &#183; corona ya llena por el pulso 1</text>
+  <rect x="578" y="96" width="86" height="210" fill="#d6e6f5" stroke="#9cc3e6"/>
+  <rect x="578" y="306" width="86" height="76" fill="#fbe9d8" stroke="#e8c49a"/>
+  <line x1="578" y1="306" x2="664" y2="306" stroke="#8e44ad" stroke-width="2"/>
+  <!-- dense dots -->
+  <g fill="#1f4e79" fill-opacity="0.55">
+    <circle cx="590" cy="112" r="2.6"/><circle cx="612" cy="124" r="2.6"/><circle cx="640" cy="110" r="2.6"/>
+    <circle cx="596" cy="146" r="2.6"/><circle cx="624" cy="158" r="2.6"/><circle cx="652" cy="140" r="2.6"/>
+    <circle cx="586" cy="182" r="2.6"/><circle cx="616" cy="194" r="2.6"/><circle cx="646" cy="176" r="2.6"/>
+    <circle cx="600" cy="214" r="2.6"/><circle cx="630" cy="226" r="2.6"/><circle cx="656" cy="208" r="2.6"/>
+    <circle cx="588" cy="248" r="2.6"/><circle cx="618" cy="258" r="2.6"/><circle cx="648" cy="242" r="2.6"/>
+    <circle cx="604" cy="280" r="2.6"/><circle cx="634" cy="290" r="2.6"/><circle cx="658" cy="274" r="2.6"/>
+  </g>
+  <text x="674" y="130" font-size="11" fill="#1f4e79">corona llena:</text>
+  <text x="674" y="145" font-size="11" fill="#1f4e79">n &#8776; 10&#185;&#8304;&#8211;10&#185;&#185; cm&#8315;&#179;,</text>
+  <text x="674" y="160" font-size="11" fill="#1f4e79">T &#8776; 5 MK</text>
+  <text x="674" y="182" font-size="11" fill="#1f4e79">columna coronal</text>
+  <text x="674" y="197" font-size="11" fill="#1f4e79">4&#215;10&#185;&#8313; cm&#8315;&#178; =</text>
+  <text x="674" y="212" font-size="11" fill="#1f4e79">56 % de N&#8336;(20 keV)</text>
+  <!-- beam stops higher -->
+  <line x1="621" y1="92" x2="621" y2="236" stroke="#c0392b" stroke-width="4" marker-end="url(#r1)"/>
+  <line x1="621" y1="246" x2="621" y2="300" stroke="#c0392b" stroke-width="2" stroke-dasharray="4 4" stroke-opacity="0.5"/>
+  <text x="470" y="196" font-size="11.5" fill="#c0392b">parte del haz</text>
+  <text x="470" y="211" font-size="11.5" fill="#c0392b">frena YA en la</text>
+  <text x="470" y="226" font-size="11.5" fill="#c0392b">corona</text>
+  <text x="470" y="241" font-size="11.5" fill="#c0392b">(blanco grueso</text>
+  <text x="470" y="256" font-size="11.5" fill="#c0392b">coronal)</text>
+  <text x="470" y="290" font-size="11" fill="#999999">solo una fraccion</text>
+  <text x="470" y="305" font-size="11" fill="#999999">llega abajo</text>
+  <!-- sloshing -->
+  <path d="M 600 330 C 616 318, 632 342, 648 330" fill="none" stroke="#8e44ad" stroke-width="2"/>
+  <text x="564" y="360" font-size="10.5" fill="#8e44ad">flujos y condensaciones heredados</text>
+
+  <!-- consequences -->
+  <rect x="24" y="416" width="404" height="74" fill="#f4f6f8" stroke="#d0d7de"/>
+  <text x="38" y="436" font-size="11.5" fill="#1a1a1a">&#8226; la EM caliente aparece <tspan font-weight="bold">con retardo</tspan> (hay que evaporar)</text>
+  <text x="38" y="454" font-size="11.5" fill="#1a1a1a">&#8226; el apice se calienta <tspan font-weight="bold">mas</tspan> (pocas particulas, misma energia)</text>
+  <text x="38" y="472" font-size="11.5" fill="#1a1a1a">&#8226; esto es lo que supone la aproximacion de pulsos independientes</text>
+  <rect x="452" y="416" width="404" height="74" fill="#fdf2f0" stroke="#e8b9b2"/>
+  <text x="466" y="436" font-size="11.5" fill="#1a1a1a">&#8226; la EM caliente aparece <tspan font-weight="bold">de inmediato</tspan> (ya hay plasma caliente)</text>
+  <text x="466" y="454" font-size="11.5" fill="#1a1a1a">&#8226; el apice se calienta <tspan font-weight="bold">1.5&#8211;2.4 MK menos</tspan> (misma energia, mas particulas)</text>
+  <text x="466" y="472" font-size="11.5" fill="#1a1a1a">&#8226; tras el pulso retiene 2&#8211;17&#215; mas EM caliente</text>
+</svg>

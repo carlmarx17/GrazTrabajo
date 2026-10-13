@@ -78,3 +78,29 @@ Completing these checks does not require removing `vendor/HYDRAD/`; retain usefu
 | Compilation (F77/F90 + CDF) on macOS | Delay | Try on the cluster |
 | Hard convergence of new atmospheres | Failed cases | Use already prepared atmospheres; record failures |
 | Unknown cost per run | Mis-sized campaign | Pilot before budgeting |
+
+## Cluster access: the concrete path, and the actual blocker (recorded 2026-10-13)
+
+Gate item "build on the cluster" is **not** blocked by the account. It is blocked by the network.
+
+**The machine.** COSMA, at Durham, through DiRAC. Project code **dp433**, held by a collaborator at a partner institution who supplied the account route (2026-03-31):
+
+1. Register on SAFE: <https://safe.epcc.ed.ac.uk/dirac/> (docs: <https://epcced.github.io/safe-docs/>) with full name, **institutional** e-mail (private addresses are refused), nationality and department.
+2. In SAFE, choose **Request login account**.
+3. Enter project code **dp433** and select the DiRAC system (cosma).
+4. The PI or project manager approves; an e-mail confirms it.
+5. The **SSH key pair is generated on the machine you will connect from**, and the public key goes into the SAFE request (confirmed 2026-04-01).
+
+**Status.** The account exists and is live: a DiRAC SAFE 2FA recovery token was issued on 2026-04-15, and COSMA support notices arrive directly (downtime 5–9 October 2026, including `/snap*` cleaning). A collaborator's note of useful COSMA commands is held outside this repository.
+
+**The blocker.** From the Uni Graz network the VPN works (Cisco Secure Client on Fedora) but **outgoing SSH on port 22 is blocked**, so COSMA is unreachable. This was reported to uniIT on **2026-09-08** (ticket **IT-143898**) and, as of 2026-10-13, **there is no reply** — five weeks open. Nothing on the RADYN gate can proceed from Graz until this is resolved.
+
+**Options, in order of cost.**
+
+1. **Chase IT-143898.** Ask explicitly for outbound TCP/22, or for the documented alternative (a jump host, or SSH over 443). This is a one-line request and it is the whole blocker.
+2. **Work outside the university network** (home connection or tether) to confirm the account and key work at all — this isolates the Graz firewall as the cause and takes minutes.
+3. **Ask whether Graz has its own compute** for this project, which would avoid the dp433 question entirely.
+
+**An allocation question to settle before counting on COSMA.** dp433 is the DiRAC project of the mirror-instability work, not of this flare project. Running RADYN under it may be outside its allocation. Confirm with the project PI and with the supervisor whether this work may use dp433, or whether it needs its own project code or a local machine.
+
+**Credentials.** The external university account needed for the VPN is managed through the IT service desk; MFA setup and password rotation are at the addresses that desk provides. No account name, ticket contact or credential is recorded in this repository.

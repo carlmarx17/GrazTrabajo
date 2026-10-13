@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" width="880" height="470" font-family="Helvetica, Arial, sans-serif">
+  <rect width="880" height="470" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#1a1a1a">4. La regla de decision: cuando el contraste cuenta como fallo</text>
+  <text x="20" y="48" font-size="12" fill="#666666">Esquema conceptual. La regla y los valores de &#963; se fijan ANTES de calcular cualquier contraste.</text>
+
+  <!-- panel a -->
+  <text x="40" y="80" font-size="13" font-weight="bold" fill="#1a1a1a">(a) dentro de una ventana: |M_D| frente a 3&#963;_tot</text>
+  <line x1="60" y1="340" x2="430" y2="340" stroke="#333" stroke-width="1.4"/>
+  <line x1="60" y1="340" x2="60" y2="102" stroke="#333" stroke-width="1.4"/>
+  <text x="245" y="374" font-size="11" text-anchor="middle" fill="#333">t&#8242; = tiempo desde el inicio de b  [s]</text>
+  <text x="34" y="222" font-size="11" fill="#333" transform="rotate(-90 34 222)" text-anchor="middle">|M_D|</text>
+  <g font-size="10" fill="#333" text-anchor="middle">
+    <text x="60" y="356">0</text><text x="180" y="356">30</text><text x="300" y="356">60</text><text x="416" y="356">89</text>
+  </g>
+  <rect x="66" y="102" width="76" height="238" fill="#c0392b" fill-opacity="0.07"/>
+  <rect x="214" y="102" width="216" height="238" fill="#c0392b" fill-opacity="0.07"/>
+  <path d="M 60 340 L 60 290 C 140 286, 170 272, 200 274 C 260 278, 340 294, 430 296 L 430 340 Z" fill="#b0b7be" fill-opacity="0.45" stroke="#8a9199" stroke-width="1"/>
+  <text x="424" y="316" font-size="10" text-anchor="end" fill="#55606a">3&#963;_tot = 3&#8730;(&#963;_num&#178; + &#963;_haz&#178; + &#963;_obs&#178;)</text>
+  <polyline points="60,330 72,252 92,210 116,232 148,290 180,328 212,268 260,196 300,146 340,140 380,164 430,180"
+            fill="none" stroke="#c0392b" stroke-width="2.6"/>
+  <text x="104" y="118" font-size="10" text-anchor="middle" fill="#c0392b">falla</text>
+  <text x="322" y="118" font-size="10" text-anchor="middle" fill="#c0392b">falla</text>
+  <text x="178" y="118" font-size="10" text-anchor="middle" fill="#8a9199">indistinguible</text>
+  <text x="178" y="131" font-size="10" text-anchor="middle" fill="#8a9199">del error</text>
+
+  <!-- panel b -->
+  <text x="480" y="80" font-size="13" font-weight="bold" fill="#1a1a1a">(b) entre ventanas: de donde sale &#964;*</text>
+  <line x1="500" y1="340" x2="850" y2="340" stroke="#333" stroke-width="1.4"/>
+  <line x1="500" y1="340" x2="500" y2="102" stroke="#333" stroke-width="1.4"/>
+  <text x="675" y="374" font-size="11" text-anchor="middle" fill="#333">&#964; = tiempo de espera  [s]</text>
+  <text x="474" y="222" font-size="11" fill="#333" transform="rotate(-90 474 222)" text-anchor="middle">max |M_D|</text>
+  <g font-size="10" fill="#333" text-anchor="middle">
+    <text x="522" y="356">10</text><text x="566" y="356">30</text><text x="632" y="356">60</text><text x="764" y="356">120</text>
+  </g>
+  <line x1="500" y1="286" x2="850" y2="286" stroke="#8a9199" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="846" y="278" font-size="10.5" text-anchor="end" fill="#55606a">k&#963;_tot (k = 3 por defecto)</text>
+  <path d="M 522 158 C 590 168, 650 214, 700 262 C 730 292, 780 318, 846 328" fill="none" stroke="#8e44ad" stroke-width="2.2" stroke-dasharray="5 4"/>
+  <circle cx="712" cy="286" r="5" fill="#8e44ad"/>
+  <line x1="712" y1="291" x2="712" y2="340" stroke="#8e44ad" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="712" y="356" font-size="11" text-anchor="middle" font-weight="bold" fill="#8e44ad">&#964;*</text>
+  <g fill="#c0392b">
+    <circle cx="522" cy="152" r="5"/><circle cx="566" cy="148" r="5"/><circle cx="632" cy="132" r="5"/>
+  </g>
+  <polyline points="522,152 566,148 632,132" fill="none" stroke="#c0392b" stroke-width="2.4"/>
+  <text x="506" y="104" font-size="10.5" fill="#c0392b">piloto HYDRAD (puntos rojos): el contraste no decae</text>
+  <text x="506" y="118" font-size="10.5" fill="#c0392b">entre &#964; = 10 y 60 s &#8594; &#964;* &gt; 120 s para este bucle y este haz</text>
+  <text x="764" y="158" font-size="16" text-anchor="middle" fill="#999999">&#10006;</text>
+  <text x="716" y="184" font-size="10.5" fill="#999999">&#964; = 120 s: rama invalida</text>
+  <text x="716" y="198" font-size="10.5" fill="#999999">(oscilacion de malla)</text>
+  <text x="506" y="312" font-size="10.5" fill="#8e44ad">lo esperado (linea discontinua): el contraste decae</text>
+  <text x="506" y="326" font-size="10.5" fill="#8e44ad">a medida que el pulso 1 se relaja</text>
+
+  <!-- caption -->
+  <rect x="20" y="394" width="840" height="64" fill="#f4f6f8" stroke="#d0d7de"/>
+  <text x="34" y="414" font-size="11" fill="#1a1a1a">(a) La aproximacion falla solo en los tramos de t&#8242; donde |M_D| &gt; 3&#963;_tot. En el piloto son el inicio del pulso y la fase posterior; cerca de</text>
+  <text x="34" y="430" font-size="11" fill="#1a1a1a">t&#8242; &#8776; 15&#8211;45 s un haz cambiado dentro de su error de ajuste mueve la EM tanto como la historia: ahi no se pueden distinguir.</text>
+  <text x="34" y="449" font-size="11" fill="#1a1a1a">(b) &#964;* = el &#964; mas corto a partir del cual |M_D| &#8804; k&#963;_tot en todos los &#964; mayores muestreados. Si la rejilla no llega a la relajacion, solo hay cota inferior.</text>
+</svg>

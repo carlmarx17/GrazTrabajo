@@ -94,6 +94,8 @@ The Python tests validate these utilities. They do not validate a production sol
 - [Earlier usefulness tests](docs/06_usefulness_tests.md): exploratory column and spectral-bias results; the source of the pilot domain.
 - [X5.0 first look](scripts/x5_first_look/README.md): exploratory imaging.
 - [Project working guide](skills/stix-rhd-memory/SKILL.md).
+- [Guía de conceptos (ES)](docs/guia_conceptos_es.md): Spanish companion that introduces the physics, the core experiment and the current state from scratch, with hand-drawn schematics. Supporting material; the English documents above remain authoritative.
+- [Plan de trabajo (ES)](docs/plan_trabajo_es.md): Spanish companion on the committed objectives, the five Phase 1 gates, expected outcomes and the indicative schedule. Supporting material; the English documents above remain authoritative.
 - Archived designs: [v4 loop re-use](docs/archive/00_objectives_v4_loop_reuse.md), [v3 spectral memory](docs/archive/00_objectives_v3_spectral_memory.md), [v2 inference bias](docs/archive/00_objectives_v2_inference_bias.md).
 
 ## Environments
